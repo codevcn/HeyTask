@@ -1,9 +1,10 @@
 import type { HttpStatusCode } from "axios"
 
-export type TUser = {
+export type TUserData = {
    id: number
    fullName: string
    email: string
+   avatar: string
 }
 
 export type TSuccess = {

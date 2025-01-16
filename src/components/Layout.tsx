@@ -6,7 +6,7 @@ const nonGuardRoutes: string[] = ["/", "/login", "/register"]
 
 export default function Layout() {
    return (
-      <div className="h-full">
+      <div className="h-full text-sm">
          <RouteGuard nonGuardRoutes={nonGuardRoutes}>
             <Outlet />
          </RouteGuard>

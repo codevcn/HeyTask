@@ -9,3 +9,11 @@ export type TRegisterPayload = {
    password: string
    reTypePassword: string
 }
+
+export type TWorkspaceData = {
+   name: string
+}
+
+export type TCustomizationData = {
+   background: string
+}

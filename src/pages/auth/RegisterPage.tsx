@@ -99,7 +99,7 @@ const RegisterPage = () => {
          <form
             action="#"
             onSubmit={handleSubmit(loginHandler)}
-            className="flex flex-col items-center w-[400px] py-[32px] px-[40px] mt-12 rounded bg-white m-auto shadow-md text-regular-text-cl"
+            className="flex flex-col items-center w-[400px] py-[32px] px-[40px] mt-12 rounded bg-white m-auto shadow-md text-[#44546f]"
          >
             <div className="flex gap-x-[5px] items-center text-black">
                <img src={appLogo} alt="App Logo" className="h-[35px]" />
