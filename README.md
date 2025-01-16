@@ -11,6 +11,7 @@
 - Sass: A CSS preprocessor that extends CSS capabilities with features like variables, nesting, and mixins.
 - Tailwind CSS: A utility-first CSS framework that enables rapid UI development without the need for custom CSS.
 - Socket.IO: A powerful library for building real-time applications, enabling communication between the server and client via WebSocket.
+- Husky: A tool for managing Git hooks, used in this project alongside Prettier and Git pre-commit hooks to ensure consistent code formatting and quality before committing changes.
 
 ## Installation
 
