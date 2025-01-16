@@ -1,4 +1,4 @@
-export default function HomePage() {
+export const MenuNavigation = () => {
    return (
       <div>
          <div></div>

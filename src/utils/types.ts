@@ -1,5 +1,11 @@
 import type { HttpStatusCode } from "axios"
 
+export type TUser = {
+   id: number
+   fullName: string
+   email: string
+}
+
 export type TSuccess = {
    success: boolean
 }

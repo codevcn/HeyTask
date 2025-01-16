@@ -5,14 +5,18 @@ import { ThemeProvider } from "@mui/material/styles"
 import CssBaseline from "@mui/material/CssBaseline"
 import theme from "./styles/theme"
 import App from "./App"
+import { Provider } from "react-redux"
+import { store } from "./redux/store"
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
    <React.StrictMode>
       <BrowserRouter>
          <ThemeProvider theme={theme}>
             <CssBaseline />
-            <App />
+            <Provider store={store}>
+               <App />
+            </Provider>
          </ThemeProvider>
       </BrowserRouter>
-   </React.StrictMode>
+   </React.StrictMode>,
 )

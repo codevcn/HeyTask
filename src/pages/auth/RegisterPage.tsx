@@ -22,7 +22,7 @@ interface IFormData {
    reTypePassword: string
 }
 
-export default function LoginPage() {
+const RegisterPage = () => {
    const [showPassword, setShowPassword] = useState<boolean>(false)
    const [loading, setLoading] = useState<boolean>(false)
    const {
@@ -188,3 +188,5 @@ export default function LoginPage() {
       </div>
    )
 }
+
+export default RegisterPage

@@ -1,10 +1,15 @@
 import { Outlet } from "react-router-dom"
 import { ToastContainer } from "react-toastify"
+import { RouteGuard } from "./ResourceGuard"
+
+const nonGuardRoutes: string[] = ["/", "/login", "/register"]
 
 export default function Layout() {
    return (
       <div className="h-full">
-         <Outlet />
+         <RouteGuard nonGuardRoutes={nonGuardRoutes}>
+            <Outlet />
+         </RouteGuard>
          <ToastContainer
             position="top-right"
             autoClose={5000} // Đóng sau 5 giây

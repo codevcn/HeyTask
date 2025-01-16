@@ -20,7 +20,7 @@ interface IFormData {
    password: string
 }
 
-export default function LoginPage() {
+const LoginPage = () => {
    const [showPassword, setShowPassword] = useState<boolean>(false)
    const [loading, setLoading] = useState<boolean>(false)
    const {
@@ -37,7 +37,9 @@ export default function LoginPage() {
          isValid = false
       }
       if (!passwordRegex.test(data.password)) {
-         setError("password", { message: "Mật khẩu phải có ít nhất 4 kí tự, 1 chữ viết thường và 1 số." })
+         setError("password", {
+            message: "Mật khẩu phải có ít nhất 4 kí tự, 1 chữ viết thường và 1 số.",
+         })
          isValid = false
       }
       return isValid
@@ -108,10 +110,7 @@ export default function LoginPage() {
                      error={!!errors.password}
                      helperText={errors.password?.message || ""}
                   />
-                  <div
-                     onClick={handleShowPassword}
-                     className="absolute top-[1px] right-0"
-                  >
+                  <div onClick={handleShowPassword} className="absolute top-[1px] right-0">
                      <IconButton>{showPassword ? <Visibility /> : <VisibilityOff />}</IconButton>
                   </div>
                </div>
@@ -140,3 +139,5 @@ export default function LoginPage() {
       </div>
    )
 }
+
+export default LoginPage
