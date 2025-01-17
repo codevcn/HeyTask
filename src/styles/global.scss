@@ -27,6 +27,7 @@ textarea {
    font-size: 14px;
    line-height: 1;
    box-sizing: border-box;
+   border: unset;
 }
 
 svg {
@@ -47,5 +48,5 @@ svg {
 }
 
 .css-board-list {
-   height: calc(100% - var(--ht-top-nav-height) - 12px);
+   height: calc(100% - var(--ht-top-nav-height) - 18px);
 }

@@ -82,7 +82,7 @@ export const TopNavigation = () => {
          <div className="flex gap-x-5">
             <div className="flex gap-x-[5px] items-center text-[#9EACBA] cursor-pointer">
                <img src={appLogo} alt="App Logo" className="h-[1.2rem]" />
-               <span className="text-[1.1rem] font-bold">HeyTask</span>
+               <span className="text-[1.2rem] font-bold">HeyTask</span>
             </div>
             <MenuList />
          </div>

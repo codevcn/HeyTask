@@ -90,7 +90,8 @@ export const useDragScroll = () => {
 
    useEffect(() => {
       const dragNode = dragNodeRef.current
-      if (dragNode) {
+      const scrollNode = scrollNodeRef.current
+      if (dragNode && scrollNode) {
          dragNode.addEventListener("mousedown", handleMouseDown)
          dragNode.addEventListener("touchstart", handleTouchStart)
          return () => {
@@ -98,7 +99,7 @@ export const useDragScroll = () => {
             dragNode.removeEventListener("touchstart", handleTouchStart)
          }
       }
-   }, [dragNodeRef.current])
+   }, [dragNodeRef.current, scrollNodeRef.current])
 
    return [refToScroll, refToDrag]
 }
