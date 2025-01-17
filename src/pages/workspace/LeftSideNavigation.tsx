@@ -23,7 +23,7 @@ export const LeftSideNavigation = () => {
                <img src={user.avatar} alt="User Avatar" className="h-[32px] w-[32px]" />
                {workspace ? (
                   <div className="font-semibold">
-                     <span>{workspace.name}</span>
+                     <span>{workspace.title}</span>
                   </div>
                ) : (
                   <StyledSkeleton height={32} width={150} />

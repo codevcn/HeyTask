@@ -9,6 +9,7 @@ export default {
             "hover-silver-bgcl": "var(--ht-hover-silver-bgcl)",
             "divider-cl": "var(--ht-divider-cl)",
             "secondary-text-cl": "var(--ht-secondary-text-cl)",
+            "list-bgcl": "var(--ht-list-bgcl)",
          },
          height: {
             "top-nav-height": "var(--ht-top-nav-height)",

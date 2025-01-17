@@ -11,9 +11,27 @@ export type TRegisterPayload = {
 }
 
 export type TWorkspaceData = {
-   name: string
+   title: string
 }
 
 export type TCustomizationData = {
    background: string
+}
+
+export type TCardMemberData = {
+   fullName: string
+   avatar: string | null
+}
+
+export type TCardItemPreviewData = {
+   id: number
+   title: string
+   hasDescription: boolean
+   firstMember: TCardMemberData | null
+}
+
+export type TListData = {
+   id: number
+   title: string
+   cards: TCardItemPreviewData[] | null
 }
