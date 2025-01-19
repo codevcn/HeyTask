@@ -27,19 +27,10 @@ textarea {
    font-size: 14px;
    line-height: 1;
    box-sizing: border-box;
-   border: unset;
 }
 
 svg {
    display: flex;
-}
-
-.css-background {
-   height: calc(100% - var(--ht-top-nav-height));
-}
-
-.css-main-board {
-   width: calc(100% - var(--ht-left-side-nav-width));
 }
 
 .css-board-styled-scrollbar {
@@ -47,6 +38,26 @@ svg {
    scrollbar-width: auto;
 }
 
-.css-board-list {
-   height: calc(100% - var(--ht-top-nav-height) - 18px);
+.css-logo-loading-border {
+   position: absolute;
+   top: 50%;
+   left: 50%;
+   transform: translate(-50%, -50%);
+   z-index: 10;
+   background-color: transparent;
+   height: 100%;
+   width: 100%;
+   border-radius: 50%;
+   border: none;
+   border-top: 3px solid var(--ht-regular-text-cl);
+   animation: logo-loading 1.2s infinite forwards linear;
+}
+
+@keyframes logo-loading {
+   0% {
+      transform: translate(-50%, -50%) rotate(0);
+   }
+   100% {
+      transform: translate(-50%, -50%) rotate(360deg);
+   }
 }

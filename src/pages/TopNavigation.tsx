@@ -1,13 +1,13 @@
 import { type MouseEvent, useRef, useState } from "react"
-import appLogo from "../../assets/app-logo.png"
+import appLogo from "../assets/app-logo.png"
 import { Menu, MenuItem, Button, styled } from "@mui/material"
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore"
 import SearchIcon from "@mui/icons-material/Search"
 import NotificationsIcon from "@mui/icons-material/Notifications"
-import { useUser } from "../../hooks/user"
-import { StyledIconButton } from "../../components/StyledIconButton"
+import { useUser } from "../hooks/user"
+import { StyledIconButton } from "../components/StyledIconButton"
 
-type TActive = "workspaces" | "more" | undefined
+type TActive = "projects" | "more" | undefined
 
 const MenuList = () => {
    const [active, setActive] = useState<TActive>()
@@ -24,21 +24,21 @@ const MenuList = () => {
 
    return (
       <div className="flex items-center gap-x-2 text-[#9FADBC]">
-         <StyledButton onClick={(e) => handleActive("workspaces", e)} endIcon={<ExpandMoreIcon />}>
-            Workspaces
+         <StyledButton onClick={(e) => handleActive("projects", e)} endIcon={<ExpandMoreIcon />}>
+            Projects
          </StyledButton>
-         <StyledButton onClick={(e) => handleActive("workspaces", e)} endIcon={<ExpandMoreIcon />}>
+         <StyledButton onClick={(e) => handleActive("projects", e)} endIcon={<ExpandMoreIcon />}>
             More
          </StyledButton>
 
          <Menu
             anchorEl={anchorElRef.current}
-            open={active === "workspaces"}
+            open={active === "projects"}
             onClose={() => handleActive(undefined)}
          >
-            <MenuItem>Workspace 1</MenuItem>
-            <MenuItem>Workspace 2</MenuItem>
-            <MenuItem>Workspace 3</MenuItem>
+            <MenuItem>Project 1</MenuItem>
+            <MenuItem>Project 2</MenuItem>
+            <MenuItem>Project 3</MenuItem>
          </Menu>
          <Menu
             anchorEl={anchorElRef.current}
@@ -78,7 +78,7 @@ const UserSection = () => {
 
 export const TopNavigation = () => {
    return (
-      <nav className="flex justify-between gap-x-5 h-top-nav-height bg-top-nav-bgcl py-2 px-4 border-b border-divider-cl">
+      <nav className="flex justify-between gap-x-5 h-top-nav bg-top-nav-bgcl py-2 px-4 border-b border-divider-cl">
          <div className="flex gap-x-5">
             <div className="flex gap-x-[5px] items-center text-[#9EACBA] cursor-pointer">
                <img src={appLogo} alt="App Logo" className="h-[1.2rem]" />

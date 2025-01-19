@@ -12,10 +12,12 @@ export default {
             "list-bgcl": "var(--ht-list-bgcl)",
          },
          height: {
-            "top-nav-height": "var(--ht-top-nav-height)",
+            "top-nav": "var(--ht-top-nav-height)",
+            background: "calc(100% - var(--ht-top-nav-height))",
          },
          width: {
-            "left-side-nav-width": "var(--ht-left-side-nav-width)",
+            "left-side-nav": "var(--ht-left-side-nav-width)",
+            "main-board": "calc(100% - var(--ht-left-side-nav-width))",
          },
       },
    },

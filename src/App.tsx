@@ -6,7 +6,7 @@ import Layout from "./components/Layout"
 import Page404 from "./pages/Page404"
 import "react-toastify/dist/ReactToastify.css"
 import RegisterPage from "./pages/auth/RegisterPage"
-import WorkspacePage from "./pages/workspace/WorkspacePage"
+import ProjectPage from "./pages/project/ProjectPage"
 
 const App = () => {
    return (
@@ -15,7 +15,7 @@ const App = () => {
             <Route index element={<HomePage />} />
             <Route path="login" element={<LoginPage />} />
             <Route path="register" element={<RegisterPage />} />
-            <Route path="workspace" element={<WorkspacePage />} />
+            <Route path="projects/:projectId" element={<ProjectPage />} />
          </Route>
 
          <Route path="*" element={<Page404 />} />

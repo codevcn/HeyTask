@@ -1,8 +1,8 @@
 import { useEffect } from "react"
 import { useAppSelector } from "../hooks/redux"
-import { workspaceService } from "../services/workspace-service"
+import { projectService } from "../services/project-service"
 import { useDispatch } from "react-redux"
-import { setCustomization } from "../redux/workspace/workspace-slice"
+import { setCustomization } from "../redux/project/project-slice"
 import { toast } from "react-toastify"
 import axiosErrorHandler from "../utils/axios-error-handler"
 
@@ -11,12 +11,12 @@ type TBackgroundProps = {
 }
 
 export const Background = ({ children }: TBackgroundProps) => {
-   const { customization } = useAppSelector(({ workspace }) => workspace)
+   const { customization } = useAppSelector(({ project }) => project)
    const dispatch = useDispatch()
 
    useEffect(() => {
       if (!customization) {
-         workspaceService
+         projectService
             .getCustomization(1)
             .then((res) => {
                dispatch(setCustomization(res))
@@ -38,7 +38,7 @@ export const Background = ({ children }: TBackgroundProps) => {
                  }
                : {}
          }
-         className="bg-blend-darken	bg-[#0000004d] h-full w-full css-background"
+         className="bg-blend-darken	bg-[#0000004d] w-full h-background"
       >
          {children}
       </div>

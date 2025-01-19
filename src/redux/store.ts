@@ -1,15 +1,15 @@
 import { configureStore } from "@reduxjs/toolkit"
 import { authSlice } from "./auth/auth-slice"
 import { userSlice } from "./user/user-slice"
-import { workspaceSlice } from "./workspace/workspace-slice"
+import { projectSlice } from "./project/project-slice"
 
 export const store = configureStore({
    reducer: {
       [authSlice.name]: authSlice.reducer,
       [userSlice.name]: userSlice.reducer,
-      [workspaceSlice.name]: workspaceSlice.reducer,
+      [projectSlice.name]: projectSlice.reducer,
    },
 })
 
-export type RootState = ReturnType<typeof store.getState>
-export type AppDispatch = typeof store.dispatch
+export type TRootState = ReturnType<typeof store.getState>
+export type TAppDispatch = typeof store.dispatch

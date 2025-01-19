@@ -10,7 +10,7 @@ export type TRegisterPayload = {
    reTypePassword: string
 }
 
-export type TWorkspaceData = {
+export type TProjectData = {
    title: string
 }
 
@@ -18,20 +18,26 @@ export type TCustomizationData = {
    background: string
 }
 
-export type TCardMemberData = {
+export type TTaskMemberData = {
    fullName: string
    avatar: string | null
 }
 
-export type TCardItemPreviewData = {
+export type TTaskData = {
+   title: string
+   description: string
+   members: TTaskMemberData[] | null
+}
+
+export type TTaskItemPreviewData = {
    id: number
    title: string
    hasDescription: boolean
-   firstMember: TCardMemberData | null
+   firstMember: TTaskMemberData | null
 }
 
-export type TListData = {
+export type TPhaseData = {
    id: number
    title: string
-   cards: TCardItemPreviewData[] | null
+   taskPreviews: TTaskItemPreviewData[] | null
 }

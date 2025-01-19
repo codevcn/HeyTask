@@ -1,9 +1,9 @@
 import { MainBoard } from "./MainBoard"
 import { LeftSideNavigation } from "./LeftSideNavigation"
-import { TopNavigation } from "./TopNavigation"
+import { TopNavigation } from "../TopNavigation"
 import { Background } from "../../components/Background"
 
-const WorkspacePage = () => {
+const ProjectPage = () => {
    return (
       <div className="h-screen">
          <TopNavigation />
@@ -17,4 +17,4 @@ const WorkspacePage = () => {
    )
 }
 
-export default WorkspacePage
+export default ProjectPage

@@ -2,7 +2,7 @@ import { useLocation, useNavigate } from "react-router-dom"
 import { useAppDispatch, useAppSelector } from "../hooks/redux"
 import { useEffect, useState } from "react"
 import { EAuthStatus } from "../utils/enums"
-import { AppLoading } from "./AppLoading"
+import { RouteLoading } from "./Loadings"
 import { useUser } from "../hooks/user"
 import { authService } from "../services/auth-service"
 import { setAuthStatus } from "../redux/auth/auth-slice"
@@ -44,7 +44,7 @@ const AuthGuard = ({ children }: TGuardProps) => {
       return children
    }
 
-   return <AppLoading />
+   return <RouteLoading />
 }
 
 type TResourceGuardProps = {

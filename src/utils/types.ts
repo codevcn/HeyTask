@@ -1,4 +1,5 @@
 import type { HttpStatusCode } from "axios"
+import type { TTaskItemPreviewData } from "../services/types"
 
 export type TUserData = {
    id: number
@@ -26,3 +27,13 @@ export type THttpErrorResBody =
         isUserError: boolean
      }
    | string
+
+export type TPhaseTaskPreview = TTaskItemPreviewData & {
+   phaseId: number
+}
+
+export type TProjectPageParams = {
+   projectId: string
+}
+
+export type TRegularSizes = "small" | "medium" | "large"

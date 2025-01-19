@@ -1,14 +1,14 @@
 import { perfomDelay } from "../utils/helpers"
-import type { TCustomizationData, TListData, TWorkspaceData } from "./types"
+import type { TCustomizationData, TPhaseData, TProjectData } from "./types"
 
-class WorkspaceService {
-   async getWorkspaceData(workspaceId: number): Promise<TWorkspaceData> {
+class ProjectService {
+   async getProjectData(projectId: number): Promise<TProjectData> {
       await perfomDelay(1000)
-      const data = { title: "VCN Workspace" }
+      const data = { title: "VCN Project" }
       return data
    }
 
-   async getCustomization(workspaceId: number): Promise<TCustomizationData> {
+   async getCustomization(projectId: number): Promise<TCustomizationData> {
       await perfomDelay(1000)
       const data = {
          background:
@@ -17,13 +17,13 @@ class WorkspaceService {
       return data
    }
 
-   async getLists(): Promise<TListData[]> {
+   async getPhases(): Promise<TPhaseData[]> {
       await perfomDelay(1000)
-      const data: TListData[] = [
+      const data: TPhaseData[] = [
          {
             id: 1,
             title: "Todo",
-            cards: [
+            taskPreviews: [
                {
                   id: 1,
                   title: "Lời mở đầu",
@@ -48,7 +48,7 @@ class WorkspaceService {
          {
             id: 2,
             title: "In Progress",
-            cards: [
+            taskPreviews: [
                {
                   id: 4,
                   title: "Lời mở đầu",
@@ -79,12 +79,60 @@ class WorkspaceService {
                      fullName: "codevcn",
                   },
                },
+               {
+                  id: 99,
+                  title: "Mẫu giao diện",
+                  hasDescription: true,
+                  firstMember: {
+                     avatar: null,
+                     fullName: "Haha vcn",
+                  },
+               },
+               {
+                  id: 101,
+                  title: "Mẫu giao diện",
+                  hasDescription: true,
+                  firstMember: {
+                     avatar:
+                        "https://trello-logos.s3.amazonaws.com/7c17ee5f87fa99637dce66430e395d97/170.png",
+                     fullName: "mot vo troi giang troi oi",
+                  },
+               },
+               {
+                  id: 105,
+                  title: "Mẫu giao diện",
+                  hasDescription: true,
+                  firstMember: {
+                     avatar: null,
+                     fullName: "1112",
+                  },
+               },
+               {
+                  id: 102,
+                  title: "Mẫu giao diện",
+                  hasDescription: true,
+                  firstMember: {
+                     avatar:
+                        "https://trello-logos.s3.amazonaws.com/7c17ee5f87fa99637dce66430e395d97/170.png",
+                     fullName: "mot vo troi giang troi oi",
+                  },
+               },
+               {
+                  id: 103,
+                  title: "Mẫu giao diện",
+                  hasDescription: true,
+                  firstMember: {
+                     avatar:
+                        "https://trello-logos.s3.amazonaws.com/7c17ee5f87fa99637dce66430e395d97/170.png",
+                     fullName: "mot vo troi giang troi oi",
+                  },
+               },
             ],
          },
          {
             id: 3,
             title: "Complete",
-            cards: [
+            taskPreviews: [
                {
                   id: 11,
                   title: "Lời mở đầuLời mở đầuLời mở đầuLời mở đầuLời mở đầuLời mở đầuLời mở đầu",
@@ -100,7 +148,7 @@ class WorkspaceService {
          {
             id: 4,
             title: "Done",
-            cards: [
+            taskPreviews: [
                {
                   id: 9,
                   title: "Lời mở đầu",
@@ -116,7 +164,7 @@ class WorkspaceService {
          {
             id: 5,
             title: "Need Help",
-            cards: [
+            taskPreviews: [
                {
                   id: 10,
                   title: "Lời mở đầu",
@@ -143,4 +191,4 @@ class WorkspaceService {
    }
 }
 
-export const workspaceService = new WorkspaceService()
+export const projectService = new ProjectService()
