@@ -20,7 +20,7 @@ export const LogoLoading = ({
    logoImgClassName,
 }: TLogoLoadingProps) => {
    return (
-      <div className={`flex relative h-fit aspect-square p-2 ${className || ""}`}>
+      <div className={`flex relative h-fit w-fit aspect-square p-2 ${className || ""}`}>
          <div className={`css-logo-loading-border ${borderClassName || ""}`}></div>
          <img
             src={appLogo}

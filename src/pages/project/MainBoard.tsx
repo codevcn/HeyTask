@@ -159,19 +159,19 @@ const Header = () => {
    }, [])
 
    return (
-      <section className="flex justify-between items-center flex-wrap overflow-x-hidden gap-y-3 gap-x-5 py-3 px-5 bg-[#0000003d] backdrop-blur-sm w-full">
+      <header className="flex justify-between items-center flex-wrap overflow-x-hidden gap-y-3 gap-x-5 py-3 px-5 bg-[#0000003d] backdrop-blur-sm w-full">
          {project ? (
             <EditableSection projectData={project} />
          ) : (
             <LogoLoading className="m-auto" logoImgClassName="h-[0.9rem]" />
          )}
-      </section>
+      </header>
    )
 }
 
 export const MainBoard = () => {
    return (
-      <div className="flex flex-col text-white w-main-board">
+      <div className="flex flex-col flex-1 text-white w-main-board">
          <Header />
          <Phases />
       </div>

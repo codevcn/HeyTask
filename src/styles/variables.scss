@@ -1,10 +1,19 @@
 :root {
+   // color
    --ht-regular-text-cl: #9fadbc;
    --ht-secondary-text-cl: #172b4d;
+   --ht-divider-cl: #ffffff36;
+
+   // background color
    --ht-top-nav-bgcl: #1f2123;
    --ht-hover-silver-bgcl: #333c43;
-   --ht-divider-cl: #ffffff36;
+   --ht-phase-bgcl: #101204;
+   --ht-modal-bgcl: #282e33;
+
+   // height
    --ht-top-nav-height: 48px;
+
+   // width
    --ht-left-side-nav-width: 260px;
-   --ht-list-bgcl: #101204;
+   --ht-task-modal-width: 768px;
 }

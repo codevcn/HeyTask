@@ -24,6 +24,7 @@ export type TTaskMemberData = {
 }
 
 export type TTaskData = {
+   id: number
    title: string
    description: string
    members: TTaskMemberData[] | null
@@ -34,10 +35,12 @@ export type TTaskItemPreviewData = {
    title: string
    hasDescription: boolean
    firstMember: TTaskMemberData | null
+   position: number
 }
 
 export type TPhaseData = {
    id: number
    title: string
    taskPreviews: TTaskItemPreviewData[] | null
+   position: number
 }

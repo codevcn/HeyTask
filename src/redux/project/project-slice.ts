@@ -1,17 +1,19 @@
 import { createSlice, current, PayloadAction } from "@reduxjs/toolkit"
-import type { TCustomizationData, TPhaseData, TProjectData } from "../../services/types"
+import type { TCustomizationData, TPhaseData, TProjectData, TTaskData } from "../../services/types"
 import type { TPhaseTaskPreview } from "../../utils/types"
 
 type TInitialState = {
    project: TProjectData | null
    customization: TCustomizationData | null
    phases: TPhaseData[] | null
+   taskData: TTaskData | null
 }
 
 const initialState: TInitialState = {
    project: null,
    customization: null,
    phases: null,
+   taskData: null,
 }
 
 export const projectSlice = createSlice({
@@ -65,6 +67,16 @@ export const projectSlice = createSlice({
       addNewPhase: (state, action: PayloadAction<TPhaseData>) => {
          state.phases?.push(action.payload)
       },
+      setTaskData: (state, action: PayloadAction<TTaskData | null>) => {
+         state.taskData = action.payload
+      },
+      updateTaskData: (state, action: PayloadAction<TTaskData>) => {
+         const updates = action.payload
+         state.taskData = {
+            ...(current(state).taskData || {}),
+            ...updates,
+         }
+      },
    },
 })
 
@@ -76,4 +88,6 @@ export const {
    updateTaskPreview,
    addNewTaskPreview,
    addNewPhase,
+   setTaskData,
+   updateTaskData,
 } = projectSlice.actions

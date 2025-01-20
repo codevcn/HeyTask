@@ -9,7 +9,8 @@ export default {
             "hover-silver-bgcl": "var(--ht-hover-silver-bgcl)",
             "divider-cl": "var(--ht-divider-cl)",
             "secondary-text-cl": "var(--ht-secondary-text-cl)",
-            "list-bgcl": "var(--ht-list-bgcl)",
+            "phase-bgcl": "var(--ht-phase-bgcl)",
+            "modal-bgcl": "var(--ht-modal-bgcl)",
          },
          height: {
             "top-nav": "var(--ht-top-nav-height)",
@@ -18,6 +19,7 @@ export default {
          width: {
             "left-side-nav": "var(--ht-left-side-nav-width)",
             "main-board": "calc(100% - var(--ht-left-side-nav-width))",
+            "task-modal": "var(--ht-task-modal-width)",
          },
       },
    },

@@ -53,6 +53,11 @@ svg {
    animation: logo-loading 1.2s infinite forwards linear;
 }
 
+.css-tasks-styled-scrollbar {
+   scrollbar-color: #a6c5e229 #a1bdd914;
+   scrollbar-width: thin;
+}
+
 @keyframes logo-loading {
    0% {
       transform: translate(-50%, -50%) rotate(0);
