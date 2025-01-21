@@ -31,6 +31,7 @@ class ProjectService {
                   hasDescription: true,
                   position: 1,
                   firstMember: {
+                     id: 1,
                      avatar:
                         "https://trello-logos.s3.amazonaws.com/7c17ee5f87fa99637dce66430e395d97/170.png",
                      fullName: "codevcn",
@@ -42,6 +43,7 @@ class ProjectService {
                   hasDescription: true,
                   position: 2,
                   firstMember: {
+                     id: 2,
                      avatar: null,
                      fullName: "codevcn",
                   },
@@ -59,6 +61,7 @@ class ProjectService {
                   hasDescription: true,
                   position: 3,
                   firstMember: {
+                     id: 3,
                      avatar:
                         "https://trello-logos.s3.amazonaws.com/7c17ee5f87fa99637dce66430e395d97/170.png",
                      fullName: "codevcn",
@@ -70,6 +73,7 @@ class ProjectService {
                   hasDescription: true,
                   position: 4,
                   firstMember: {
+                     id: 4,
                      avatar:
                         "https://trello-logos.s3.amazonaws.com/7c17ee5f87fa99637dce66430e395d97/170.png",
                      fullName: "codevcn",
@@ -81,6 +85,7 @@ class ProjectService {
                   hasDescription: true,
                   position: 5,
                   firstMember: {
+                     id: 5,
                      avatar:
                         "https://trello-logos.s3.amazonaws.com/7c17ee5f87fa99637dce66430e395d97/170.png",
                      fullName: "codevcn",
@@ -92,6 +97,7 @@ class ProjectService {
                   hasDescription: true,
                   position: 6,
                   firstMember: {
+                     id: 6,
                      avatar: null,
                      fullName: "Haha vcn",
                   },
@@ -102,6 +108,7 @@ class ProjectService {
                   hasDescription: true,
                   position: 7,
                   firstMember: {
+                     id: 7,
                      avatar:
                         "https://trello-logos.s3.amazonaws.com/7c17ee5f87fa99637dce66430e395d97/170.png",
                      fullName: "mot vo troi giang troi oi",
@@ -113,6 +120,7 @@ class ProjectService {
                   hasDescription: true,
                   position: 8,
                   firstMember: {
+                     id: 8,
                      avatar: null,
                      fullName: "1112",
                   },
@@ -123,6 +131,7 @@ class ProjectService {
                   hasDescription: true,
                   position: 9,
                   firstMember: {
+                     id: 9,
                      avatar:
                         "https://trello-logos.s3.amazonaws.com/7c17ee5f87fa99637dce66430e395d97/170.png",
                      fullName: "mot vo troi giang troi oi",
@@ -134,6 +143,7 @@ class ProjectService {
                   hasDescription: true,
                   position: 10,
                   firstMember: {
+                     id: 10,
                      avatar:
                         "https://trello-logos.s3.amazonaws.com/7c17ee5f87fa99637dce66430e395d97/170.png",
                      fullName: "mot vo troi giang troi oi",
@@ -152,6 +162,7 @@ class ProjectService {
                   hasDescription: true,
                   position: 11,
                   firstMember: {
+                     id: 11,
                      avatar:
                         "https://trello-logos.s3.amazonaws.com/7c17ee5f87fa99637dce66430e395d97/170.png",
                      fullName: "codevcn",
@@ -170,6 +181,7 @@ class ProjectService {
                   hasDescription: true,
                   position: 12,
                   firstMember: {
+                     id: 12,
                      avatar:
                         "https://trello-logos.s3.amazonaws.com/7c17ee5f87fa99637dce66430e395d97/170.png",
                      fullName: "codevcn",
@@ -188,6 +200,7 @@ class ProjectService {
                   hasDescription: true,
                   position: 13,
                   firstMember: {
+                     id: 13,
                      avatar:
                         "https://trello-logos.s3.amazonaws.com/7c17ee5f87fa99637dce66430e395d97/170.png",
                      fullName: "codevcn",
@@ -199,6 +212,7 @@ class ProjectService {
                   hasDescription: true,
                   position: 14,
                   firstMember: {
+                     id: 14,
                      avatar: null,
                      fullName: "Tiên Tiên",
                   },
@@ -214,16 +228,44 @@ class ProjectService {
    async getTaskDetails(taskId: number): Promise<TTaskData> {
       await perfomDelay(1000)
       const data: TTaskData = {
-         description: "oke lala vcn!\nno no no.",
+         description: `<p><span style="color: #ced4d9;">oke lala</span><span style="color: #e03e2d;"><em><strong> vcn! no no no.</strong></em></span></p><p><span style="color: #ced4d9;">aa</span></p>`,
          id: taskId,
          members: [
             {
+               id: 1,
                avatar:
                   "https://trello-logos.s3.amazonaws.com/7c17ee5f87fa99637dce66430e395d97/170.png",
                fullName: "full codevcn",
             },
+            {
+               id: 2,
+               avatar: null,
+               fullName: "Lala",
+            },
          ],
          title: "Web do homework okay?",
+         comments: [
+            {
+               id: 1,
+               content: `<p><span style="color: #ced4d9;">oke lala</span><span style="color: #e03e2d;"><em><strong> vcn! no no no.</strong></em></span></p><p><span style="color: #ced4d9;">aa</span></p>`,
+               createdAt: "2025-01-21T15:21:45.219Z",
+               user: {
+                  id: 1,
+                  avatar: null,
+                  fullName: "Luu Thien Thien",
+               },
+            },
+            {
+               id: 2,
+               content: `<p><span style="color: #ced4d9;">oke lala</span><span style="color: #e03e2d;"><em><strong> vcn! no no no.</strong></em></span></p><p><span style="color: #ced4d9;">aa</span></p>`,
+               createdAt: "2025-01-21T15:21:45.219Z",
+               user: {
+                  id: 2,
+                  avatar: null,
+                  fullName: "Luu Thien Thien",
+               },
+            },
+         ],
       }
       return data
    }

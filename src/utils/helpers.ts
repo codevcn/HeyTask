@@ -1,3 +1,5 @@
+import dayjs from "dayjs"
+
 export const pureNavigator = (href: string): void => {
    window.location.href = href || "/"
 }
@@ -23,4 +25,26 @@ export const measureTextWidth = (text: string, font: string): number => {
  */
 export const randomInteger = (min: number, max: number): number => {
    return Math.floor(Math.random() * (max - min + 1)) + min
+}
+
+export const displayPreTimePeriod = (originalTime: Date | string): string => {
+   const now = dayjs()
+   const convertedTime = dayjs(originalTime)
+   const diffInMinutes = now.diff(convertedTime, "minute")
+
+   if (diffInMinutes < 1) {
+      return "Just now"
+   }
+   if (diffInMinutes < 60) {
+      return `${diffInMinutes} minutes ago`
+   }
+   const diffInHours = now.diff(convertedTime, "hour")
+   if (diffInHours < 24) {
+      return `${diffInHours} hours ago`
+   }
+   const diffInDays = now.diff(convertedTime, "day")
+   if (diffInDays < 31) {
+      return `${diffInDays} days ago`
+   }
+   return convertedTime.format("MMM DD YYYY")
 }

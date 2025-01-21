@@ -11,6 +11,10 @@ export default {
             "secondary-text-cl": "var(--ht-secondary-text-cl)",
             "phase-bgcl": "var(--ht-phase-bgcl)",
             "modal-bgcl": "var(--ht-modal-bgcl)",
+            "modal-btn-bgcl": "var(--ht-modal-btn-bgcl)",
+            "modal-btn-hover-bgcl": "var(--ht-modal-btn-hover-bgcl)",
+            "outline-cl": "var(--ht-outline-cl)",
+            "dark-outline-cl": "var(--ht-dark-outline-cl)",
          },
          height: {
             "top-nav": "var(--ht-top-nav-height)",

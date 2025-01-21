@@ -66,3 +66,15 @@ svg {
       transform: translate(-50%, -50%) rotate(360deg);
    }
 }
+
+.tox.tox-tinymce {
+   border-radius: 4px;
+
+   .tox-sidebar-wrap {
+      .tox-edit-area {
+         &::before {
+            border: none;
+         }
+      }
+   }
+}

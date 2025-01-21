@@ -19,8 +19,16 @@ export type TCustomizationData = {
 }
 
 export type TTaskMemberData = {
+   id: number
    fullName: string
    avatar: string | null
+}
+
+export type TCommentData = {
+   id: number
+   content: string
+   user: TTaskMemberData
+   createdAt: string
 }
 
 export type TTaskData = {
@@ -28,6 +36,7 @@ export type TTaskData = {
    title: string
    description: string
    members: TTaskMemberData[] | null
+   comments: TCommentData[] | null
 }
 
 export type TTaskItemPreviewData = {

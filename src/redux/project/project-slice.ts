@@ -70,11 +70,10 @@ export const projectSlice = createSlice({
       setTaskData: (state, action: PayloadAction<TTaskData | null>) => {
          state.taskData = action.payload
       },
-      updateTaskData: (state, action: PayloadAction<TTaskData>) => {
-         const updates = action.payload
-         state.taskData = {
-            ...(current(state).taskData || {}),
-            ...updates,
+      updateTaskData: (state, action: PayloadAction<Partial<TTaskData>>) => {
+         const currentTaskData = state.taskData
+         if (currentTaskData) {
+            Object.assign(currentTaskData, action.payload)
          }
       },
    },
