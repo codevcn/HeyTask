@@ -40,7 +40,7 @@ import CloseIcon from "@mui/icons-material/Close"
 import { randomInteger } from "../../utils/helpers"
 import { EInternalEvents, eventEmitter } from "../../utils/events"
 import { Fade, Popover } from "@mui/material"
-import { TaskDetails } from "./TaskDetails"
+import { TaskDetails } from "./TaskDetails/TaskDetails"
 
 type TPhaseActions = "copy-phase" | "delete-phase" | "move-phase"
 
@@ -168,7 +168,7 @@ const Phase = ({ phaseData, className }: TPhaseProps) => {
       eventEmitter.on(EInternalEvents.DROPPING_TASK_IN_PHASE, (payload, type) => {
          if (payload === id) {
             if (type === "start-dropping") {
-               setCssClass("outline outline-2 outline-[#85B8FF]")
+               setCssClass("outline outline-2 outline-outline-cl")
             } else {
                setCssClass("")
             }
@@ -277,7 +277,7 @@ const AddNewPhase = ({ finalPosition }: TAddNewPhaseProps) => {
                <div className="flex mt-3 gap-x-2">
                   <button
                      type="submit"
-                     className="py-[6px] px-3 leading-none border-none rounded bg-[#579DFF] text-[#1D2125] font-medium text-sm"
+                     className="py-[6px] px-3 leading-none border-none rounded bg-dark-outline-cl text-[#1D2125] font-medium text-sm"
                   >
                      Add Phase
                   </button>
@@ -488,14 +488,14 @@ const EditableTitle = styled(TextField)({
       padding: "5px 8px",
       "& .MuiInputBase-input": {
          width: "100%",
-         color: "#9fadbc",
+         color: "var(--ht-regular-text-cl)",
          fontWeight: 500,
       },
       "& .MuiOutlinedInput-notchedOutline": {
          borderColor: "transparent",
       },
       "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-         borderColor: "#85B8FF",
+         borderColor: "var(--ht-outline-cl)",
       },
    },
 })

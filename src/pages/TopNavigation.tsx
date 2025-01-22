@@ -23,7 +23,7 @@ const MenuList = () => {
    }
 
    return (
-      <div className="flex items-center gap-x-2 text-[#9FADBC]">
+      <div className="flex items-center gap-x-2 text-regular-text-cl">
          <StyledButton onClick={(e) => handleActive("projects", e)} endIcon={<ExpandMoreIcon />}>
             Projects
          </StyledButton>
@@ -96,6 +96,6 @@ const StyledButton = styled(Button)({
    color: "inherit",
    textTransform: "none",
    "&:hover": {
-      backgroundColor: "#333C43",
+      backgroundColor: "var(--ht-hover-silver-bgcl)",
    },
 })

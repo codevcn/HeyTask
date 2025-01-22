@@ -51,7 +51,7 @@ const Task = ({ taskPreviewData, className }: TTaskPreviewProps) => {
          {...listeners}
       >
          <div
-            className={`bg-[#22272B] cursor-pointer mb-2 rounded-lg py-2 px-3 pr-2 hover:outline outline-2 outline-white ${className || ""}`}
+            className={`bg-focused-textfield-bgcl cursor-pointer mb-2 rounded-lg py-2 px-3 pr-2 hover:outline outline-2 outline-white ${className || ""}`}
             onClick={openTaskDetails}
          >
             <h3 className="text-sm">{title}</h3>
@@ -125,7 +125,7 @@ const AddNewTask = ({ phaseId, finalTaskPosition }: TAddNewTaskProps) => {
    return (
       <div className="p-2">
          {isAdding ? (
-            <form onSubmit={submitAdding} className="p-1 rounded-md bg-[#22272B]">
+            <form onSubmit={submitAdding} className="p-1 rounded-md bg-focused-textfield-bgcl">
                <EditableTitle
                   multiline
                   maxRows={5}
@@ -138,7 +138,7 @@ const AddNewTask = ({ phaseId, finalTaskPosition }: TAddNewTaskProps) => {
                <div className="flex mt-3 gap-x-2">
                   <button
                      type="submit"
-                     className="py-[6px] px-3 leading-none border-none rounded bg-[#579DFF] text-[#1D2125] font-medium text-sm"
+                     className="py-[6px] px-3 leading-none border-none rounded bg-dark-outline-cl text-[#1D2125] font-medium text-sm"
                   >
                      Add Task
                   </button>
@@ -174,7 +174,7 @@ const OverlayItem = ({ taskPreviewData }: TOverlayItemProps) => {
    const { firstMember, hasDescription, title } = taskPreviewData
 
    return (
-      <div className="bg-[#22272B] cursor-pointer mb-2 rounded-lg py-2 px-3 pr-2 opacity-60 rotate-12">
+      <div className="bg-focused-textfield-bgcl cursor-pointer mb-2 rounded-lg py-2 px-3 pr-2 opacity-60 rotate-12">
          <h3 className="text-sm">{title}</h3>
          <div className="flex items-center justify-between mt-2">
             {hasDescription && (
@@ -329,7 +329,7 @@ const EditableTitle = styled(TextField)({
       padding: "5px 8px",
       "& .MuiInputBase-input": {
          width: "100%",
-         color: "#9fadbc",
+         color: "var(--ht-regular-text-cl)",
          fontWeight: 500,
       },
       "& .MuiOutlinedInput-notchedOutline": {

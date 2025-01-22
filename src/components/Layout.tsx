@@ -1,10 +1,26 @@
 import { Outlet } from "react-router-dom"
 import { ToastContainer } from "react-toastify"
 import { RouteGuard } from "./ResourceGuard"
+import { useEffect } from "react"
 
 const nonGuardRoutes: string[] = ["/", "/login", "/register"]
 
 export default function Layout() {
+   useEffect(() => {
+      document.addEventListener("focusin", (e) => {
+         const target = e.target
+         if (target && target instanceof HTMLElement && target.closest) {
+            if (
+               target.closest(
+                  ".tox-tinymce, .tox-tinymce-aux, .moxman-window, .tam-assetmanager-root",
+               ) !== null
+            ) {
+               e.stopImmediatePropagation()
+            }
+         }
+      })
+   }, [])
+
    return (
       <div className="h-full text-sm">
          <RouteGuard nonGuardRoutes={nonGuardRoutes}>

@@ -9,9 +9,6 @@
 }
 
 body,
-h1,
-h2,
-h3,
 p,
 a,
 li,
@@ -25,12 +22,28 @@ textarea {
    margin: 0;
    padding: 0;
    font-size: 14px;
-   line-height: 1;
+   line-height: 1.1;
    box-sizing: border-box;
 }
 
 svg {
    display: flex;
+}
+
+ol {
+   list-style: decimal;
+
+   &::marker {
+      color: #9fadbc;
+   }
+}
+
+ul {
+   list-style: disc;
+
+   &::marker {
+      color: #9fadbc;
+   }
 }
 
 .css-board-styled-scrollbar {
@@ -54,7 +67,7 @@ svg {
 }
 
 .css-tasks-styled-scrollbar {
-   scrollbar-color: #a6c5e229 #a1bdd914;
+   scrollbar-color: var(--ht-modal-btn-hover-bgcl) var(--ht-modal-btn-bgcl);
    scrollbar-width: thin;
 }
 
@@ -76,5 +89,18 @@ svg {
             border: none;
          }
       }
+   }
+}
+
+.Task-details-description {
+   ol,
+   ul {
+      color: var(--ht-regular-text-cl);
+   }
+}
+.Task-details-user-comment {
+   ol,
+   ul {
+      color: var(--ht-regular-text-cl);
    }
 }

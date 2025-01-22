@@ -1,5 +1,11 @@
 import { createSlice, current, PayloadAction } from "@reduxjs/toolkit"
-import type { TCustomizationData, TPhaseData, TProjectData, TTaskData } from "../../services/types"
+import type {
+   TCommentData,
+   TCustomizationData,
+   TPhaseData,
+   TProjectData,
+   TTaskData,
+} from "../../services/types"
 import type { TPhaseTaskPreview } from "../../utils/types"
 
 type TInitialState = {
@@ -76,6 +82,15 @@ export const projectSlice = createSlice({
             Object.assign(currentTaskData, action.payload)
          }
       },
+      addNewComment: (state, action: PayloadAction<TCommentData>) => {
+         const newComment = action.payload
+         const currentComments = state.taskData!.comments
+         if (currentComments && currentComments.length > 0) {
+            currentComments.push(newComment)
+         } else {
+            state.taskData!.comments = [newComment]
+         }
+      },
    },
 })
 
@@ -89,4 +104,5 @@ export const {
    addNewPhase,
    setTaskData,
    updateTaskData,
+   addNewComment,
 } = projectSlice.actions

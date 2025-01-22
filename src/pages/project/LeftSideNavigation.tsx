@@ -30,7 +30,7 @@ export const LeftSideNavigation = () => {
 
    return (
       <nav
-         className={`bg-top-nav-bgcl text-[#9fadbc] relative overflow-x-visible transition-[width] h-full border-r border-divider-cl ${setNavPosition(open)}`}
+         className={`bg-top-nav-bgcl text-regular-text-cl relative overflow-x-visible transition-[width] h-full border-r border-divider-cl ${setNavPosition(open)}`}
       >
          <div className={`h-full w-full transition-transform ${setNavContentPosition(open)}`}>
             {project ? (

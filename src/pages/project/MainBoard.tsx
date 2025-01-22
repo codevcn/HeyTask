@@ -71,7 +71,7 @@ const EditableSection = ({ projectData }: TEditableSectionProps) => {
          <div className="flex gap-x-3 items-center max-w-[calc(100%-100px)]">
             <div
                hidden={!isEditing}
-               className="bg-[#101204] h-full rounded border-[#85B8FF] border-solid border-2 max-w-full"
+               className="bg-[var(--ht-phase-bgcl)] h-full rounded border-outline-cl border-solid border-2 max-w-full"
             >
                <input
                   defaultValue={title}

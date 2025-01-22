@@ -37,3 +37,9 @@ export type TProjectPageParams = {
 }
 
 export type TRegularSizes = "small" | "medium" | "large"
+
+export type TTinyMCEFilePickerCallback = (
+   callback: (value: string, meta?: Record<string, any>) => void,
+   value: string,
+   meta: Record<string, any>,
+) => void

@@ -10,11 +10,12 @@ export default {
             "divider-cl": "var(--ht-divider-cl)",
             "secondary-text-cl": "var(--ht-secondary-text-cl)",
             "phase-bgcl": "var(--ht-phase-bgcl)",
-            "modal-bgcl": "var(--ht-modal-bgcl)",
+            "modal-board-bgcl": "var(--ht-modal-board-bgcl)",
             "modal-btn-bgcl": "var(--ht-modal-btn-bgcl)",
             "modal-btn-hover-bgcl": "var(--ht-modal-btn-hover-bgcl)",
             "outline-cl": "var(--ht-outline-cl)",
             "dark-outline-cl": "var(--ht-dark-outline-cl)",
+            "focused-textfield-bgcl": "var(--ht-focused-textfield-bgcl)",
          },
          height: {
             "top-nav": "var(--ht-top-nav-height)",
