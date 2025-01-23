@@ -1,16 +1,24 @@
 import { perfomDelay } from "../utils/helpers"
-import type { TCustomizationData, TPhaseData, TProjectData, TTaskData } from "./types"
+import type {
+   TCommentFileData,
+   TCustomizationData,
+   TPhaseData,
+   TProjectData,
+   TTaskData,
+   TUploadedFileData,
+} from "./types"
 
 class ProjectService {
    async getProjectData(projectId: number): Promise<TProjectData> {
       await perfomDelay(1000)
-      const data = { title: "VCN Project" }
+      const data: TProjectData = { title: "VCN Project", id: projectId }
       return data
    }
 
    async getCustomization(projectId: number): Promise<TCustomizationData> {
       await perfomDelay(1000)
       const data = {
+         projectId,
          background:
             "https://trello-backgrounds.s3.amazonaws.com/SharedBackground/2401x1600/ceca11e134be93c2bf61b61bd285fc6f/photo-1691929601779-ead6aeb78d1b.jpg",
       }
@@ -265,19 +273,42 @@ class ProjectService {
                   fullName: "Luu Thien Thien",
                },
             },
+            {
+               id: 3,
+               content: `<p>dadadada<span class="css-rich-file-title-template" data-ht-file-url="https://www.dropbox.com/scl/fi/ywyj0fc0dh5duf9dtlx3k/Bai-tap-Thuc-hanh-SQL.pdf?rlkey=xwebotclt9umt4njwul48pwt9&amp;st=ekgd62lu&amp;dl=0" data-ht-file-id="1">Danh_s&aacute;ch_lớp_D21CQCN01-N.xlsx</span></p>`,
+               createdAt: "2025-01-22T10:21:45.219Z",
+               user: {
+                  id: 3,
+                  avatar: null,
+                  fullName: "Luu Thien Thien",
+               },
+            },
          ],
       }
       return data
    }
 
-   async uploadTaskFile(file: File): Promise<string> {
+   async uploadTaskFile(file: File): Promise<TUploadedFileData> {
       const formData = new FormData()
       formData.append("file", file)
       await perfomDelay(1000)
       const data = {
+         id: 1,
          url: "https://www.dropbox.com/scl/fi/ywyj0fc0dh5duf9dtlx3k/Bai-tap-Thuc-hanh-SQL.pdf?rlkey=xwebotclt9umt4njwul48pwt9&st=ekgd62lu&dl=0",
       }
-      return data.url
+      return data
+   }
+
+   async getCommentFileDetails(fileId: number): Promise<TCommentFileData> {
+      await perfomDelay(1000)
+      const data: TCommentFileData = {
+         id: fileId,
+         fileName: "file cua loi",
+         fileSize: "111KB",
+         uploadedAt: "2025-01-21T15:21:45.219Z",
+         url: "https://www.dropbox.com/scl/fi/ywyj0fc0dh5duf9dtlx3k/Bai-tap-Thuc-hanh-SQL.pdf?rlkey=xwebotclt9umt4njwul48pwt9&st=ekgd62lu&dl=0",
+      }
+      return data
    }
 }
 

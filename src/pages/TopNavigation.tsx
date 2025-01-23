@@ -78,7 +78,7 @@ const UserSection = () => {
 
 export const TopNavigation = () => {
    return (
-      <nav className="flex justify-between gap-x-5 h-top-nav bg-top-nav-bgcl py-2 px-4 border-b border-divider-cl">
+      <nav className="flex justify-between gap-x-5 h-top-nav bg-top-nav-bgcl py-2 px-4 border-b border-divider-bgcl">
          <div className="flex gap-x-5">
             <div className="flex gap-x-[5px] items-center text-[#9EACBA] cursor-pointer">
                <img src={appLogo} alt="App Logo" className="h-[1.2rem]" />

@@ -2,9 +2,9 @@ import { Editor } from "@tinymce/tinymce-react"
 import { Editor as TinyMCEEditor } from "tinymce"
 import { useRef, useState } from "react"
 import { useAppDispatch } from "../../../hooks/redux"
-import parse from "html-react-parser"
 import ReorderIcon from "@mui/icons-material/Reorder"
 import { updateTaskData } from "../../../redux/project/project-slice"
+import { CustomRichTextContent } from "../../../components/RichTextContent"
 
 const { VITE_TINYMCE_API_KEY } = import.meta.env
 
@@ -21,7 +21,7 @@ export const Description = ({ description }: TDescriptionProps) => {
    const plugins: string = "autolink lists link image fullscreen code autoresize"
 
    const toolbar: string =
-      "blocks | bold italic forecolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat link"
+      "blocks | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat link"
 
    const focusEditor = () => {
       const editorWrapper = editorWrapperRef.current
@@ -33,7 +33,7 @@ export const Description = ({ description }: TDescriptionProps) => {
    const blurEditor = () => {
       const editorWrapper = editorWrapperRef.current
       if (editorWrapper) {
-         editorWrapper.style.borderColor = "transparent"
+         editorWrapper.style.borderColor = "#738496"
       }
    }
 
@@ -41,7 +41,6 @@ export const Description = ({ description }: TDescriptionProps) => {
       const editor = editorRef.current
       if (editor) {
          const content = editor.getContent()
-         console.log(">>> conte:", content)
          if (content && content.length > 0) {
             dispatch(updateTaskData({ description: content }))
             setOpenEditor(false)
@@ -69,14 +68,16 @@ export const Description = ({ description }: TDescriptionProps) => {
          <div className="mt-2 pl-10 w-full">
             {!openEditor &&
                (description ? (
-                  <div className="Task-details-description leading-tight">{parse(description)}</div>
+                  <div className="css-task-details-description leading-tight">
+                     <CustomRichTextContent content={description} />
+                  </div>
                ) : (
                   <div className="bg-modal-btn-bgcl rounded-md p-2 text-regular-text-cl text-sm font-medium">
                      Add a description for this task...
                   </div>
                ))}
             <div className="w-full" hidden={!openEditor}>
-               <div ref={editorWrapperRef} className="w-full rounded-md border-2 border-solid">
+               <div ref={editorWrapperRef} className="css-rich-text-editor-wrapper">
                   <Editor
                      apiKey={VITE_TINYMCE_API_KEY}
                      onInit={(_evt, editor) => (editorRef.current = editor)}
@@ -100,7 +101,7 @@ export const Description = ({ description }: TDescriptionProps) => {
                <div className="flex gap-x-3 mt-2">
                   <button
                      onClick={saveDescription}
-                     className="bg-dark-outline-cl rounded font-medium hover:bg-outline-cl text-black text-sm py-2 px-3"
+                     className="bg-confirm-btn-bgcl font-bold rounded hover:bg-outline-cl text-black text-sm py-2 px-3"
                   >
                      Save
                   </button>

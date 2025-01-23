@@ -6,13 +6,15 @@ import { addNewComment } from "../../../redux/project/project-slice"
 import type { TCommentData } from "../../../services/types"
 import { Editor } from "@tinymce/tinymce-react"
 import { Editor as TinyMCEEditor } from "tinymce"
-import parse from "html-react-parser"
 import { useRef, useState } from "react"
 import { useAppDispatch } from "../../../hooks/redux"
 import { TTinyMCEFilePickerCallback } from "../../../utils/types"
 import { projectService } from "../../../services/project-service"
 import { toast } from "react-toastify"
 import axiosErrorHandler from "../../../utils/axios-error-handler"
+import { CustomRichTextContent } from "../../../components/RichTextContent"
+import { RichFileTitleTemplate } from "../../../components/NonInteractiveTemplates"
+import { renderToStaticMarkup } from "react-dom/server"
 
 const { VITE_TINYMCE_API_KEY } = import.meta.env
 
@@ -37,8 +39,8 @@ const UserComment = ({ commentData }: TCommentProps) => {
                <h3 className="font-bold text-sm">{user.fullName}</h3>
                <span className="text-xs">{displayPreTimePeriod(createdAt)}</span>
             </div>
-            <div className="Task-details-user-comment bg-focused-textfield-bgcl p-3 mt-[2px] rounded-md leading-tight">
-               {parse(content)}
+            <div className="css-task-details-user-comment bg-focused-textfield-bgcl p-3 mt-[2px] rounded-md leading-tight">
+               <CustomRichTextContent content={content} />
             </div>
             <div className="flex items-center gap-x-1 pl-2 mt-1 text-regular-text-cl">
                <button className="hover:underline text-xs">Edit</button>
@@ -64,7 +66,7 @@ export const Comments = ({ comments }: TCommentsProps) => {
    const plugins: string = "autolink lists link image fullscreen code autoresize"
 
    const toolbar: string =
-      "blocks | bold italic forecolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat link | image"
+      "blocks | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat link | image customUploadFileButton"
 
    const focusEditor = () => {
       const editorWrapper = editorWrapperRef.current
@@ -84,6 +86,7 @@ export const Comments = ({ comments }: TCommentsProps) => {
       const editor = editorRef.current
       if (editor) {
          const content = editor.getContent()
+         console.log(">>> con:", content)
          if (content && content.length > 0) {
             dispatch(
                addNewComment({
@@ -99,7 +102,7 @@ export const Comments = ({ comments }: TCommentsProps) => {
       }
    }
 
-   const pickingFile: TTinyMCEFilePickerCallback = (callback, value, { filetype }) => {
+   const pickingFile: TTinyMCEFilePickerCallback = (callback, _, { filetype }) => {
       const input = document.createElement("input")
       input.setAttribute("type", "file")
       if (filetype === "image") {
@@ -114,9 +117,9 @@ export const Comments = ({ comments }: TCommentsProps) => {
                .uploadTaskFile(file)
                .then((res) => {
                   if (filetype === "image") {
-                     callback(res, { alt: file.name })
+                     callback(res.url, { alt: file.name })
                   } else if (filetype === "file") {
-                     callback("UploadedFile.html", { text: "file gi do" })
+                     callback(res.url, { text: file.name })
                   }
                })
                .catch((error) => {
@@ -125,6 +128,40 @@ export const Comments = ({ comments }: TCommentsProps) => {
          }
       }
       input.click()
+   }
+
+   const onInitRichTextEditor = (editor: TinyMCEEditor) => {
+      editor.ui.registry.addButton("customUploadFileButton", {
+         icon: "new-document",
+         tooltip: "Upload a file",
+         onAction: (_) => {
+            const input = document.createElement("input")
+            input.setAttribute("type", "file")
+            input.setAttribute("accept", ".doc,.docx,.xls,.xlsx,.pdf")
+            input.onchange = (e) => {
+               const file = (e.target as HTMLInputElement | undefined)?.files?.[0]
+               if (file && file instanceof File) {
+                  projectService
+                     .uploadTaskFile(file)
+                     .then((res) => {
+                        editor.insertContent(
+                           renderToStaticMarkup(
+                              <RichFileTitleTemplate
+                                 textContent={file.name}
+                                 fileURL={res.url}
+                                 fileId={res.id}
+                              />,
+                           ),
+                        )
+                     })
+                     .catch((error) => {
+                        toast.error(axiosErrorHandler.handleHttpError(error).message)
+                     })
+               }
+            }
+            input.click()
+         },
+      })
    }
 
    return (
@@ -152,7 +189,7 @@ export const Comments = ({ comments }: TCommentsProps) => {
                   Write a comment...
                </button>
                <div className="w-full" hidden={!openEditor}>
-                  <div ref={editorWrapperRef} className="w-full rounded-md border-2 border-solid">
+                  <div ref={editorWrapperRef} className="css-rich-text-editor-wrapper">
                      <Editor
                         apiKey={VITE_TINYMCE_API_KEY}
                         onInit={(_evt, editor) => (editorRef.current = editor)}
@@ -170,6 +207,7 @@ export const Comments = ({ comments }: TCommentsProps) => {
                            autoresize_bottom_margin: 0,
                            file_picker_types: "file image",
                            file_picker_callback: pickingFile,
+                           setup: onInitRichTextEditor,
                         }}
                         onFocus={focusEditor}
                         onBlur={blurEditor}
@@ -178,7 +216,7 @@ export const Comments = ({ comments }: TCommentsProps) => {
                   <div className="flex gap-x-3 mt-2">
                      <button
                         onClick={addNewCommentHandler}
-                        className="bg-dark-outline-cl rounded font-medium hover:bg-outline-cl text-black text-sm py-2 px-3"
+                        className="bg-confirm-btn-bgcl rounded font-medium hover:bg-outline-cl text-black text-sm py-2 px-3"
                      >
                         Save
                      </button>

@@ -10,22 +10,17 @@ export const RouteLoading = () => {
 
 type TLogoLoadingProps = Partial<{
    className: string
-   borderClassName: string
    logoImgClassName: string
 }>
 
-export const LogoLoading = ({
-   className,
-   borderClassName,
-   logoImgClassName,
-}: TLogoLoadingProps) => {
+export const LogoLoading = ({ className, logoImgClassName }: TLogoLoadingProps) => {
    return (
       <div className={`flex relative h-fit w-fit aspect-square p-2 ${className || ""}`}>
-         <div className={`css-logo-loading-border ${borderClassName || ""}`}></div>
+         <div className="css-logo-loading-border"></div>
          <img
             src={appLogo}
             alt="App Logo"
-            className={`m-auto relative z-20 h-[1.2rem] w-min ${logoImgClassName || ""}`}
+            className={`relative z-20 h-[1.2rem] w-min ${logoImgClassName || ""}`}
          />
       </div>
    )

@@ -1,4 +1,30 @@
+:root {
+   /* text color */
+   --ht-regular-text-cl: #9fadbc;
+}
+
 #tinymce {
    margin: 0 16px !important;
    padding: 0 !important;
+   color: var(--ht-regular-text-cl) !important;
+}
+
+#tinymce::before {
+   color: var(--ht-regular-text-cl) !important;
+}
+
+#tinymce ol {
+   list-style: decimal;
+}
+
+#tinymce ul {
+   list-style: disc;
+}
+
+#tinymce ol li::marker {
+   color: var(--ht-regular-text-cl);
+}
+
+#tinymce ul li::marker {
+   color: var(--ht-regular-text-cl);
 }

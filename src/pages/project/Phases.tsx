@@ -40,7 +40,6 @@ import CloseIcon from "@mui/icons-material/Close"
 import { randomInteger } from "../../utils/helpers"
 import { EInternalEvents, eventEmitter } from "../../utils/events"
 import { Fade, Popover } from "@mui/material"
-import { TaskDetails } from "./TaskDetails/TaskDetails"
 
 type TPhaseActions = "copy-phase" | "delete-phase" | "move-phase"
 
@@ -96,7 +95,7 @@ const PhaseActions = () => {
                horizontal: "left",
             }}
          >
-            <div className="bg-transparent min-w-52 py-1 pb-3 border border-solid border-divider-cl rounded-lg">
+            <div className="bg-transparent min-w-52 py-1 pb-3 border border-solid border-divider-bgcl rounded-lg">
                <header className="flex py-1 px-2 items-center">
                   <h3 className="grow text-regular-text-cl font-semibold text-sm text-center">
                      Phase actions
@@ -277,7 +276,7 @@ const AddNewPhase = ({ finalPosition }: TAddNewPhaseProps) => {
                <div className="flex mt-3 gap-x-2">
                   <button
                      type="submit"
-                     className="py-[6px] px-3 leading-none border-none rounded bg-dark-outline-cl text-[#1D2125] font-medium text-sm"
+                     className="py-[6px] px-3 leading-none border-none rounded bg-confirm-btn-bgcl text-[#1D2125] font-medium text-sm"
                   >
                      Add Phase
                   </button>
@@ -476,7 +475,6 @@ export const Phases = () => {
                finalPosition={sortedDndItems[sortedDndItems.length - 1]?.position || null}
             />
          </div>
-         <TaskDetails />
       </div>
    )
 }

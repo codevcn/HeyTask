@@ -138,7 +138,7 @@ const AddNewTask = ({ phaseId, finalTaskPosition }: TAddNewTaskProps) => {
                <div className="flex mt-3 gap-x-2">
                   <button
                      type="submit"
-                     className="py-[6px] px-3 leading-none border-none rounded bg-dark-outline-cl text-[#1D2125] font-medium text-sm"
+                     className="py-[6px] px-3 leading-none border-none rounded bg-confirm-btn-bgcl text-[#1D2125] font-medium text-sm"
                   >
                      Add Task
                   </button>

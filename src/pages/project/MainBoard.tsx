@@ -16,6 +16,8 @@ import { LogoLoading } from "../../components/Loadings"
 import { measureTextWidth } from "../../utils/helpers"
 import { useParams } from "react-router-dom"
 import type { TProjectPageParams } from "../../utils/types"
+import { TaskDetails } from "./TaskDetails/TaskDetails"
+import { CommentFileDetails } from "./TaskDetails/CommentFileDetails"
 
 type TEditableSectionProps = {
    projectData: TProjectData
@@ -174,6 +176,8 @@ export const MainBoard = () => {
       <div className="flex flex-col flex-1 text-white w-main-board">
          <Header />
          <Phases />
+         <TaskDetails />
+         <CommentFileDetails />
       </div>
    )
 }

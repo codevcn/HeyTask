@@ -11,10 +11,12 @@ export type TRegisterPayload = {
 }
 
 export type TProjectData = {
+   id: number
    title: string
 }
 
 export type TCustomizationData = {
+   projectId: number
    background: string
 }
 
@@ -52,4 +54,17 @@ export type TPhaseData = {
    title: string
    taskPreviews: TTaskItemPreviewData[] | null
    position: number
+}
+
+export type TCommentFileData = {
+   id: number
+   fileName: string
+   fileSize: string
+   uploadedAt: string
+   url: string
+}
+
+export type TUploadedFileData = {
+   id: number
+   url: string
 }
