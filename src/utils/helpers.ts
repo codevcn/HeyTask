@@ -18,10 +18,10 @@ export const measureTextWidth = (text: string, font: string): number => {
 }
 
 /**
- * Generate a random number in min to max
+ * Generate a random number in min to max ([min,max])
  * @param min an integer to begin
  * @param max an integer to end
- * @returns a random number in min to max
+ * @returns a random number in min to max ([min,max])
  */
 export const randomInteger = (min: number, max: number): number => {
    return Math.floor(Math.random() * (max - min + 1)) + min

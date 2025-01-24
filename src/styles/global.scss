@@ -1,4 +1,5 @@
 @use "./variables.scss";
+@use "./animations.scss";
 
 @tailwind base;
 @tailwind components;
@@ -18,12 +19,41 @@ section,
 form,
 button,
 input,
-textarea {
-   margin: 0;
-   padding: 0;
-   font-size: 14px;
-   line-height: 1.1;
+textarea,
+nav,
+main,
+footer,
+header,
+article {
    box-sizing: border-box;
+}
+
+h1 {
+   font-size: 2rem;
+}
+h2 {
+   font-size: 1.5rem;
+}
+h3 {
+   font-size: 1.3rem;
+}
+h4,
+p {
+   font-size: 1rem;
+}
+h5 {
+   font-size: 0.83rem;
+}
+h6 {
+   font-size: 0.67rem;
+}
+
+a {
+   color: var(--ht-confirm-btn-bgcl);
+
+   &:hover {
+      text-decoration: underline;
+   }
 }
 
 svg {
@@ -53,33 +83,38 @@ ul {
    scrollbar-width: auto;
 }
 
-.css-logo-loading-border {
-   position: absolute;
-   top: 50%;
-   left: 50%;
-   transform: translate(-50%, -50%);
-   z-index: 10;
-   background-color: transparent;
-   height: 100%;
-   width: 100%;
-   border-radius: 50%;
-   border: none;
-   border-top: 3px solid var(--ht-regular-text-cl);
-   animation: logo-loading 1.2s infinite forwards linear;
+.css-logo-loading-container {
+   display: flex;
+   padding: 5px;
+   column-gap: 5px;
+
+   .css-logo-loading-bar {
+      &__bar-1,
+      &__bar-2,
+      &__bar-3 {
+         height: 5px;
+         width: 5px;
+         transform: scaleY(1);
+         transform-origin: 0 0;
+         background-color: var(--ht-logo-loading-bar-bgcl);
+         animation-duration: 1s;
+         animation-timing-function: ease-in-out;
+         animation-iteration-count: infinite;
+         animation-name: logo-loading;
+      }
+
+      &__bar-2 {
+         animation-delay: 0.1s;
+      }
+      &__bar-3 {
+         animation-delay: 0.2s;
+      }
+   }
 }
 
 .css-tasks-styled-scrollbar {
    scrollbar-color: var(--ht-modal-btn-hover-bgcl) var(--ht-modal-btn-bgcl);
    scrollbar-width: thin;
-}
-
-@keyframes logo-loading {
-   0% {
-      transform: translate(-50%, -50%) rotate(0);
-   }
-   100% {
-      transform: translate(-50%, -50%) rotate(360deg);
-   }
 }
 
 .css-rich-text-editor-wrapper {
@@ -111,6 +146,7 @@ ul {
                   button {
                      background-color: inherit;
                      color: inherit;
+                     cursor: pointer;
 
                      .tox-icon {
                         color: inherit;
@@ -124,6 +160,10 @@ ul {
                         svg {
                            fill: var(--ht-regular-text-cl);
                         }
+                     }
+
+                     &:hover {
+                        background-color: var(--ht-modal-btn-hover-bgcl);
                      }
 
                      &.tox-tbtn--enabled {
@@ -155,7 +195,13 @@ ul {
    }
 }
 
-.tox.tox.tox-silver-sink {
+.tox.tox-silver-sink {
+   .tox-menu {
+      &.tox-selected-menu {
+         background-color: var(--ht-modal-board-bgcl);
+      }
+   }
+
    .tox-tiered-menu {
       background-color: var(--ht-modal-board-bgcl);
       color: var(--ht-regular-text-cl);

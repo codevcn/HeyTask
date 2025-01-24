@@ -12,7 +12,6 @@ import { useUser } from "../../hooks/user"
 import { AvatarGroup, Avatar, styled, Tooltip } from "@mui/material"
 import { Phases } from "./Phases"
 import type { TProjectData } from "../../services/types"
-import { LogoLoading } from "../../components/Loadings"
 import { measureTextWidth } from "../../utils/helpers"
 import { useParams } from "react-router-dom"
 import type { TProjectPageParams } from "../../utils/types"
@@ -161,12 +160,8 @@ const Header = () => {
    }, [])
 
    return (
-      <header className="flex justify-between items-center flex-wrap overflow-x-hidden gap-y-3 gap-x-5 py-3 px-5 bg-[#0000003d] backdrop-blur-sm w-full">
-         {project ? (
-            <EditableSection projectData={project} />
-         ) : (
-            <LogoLoading className="m-auto" logoImgClassName="h-[0.9rem]" />
-         )}
+      <header className="flex justify-between items-center flex-wrap min-h-top-nav overflow-x-hidden gap-y-3 gap-x-5 py-3 px-5 bg-[#0000003d] backdrop-blur-sm w-full">
+         {project && <EditableSection projectData={project} />}
       </header>
    )
 }

@@ -19,8 +19,10 @@ export default {
             "rich-file-title-cl": "var(--ht-rich-file-title-cl)",
          },
          height: {
-            "top-nav": "var(--ht-top-nav-height)",
-            background: "calc(100% - var(--ht-top-nav-height))",
+            background: "calc(100% - var(--ht-top-nav-min-height))",
+         },
+         minHeight: {
+            "top-nav": "var(--ht-top-nav-min-height)",
          },
          width: {
             "left-side-nav": "var(--ht-left-side-nav-width)",

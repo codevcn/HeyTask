@@ -8,7 +8,7 @@ import {
    Tooltip,
    DialogContent,
 } from "@mui/material"
-import { useEffect, useState } from "react"
+import { FocusEvent, KeyboardEvent, useEffect, useState } from "react"
 import { EInternalEvents, eventEmitter } from "../../../utils/events"
 import SubtitlesIcon from "@mui/icons-material/Subtitles"
 import CloseIcon from "@mui/icons-material/Close"
@@ -17,7 +17,7 @@ import { projectService } from "../../../services/project-service"
 import { toast } from "react-toastify"
 import axiosErrorHandler from "../../../utils/axios-error-handler"
 import { useAppDispatch, useAppSelector } from "../../../hooks/redux"
-import { setTaskData } from "../../../redux/project/project-slice"
+import { setTaskData, updateTaskData } from "../../../redux/project/project-slice"
 import type { TTaskMemberData } from "../../../services/types"
 import AddIcon from "@mui/icons-material/Add"
 import GroupRemoveIcon from "@mui/icons-material/GroupRemove"
@@ -65,23 +65,26 @@ type TTitleProps = {
 }
 
 const Title = ({ taskTitle, onClose }: TTitleProps) => {
-   // const quitEditing = (newTitle: string) => {
-   //    if (newTitle && newTitle.length > 0) {
-   //       dispatch(updateSinglePhase({ ...phaseData, title: newTitle }))
-   //    }
-   //    setIsEditing(false)
-   // }
+   const dispatch = useAppDispatch()
 
-   // const catchEditingEnter = (e: KeyboardEvent<HTMLInputElement>) => {
-   //    if (e.key === "Enter") {
-   //       e.preventDefault()
-   //       quitEditing((e.target as HTMLTextAreaElement).value || title)
-   //    }
-   // }
+   const quitEditing = (newTitle: string) => {
+      if (newTitle && newTitle.length > 0) {
+         dispatch(updateTaskData({ title: newTitle }))
+      }
+   }
 
-   // const blurListTitleInput = (e: FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-   //    quitEditing((e.target as HTMLTextAreaElement).value || title)
-   // }
+   const catchEditingEnter = (e: KeyboardEvent<HTMLInputElement>) => {
+      if (e.key === "Enter") {
+         e.preventDefault()
+         const input = e.target as HTMLTextAreaElement
+         input.blur()
+         quitEditing(input.value || taskTitle)
+      }
+   }
+
+   const blurListTitleInput = (e: FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      quitEditing((e.target as HTMLTextAreaElement).value || taskTitle)
+   }
 
    return (
       <header className="flex">
@@ -93,9 +96,9 @@ const Title = ({ taskTitle, onClose }: TTitleProps) => {
             fullWidth
             maxRows={5}
             defaultValue={taskTitle}
-            // onKeyDown={catchEditingEnter}
+            onKeyDown={catchEditingEnter}
             variant="outlined"
-            // onBlur={blurListTitleInput}
+            onBlur={blurListTitleInput}
          />
          <button onClick={onClose} className="p-1 hover:bg-modal-btn-hover-bgcl rounded ml-3">
             <CloseIcon className="text-regular-text-cl" />
@@ -179,8 +182,8 @@ export const TaskDetails = () => {
          fullWidth
          aria-hidden="true"
       >
-         <DialogContent sx={{ backgroundColor: "var(--ht-modal-board-bgcl)" }}>
-            <div className="rounded-xl">
+         <DialogContent>
+            <div className="flex flex-col rounded-xl min-h-[300px]">
                {taskData ? (
                   <>
                      <Title onClose={closeModal} taskTitle={taskData.title} />
@@ -194,7 +197,7 @@ export const TaskDetails = () => {
                      </div>
                   </>
                ) : (
-                  <LogoLoading />
+                  <LogoLoading className="m-auto" />
                )}
             </div>
          </DialogContent>
@@ -244,5 +247,8 @@ const StyledAvatarGroup = styled(AvatarGroup)({
 const StyledDialog = styled(Dialog)({
    "& .MuiPaper-root": {
       borderRadius: 9,
+      "& .MuiDialogContent-root": {
+         backgroundColor: "var(--ht-modal-board-bgcl)",
+      },
    },
 })

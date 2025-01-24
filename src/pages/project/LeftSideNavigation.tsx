@@ -32,7 +32,9 @@ export const LeftSideNavigation = () => {
       <nav
          className={`bg-top-nav-bgcl text-regular-text-cl relative overflow-x-visible transition-[width] h-full border-r border-divider-bgcl ${setNavPosition(open)}`}
       >
-         <div className={`h-full w-full transition-transform ${setNavContentPosition(open)}`}>
+         <div
+            className={`flex flex-col h-full w-full transition-transform ${setNavContentPosition(open)}`}
+         >
             {project ? (
                <>
                   <div className="flex items-center justify-between gap-x-2 px-3 py-3 border-b border-divider-bgcl w-full">

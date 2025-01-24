@@ -15,13 +15,14 @@
    --ht-focused-textfield-bgcl: #22272b;
    --ht-divider-bgcl: #ffffff36;
    --ht-confirm-btn-bgcl: #579dff;
+   --ht-logo-loading-bar-bgcl: var(--ht-regular-text-cl);
 
    // hover
    --ht-hover-silver-bgcl: #333c43;
    --ht-modal-btn-hover-bgcl: #a6c5e229;
 
    // height
-   --ht-top-nav-height: 48px;
+   --ht-top-nav-min-height: 56px;
 
    // width
    --ht-left-side-nav-width: 260px;

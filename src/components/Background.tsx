@@ -35,10 +35,12 @@ export const Background = ({ children }: TBackgroundProps) => {
                     backgroundImage: `url(${customization.background})`,
                     backgroundSize: "cover",
                     backgroundPosition: "center center",
+                    backgroundBlendMode: "darken",
+                    backgroundColor: "#0000004d",
                  }
-               : {}
+               : { backgroundColor: "transparent" }
          }
-         className="bg-blend-darken	bg-[#0000004d] w-full h-background"
+         className="w-full h-background"
       >
          {children}
       </div>

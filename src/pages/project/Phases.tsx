@@ -141,7 +141,6 @@ type TPhaseProps = {
 const Phase = ({ phaseData, className }: TPhaseProps) => {
    const { taskPreviews, title, id } = phaseData
    const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id })
-   const [isEditing, setIsEditing] = useState<boolean>(false)
    const dispatch = useAppDispatch()
    const [cssClass, setCssClass] = useState<string>("")
 
@@ -149,13 +148,14 @@ const Phase = ({ phaseData, className }: TPhaseProps) => {
       if (newTitle && newTitle.length > 0) {
          dispatch(updateSinglePhase({ ...phaseData, title: newTitle }))
       }
-      setIsEditing(false)
    }
 
    const catchEditingEnter = (e: KeyboardEvent<HTMLInputElement>) => {
       if (e.key === "Enter") {
          e.preventDefault()
-         quitEditing((e.target as HTMLTextAreaElement).value || title)
+         const input = e.target as HTMLTextAreaElement
+         input.blur()
+         quitEditing(input.value || title)
       }
    }
 
@@ -179,7 +179,7 @@ const Phase = ({ phaseData, className }: TPhaseProps) => {
    }, [])
 
    return (
-      <li
+      <div
          style={{
             transform: CSS.Transform.toString(transform),
             transition,
@@ -192,34 +192,25 @@ const Phase = ({ phaseData, className }: TPhaseProps) => {
                ref={setNodeRef}
                {...attributes}
                {...listeners}
-               className="flex justify-between text-[#B6C2CF] gap-x-2 p-2"
+               className="flex justify-between text-[#B6C2CF] gap-x-2 p-2 pb-1"
             >
-               {isEditing ? (
-                  <div className={`w-full`}>
-                     <EditableTitle
-                        multiline
-                        maxRows={5}
-                        defaultValue={title}
-                        onKeyDown={catchEditingEnter}
-                        variant="outlined"
-                        autoFocus
-                        onBlur={blurListTitleInput}
-                        onMouseDown={(e) => e.stopPropagation()}
-                     />
-                  </div>
-               ) : (
-                  <p
-                     onClick={() => setIsEditing(true)}
-                     className="cursor-text text-base font-medium p-1 w-full m-0 break-words max-w-[calc(100%-28px-18px)]"
-                  >
-                     {title}
-                  </p>
-               )}
+               <div className={`w-full`}>
+                  <EditableTitle
+                     multiline
+                     maxRows={5}
+                     defaultValue={title}
+                     onKeyDown={catchEditingEnter}
+                     variant="outlined"
+                     autoFocus
+                     onBlur={blurListTitleInput}
+                     onMouseDown={(e) => e.stopPropagation()}
+                  />
+               </div>
                <PhaseActions />
             </div>
             <TaskPreviews phaseId={id} taskPreviews={taskPreviews} />
          </div>
-      </li>
+      </div>
    )
 }
 
@@ -449,7 +440,7 @@ export const Phases = () => {
                onDragCancel={() => handleDragging()}
             >
                <SortableContext items={dndItems} strategy={horizontalListSortingStrategy}>
-                  <ul className="flex gap-x-3 relative box-border h-full pb-2">
+                  <div className="flex gap-x-3 relative box-border h-full pb-2">
                      <DragScrollPlaceholder
                         dndItemsCount={(sortedDndItems && sortedDndItems.length + 1) || 0}
                         refToDrag={refToDrag}
@@ -463,7 +454,7 @@ export const Phases = () => {
                               className={phase.id === draggingId ? "opacity-0" : "opacity-100"}
                            />
                         ))}
-                  </ul>
+                  </div>
                </SortableContext>
                <DragOverlay>
                   {draggingId ? (
@@ -480,23 +471,50 @@ export const Phases = () => {
 }
 
 const EditableTitle = styled(TextField)({
-   width: "100%",
    "& .MuiInputBase-formControl": {
       width: "100%",
       padding: "5px 8px",
       "& .MuiInputBase-input": {
          width: "100%",
          color: "var(--ht-regular-text-cl)",
-         fontWeight: 500,
+         fontWeight: 700,
+         fontSize: "1.1rem",
       },
       "& .MuiOutlinedInput-notchedOutline": {
          borderColor: "transparent",
       },
-      "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-         borderColor: "var(--ht-outline-cl)",
+      "&:hover": {
+         "& .MuiOutlinedInput-notchedOutline": {
+            borderColor: "transparent",
+         },
+      },
+      "&.Mui-focused": {
+         backgroundColor: "var(--ht-focused-textfield-bgcl)",
+         "& .MuiOutlinedInput-notchedOutline": {
+            borderColor: "var(--ht-outline-cl)",
+         },
       },
    },
 })
+
+// const EditableTitle = styled(TextField)({
+//    width: "100%",
+//    "& .MuiInputBase-formControl": {
+//       width: "100%",
+//       padding: "5px 8px",
+//       "& .MuiInputBase-input": {
+//          width: "100%",
+//          color: "var(--ht-regular-text-cl)",
+//          fontWeight: 500,
+//       },
+//       "& .MuiOutlinedInput-notchedOutline": {
+//          borderColor: "transparent",
+//       },
+//       "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+//          borderColor: "var(--ht-outline-cl)",
+//       },
+//    },
+// })
 
 const StyledPopover = styled(Popover)({
    "& .MuiPaper-root": {

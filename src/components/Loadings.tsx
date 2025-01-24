@@ -1,4 +1,6 @@
-import appLogo from "../assets/app-logo.png"
+import { useEffect, useState } from "react"
+import LinearProgress from "@mui/material/LinearProgress"
+import { EInternalEvents, eventEmitter } from "../utils/events"
 
 export const RouteLoading = () => {
    return (
@@ -10,18 +12,33 @@ export const RouteLoading = () => {
 
 type TLogoLoadingProps = Partial<{
    className: string
-   logoImgClassName: string
 }>
 
-export const LogoLoading = ({ className, logoImgClassName }: TLogoLoadingProps) => {
+export const LogoLoading = ({ className }: TLogoLoadingProps) => {
    return (
-      <div className={`flex relative h-fit w-fit aspect-square p-2 ${className || ""}`}>
-         <div className="css-logo-loading-border"></div>
-         <img
-            src={appLogo}
-            alt="App Logo"
-            className={`relative z-20 h-[1.2rem] w-min ${logoImgClassName || ""}`}
-         />
+      <div className={`css-logo-loading-container ${className || ""}`}>
+         <div className="css-logo-loading-bar__bar-1"></div>
+         <div className="css-logo-loading-bar__bar-2"></div>
+         <div className="css-logo-loading-bar__bar-3"></div>
+      </div>
+   )
+}
+
+export const FixedLoading = () => {
+   const [loading, setLoading] = useState<boolean>(false)
+
+   useEffect(() => {
+      eventEmitter.on(EInternalEvents.OPEN_FIXED_LOADING, (isShown) => {
+         setLoading(isShown)
+      })
+      return () => {
+         eventEmitter.off(EInternalEvents.OPEN_FIXED_LOADING)
+      }
+   }, [])
+
+   return (
+      <div className="fixed z-[1500] top-0 left-0 w-screen h-fit" hidden={!loading}>
+         <LinearProgress />
       </div>
    )
 }

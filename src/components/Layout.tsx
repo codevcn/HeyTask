@@ -2,12 +2,13 @@ import { Outlet } from "react-router-dom"
 import { ToastContainer } from "react-toastify"
 import { RouteGuard } from "./ResourceGuard"
 import { useEffect } from "react"
+import { FixedLoading } from "./Loadings"
 
 const nonGuardRoutes: string[] = ["/", "/login", "/register"]
 
 export default function Layout() {
    useEffect(() => {
-      document.addEventListener("focusin", (e) => {
+      const handleDisableModalBehavior = (e: FocusEvent) => {
          const target = e.target
          if (target && target instanceof HTMLElement && target.closest) {
             if (
@@ -18,11 +19,16 @@ export default function Layout() {
                e.stopImmediatePropagation()
             }
          }
-      })
+      }
+      document.addEventListener("focusin", handleDisableModalBehavior)
+      return () => {
+         document.removeEventListener("focusin", handleDisableModalBehavior)
+      }
    }, [])
 
    return (
       <div className="h-full text-sm">
+         <FixedLoading />
          <RouteGuard nonGuardRoutes={nonGuardRoutes}>
             <Outlet />
          </RouteGuard>

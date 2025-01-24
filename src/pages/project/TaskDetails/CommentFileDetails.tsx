@@ -1,4 +1,4 @@
-import { Modal } from "@mui/material"
+import { Modal, styled } from "@mui/material"
 import { useEffect, useState } from "react"
 import { EInternalEvents, eventEmitter } from "../../../utils/events"
 import type { TCommentFileData } from "../../../services/types"
@@ -17,6 +17,7 @@ export const CommentFileDetails = () => {
    const showUploadedFileDetails = (isShown: boolean, fileId: number) => {
       setOpen(isShown)
       if (isShown) {
+         if (fileData && fileData.id === fileId) return
          projectService.getCommentFileDetails(fileId).then((res) => {
             setFileData(res)
          })
@@ -35,7 +36,13 @@ export const CommentFileDetails = () => {
    }
 
    return (
-      <Modal keepMounted open={open} onClose={closeModal} aria-hidden="true">
+      <StyledModal
+         keepMounted
+         open={open}
+         onClose={closeModal}
+         aria-hidden="true"
+         slotProps={{ backdrop: { sx: {} } }}
+      >
          <div className="flex relative bg-transparent text-white h-full w-full">
             <div
                onClick={closeModal}
@@ -70,6 +77,12 @@ export const CommentFileDetails = () => {
                <LogoLoading className="m-auto" />
             )}
          </div>
-      </Modal>
+      </StyledModal>
    )
 }
+
+const StyledModal = styled(Modal)({
+   "& .MuiBackdrop-root": {
+      backgroundColor: "#000000ad",
+   },
+})

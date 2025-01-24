@@ -1,4 +1,4 @@
-import { perfomDelay } from "../utils/helpers"
+import { perfomDelay, randomInteger } from "../utils/helpers"
 import type {
    TCommentFileData,
    TCustomizationData,
@@ -294,7 +294,11 @@ class ProjectService {
       await perfomDelay(1000)
       const data = {
          id: 1,
-         url: "https://www.dropbox.com/scl/fi/ywyj0fc0dh5duf9dtlx3k/Bai-tap-Thuc-hanh-SQL.pdf?rlkey=xwebotclt9umt4njwul48pwt9&st=ekgd62lu&dl=0",
+         // url: "https://www.dropbox.com/scl/fi/ywyj0fc0dh5duf9dtlx3k/Bai-tap-Thuc-hanh-SQL.pdf?rlkey=xwebotclt9umt4njwul48pwt9&st=ekgd62lu&dl=0",
+         url:
+            randomInteger(1, 2) % 2 === 0
+               ? "https://res.cloudinary.com/doe8ogwij/image/upload/v1734920687/web-xem-phim/images/odlhurychbvf3iukjzkg.jpg"
+               : "https://res.cloudinary.com/doe8ogwij/image/upload/v1734891046/web-xem-phim/images/dg0whhotakygd4cja442.png",
       }
       return data
    }
