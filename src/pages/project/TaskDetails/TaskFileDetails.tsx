@@ -1,7 +1,7 @@
 import { Modal, styled } from "@mui/material"
 import { useEffect, useState } from "react"
 import { EInternalEvents, eventEmitter } from "../../../utils/events"
-import type { TCommentFileData } from "../../../services/types"
+import type { TTaskFileData } from "../../../services/types"
 import { projectService } from "../../../services/project-service"
 import { LogoLoading } from "../../../components/Loadings"
 import CloseIcon from "@mui/icons-material/Close"
@@ -9,18 +9,25 @@ import dayjs from "dayjs"
 import OpenInNewIcon from "@mui/icons-material/OpenInNew"
 import FileDownloadIcon from "@mui/icons-material/FileDownload"
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever"
+import { toast } from "react-toastify"
+import axiosErrorHandler from "../../../utils/axios-error-handler"
 
-export const CommentFileDetails = () => {
-   const [fileData, setFileData] = useState<TCommentFileData>()
+export const TaskFileDetails = () => {
+   const [fileData, setFileData] = useState<TTaskFileData>()
    const [open, setOpen] = useState<boolean>(false)
 
-   const showUploadedFileDetails = (isShown: boolean, fileId: number) => {
+   const showUploadedFileDetails = (isShown: boolean, fileId: string) => {
       setOpen(isShown)
       if (isShown) {
          if (fileData && fileData.id === fileId) return
-         projectService.getCommentFileDetails(fileId).then((res) => {
-            setFileData(res)
-         })
+         projectService
+            .getTaskFileDetails(fileId)
+            .then((res) => {
+               setFileData(res)
+            })
+            .catch((error) => {
+               toast.error(axiosErrorHandler.handleHttpError(error).message)
+            })
       }
    }
 
@@ -34,6 +41,22 @@ export const CommentFileDetails = () => {
    const closeModal = () => {
       setOpen(false)
    }
+
+   const viewFileInNewTab = (downloadUrl: string) => {
+      window.open(downloadUrl, "_blank", "noopener,noreferrer")
+   }
+
+   const downloadFile = (downloadUrl: string) => {
+      const download = document.createElement("a")
+      download.href =
+         "https://www.dropbox.com/scl/fi/ywyj0fc0dh5duf9dtlx3k/Bai-tap-Thuc-hanh-SQL.pdf?rlkey=xwebotclt9umt4njwul48pwt9&st=3yzhcmdq&dl=1"
+      download.download = "vcn file"
+      document.body.appendChild(download)
+      download.click()
+      document.body.removeChild(download)
+   }
+
+   const deleteFile = (fileId: string) => {}
 
    return (
       <StyledModal
@@ -59,15 +82,24 @@ export const CommentFileDetails = () => {
                      <span>{fileData.fileSize}</span>
                   </div>
                   <div className="flex items-center gap-x-4">
-                     <button className="flex items-center gap-x-2 rounded-md p-2 hover:bg-modal-btn-hover-bgcl">
+                     <button
+                        onClick={() => viewFileInNewTab(fileData.downloadUrl)}
+                        className="flex items-center gap-x-2 rounded-md p-2 hover:bg-modal-btn-hover-bgcl"
+                     >
                         <OpenInNewIcon fontSize="small" />
                         <span className="text-sm">Open in new tab</span>
                      </button>
-                     <button className="flex items-center gap-x-2 rounded-md p-2 hover:bg-modal-btn-hover-bgcl">
+                     <button
+                        onClick={() => downloadFile(fileData.downloadUrl)}
+                        className="flex items-center gap-x-2 rounded-md p-2 hover:bg-modal-btn-hover-bgcl"
+                     >
                         <FileDownloadIcon />
                         <span className="text-sm">Download</span>
                      </button>
-                     <button className="flex items-center gap-x-2 rounded-md p-2 hover:bg-modal-btn-hover-bgcl">
+                     <button
+                        onClick={() => deleteFile(fileData.id)}
+                        className="flex items-center gap-x-2 rounded-md p-2 hover:bg-modal-btn-hover-bgcl"
+                     >
                         <DeleteForeverIcon />
                         <span className="text-sm">Delete</span>
                      </button>

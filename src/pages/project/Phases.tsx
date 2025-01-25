@@ -201,7 +201,6 @@ const Phase = ({ phaseData, className }: TPhaseProps) => {
                      defaultValue={title}
                      onKeyDown={catchEditingEnter}
                      variant="outlined"
-                     autoFocus
                      onBlur={blurListTitleInput}
                      onMouseDown={(e) => e.stopPropagation()}
                   />

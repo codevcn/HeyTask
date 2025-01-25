@@ -1,3 +1,13 @@
+import type { EUserRoles } from "../utils/enums"
+
+export type TUserData = {
+   id: number
+   fullName: string
+   email: string
+   avatar: string | null
+   role: EUserRoles
+}
+
 export type TLoginPayload = {
    email: string
    password: string
@@ -10,14 +20,21 @@ export type TRegisterPayload = {
    reTypePassword: string
 }
 
+export type TProjectMemberData = {
+   id: number
+   fullName: string
+   avatar: string | null
+}
+
 export type TProjectData = {
    id: number
    title: string
+   members: TProjectMemberData[]
 }
 
 export type TCustomizationData = {
    projectId: number
-   background: string
+   background: string | null
 }
 
 export type TTaskMemberData = {
@@ -36,7 +53,7 @@ export type TCommentData = {
 export type TTaskData = {
    id: number
    title: string
-   description: string
+   description: string | null
    members: TTaskMemberData[] | null
    comments: TCommentData[] | null
 }
@@ -56,12 +73,12 @@ export type TPhaseData = {
    position: number
 }
 
-export type TCommentFileData = {
-   id: number
+export type TTaskFileData = {
+   id: string
    fileName: string
    fileSize: string
    uploadedAt: string
-   url: string
+   downloadUrl: string
 }
 
 export type TUploadedFileData = {

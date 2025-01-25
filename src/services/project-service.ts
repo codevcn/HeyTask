@@ -1,6 +1,7 @@
+import axios from "axios"
 import { perfomDelay, randomInteger } from "../utils/helpers"
 import type {
-   TCommentFileData,
+   TTaskFileData,
    TCustomizationData,
    TPhaseData,
    TProjectData,
@@ -11,7 +12,33 @@ import type {
 class ProjectService {
    async getProjectData(projectId: number): Promise<TProjectData> {
       await perfomDelay(1000)
-      const data: TProjectData = { title: "VCN Project", id: projectId }
+      const data: TProjectData = {
+         title: "VCN Project",
+         id: projectId,
+         members: [
+            {
+               id: 1,
+               avatar:
+                  "https://trello-logos.s3.amazonaws.com/7c17ee5f87fa99637dce66430e395d97/170.png",
+               fullName: "full codevcn",
+            },
+            {
+               id: 2,
+               avatar: null,
+               fullName: "Lala",
+            },
+            {
+               id: 3,
+               avatar: null,
+               fullName: "Lulu",
+            },
+            {
+               id: 4,
+               avatar: null,
+               fullName: "lele vcn",
+            },
+         ],
+      }
       return data
    }
 
@@ -260,7 +287,7 @@ class ProjectService {
                user: {
                   id: 1,
                   avatar: null,
-                  fullName: "Luu Thien Thien",
+                  fullName: "Luu Thien Quan",
                },
             },
             {
@@ -280,7 +307,7 @@ class ProjectService {
                user: {
                   id: 3,
                   avatar: null,
-                  fullName: "Luu Thien Thien",
+                  fullName: "Luu Thien Vu",
                },
             },
          ],
@@ -303,16 +330,26 @@ class ProjectService {
       return data
    }
 
-   async getCommentFileDetails(fileId: number): Promise<TCommentFileData> {
+   async getTaskFileDetails(fileId: TTaskFileData["id"]): Promise<TTaskFileData> {
       await perfomDelay(1000)
-      const data: TCommentFileData = {
+      const data: TTaskFileData = {
          id: fileId,
          fileName: "file cua loi",
          fileSize: "111KB",
          uploadedAt: "2025-01-21T15:21:45.219Z",
-         url: "https://www.dropbox.com/scl/fi/ywyj0fc0dh5duf9dtlx3k/Bai-tap-Thuc-hanh-SQL.pdf?rlkey=xwebotclt9umt4njwul48pwt9&st=ekgd62lu&dl=0",
+         downloadUrl:
+            "https://www.dropbox.com/scl/fi/ywyj0fc0dh5duf9dtlx3k/Bai-tap-Thuc-hanh-SQL.pdf?rlkey=xwebotclt9umt4njwul48pwt9&st=ekgd62lu&dl=1",
       }
       return data
+   }
+
+   async downloadTaskFile(): Promise<any> {
+      await perfomDelay(1000)
+      const { data } = await axios.get(
+         "https://www.dropbox.com/scl/fi/ywyj0fc0dh5duf9dtlx3k/Bai-tap-Thuc-hanh-SQL.pdf?rlkey=xwebotclt9umt4njwul48pwt9&st=3yzhcmdq&dl=1",
+         { responseType: "blob" },
+      )
+      console.log(">>> data:", data)
    }
 }
 

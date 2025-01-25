@@ -5,6 +5,7 @@ import type {
    TPhaseData,
    TProjectData,
    TTaskData,
+   TTaskMemberData,
 } from "../../services/types"
 import type { TPhaseTaskPreview } from "../../utils/types"
 
@@ -91,6 +92,42 @@ export const projectSlice = createSlice({
             state.taskData!.comments = [newComment]
          }
       },
+      editComment: (state, action: PayloadAction<Omit<TCommentData, "user">>) => {
+         const updates = action.payload
+         const currentComments = state.taskData!.comments!
+         for (const comment of currentComments) {
+            if (comment.id === updates.id) {
+               comment.content = updates.content
+               comment.createdAt = updates.createdAt
+            }
+         }
+      },
+      deleteComment: (state, action: PayloadAction<TCommentData["id"]>) => {
+         const commentId = action.payload
+         state.taskData!.comments = state.taskData!.comments!.filter(
+            (comment) => comment.id !== commentId,
+         )
+      },
+      addNewTaskMember: (state, action: PayloadAction<TTaskMemberData>) => {
+         const newTaskMember = action.payload
+         const newTaskMemberId = newTaskMember.id
+         const currentMembers = state.taskData!.members
+         if (currentMembers && currentMembers.length > 0) {
+            if (!currentMembers.some((member) => member.id === newTaskMemberId)) {
+               currentMembers.push(newTaskMember)
+            }
+         } else {
+            state.taskData!.members = [newTaskMember]
+         }
+      },
+      removeTaskMember: (state, action: PayloadAction<TTaskMemberData["id"]>) => {
+         const taskMemberId = action.payload
+         const task = state.taskData
+         const currentMembers = task!.members
+         if (currentMembers && currentMembers.length > 0) {
+            task!.members = currentMembers.filter((member) => member.id !== taskMemberId)
+         }
+      },
    },
 })
 
@@ -105,4 +142,8 @@ export const {
    setTaskData,
    updateTaskData,
    addNewComment,
+   addNewTaskMember,
+   removeTaskMember,
+   editComment,
+   deleteComment,
 } = projectSlice.actions

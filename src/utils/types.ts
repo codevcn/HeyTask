@@ -1,13 +1,6 @@
 import type { HttpStatusCode } from "axios"
 import type { TTaskItemPreviewData } from "../services/types"
 
-export type TUserData = {
-   id: number
-   fullName: string
-   email: string
-   avatar: string
-}
-
 export type TSuccess = {
    success: boolean
 }

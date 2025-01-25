@@ -27,24 +27,14 @@ export const CustomRichTextContent = ({ content }: TRichTextContentProps) => {
       }
    }
 
-   const initClickOnImageHandler = () => {
-      const images = contentWrapperRef.current?.querySelectorAll<HTMLImageElement>("img")
-      if (images && images.length > 0) {
-         for (const img of images) {
-            img.onclick = () => {}
-         }
-      }
-   }
-
    useEffect(() => {
       initClickOnFileHandlers()
-      initClickOnImageHandler()
    }, [content])
 
    return (
       <div
          ref={contentWrapperRef}
-         className="css-original-rich-text"
+         className="css-rich-text-content-section"
          dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(content) }}
       ></div>
    )

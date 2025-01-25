@@ -8,7 +8,6 @@ import StarOutlineIcon from "@mui/icons-material/StarOutline"
 import GroupIcon from "@mui/icons-material/Group"
 import GroupAddIcon from "@mui/icons-material/GroupAdd"
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz"
-import { useUser } from "../../hooks/user"
 import { AvatarGroup, Avatar, styled, Tooltip } from "@mui/material"
 import { Phases } from "./Phases"
 import type { TProjectData } from "../../services/types"
@@ -16,7 +15,7 @@ import { measureTextWidth } from "../../utils/helpers"
 import { useParams } from "react-router-dom"
 import type { TProjectPageParams } from "../../utils/types"
 import { TaskDetails } from "./TaskDetails/TaskDetails"
-import { CommentFileDetails } from "./TaskDetails/CommentFileDetails"
+import { TaskFileDetails } from "./TaskDetails/TaskFileDetails"
 
 type TEditableSectionProps = {
    projectData: TProjectData
@@ -24,9 +23,8 @@ type TEditableSectionProps = {
 
 const EditableSection = ({ projectData }: TEditableSectionProps) => {
    const [isEditing, setIsEditing] = useState<boolean>(false)
-   const { title } = projectData
+   const { title, members } = projectData
    const titleInputRef = useRef<HTMLInputElement | null>(null)
-   const user = useUser()!
    const dispatch = useAppDispatch()
 
    const quitEditing = (newTitle: string) => {
@@ -109,18 +107,15 @@ const EditableSection = ({ projectData }: TEditableSectionProps) => {
                max={3}
                renderSurplus={(surplus) => <span>+{surplus.toString()[0]}</span>}
             >
-               <Tooltip title="codevcn" arrow>
-                  <Avatar alt="User Avatar" src={user.avatar} />
-               </Tooltip>
-               <Tooltip title="codevcn" arrow>
-                  <Avatar alt="User Avatar" src={user.avatar} />
-               </Tooltip>
-               <Tooltip title="codevcn" arrow>
-                  <Avatar alt="User Avatar" src={user.avatar} />
-               </Tooltip>
-               <Tooltip title="codevcn" arrow>
-                  <Avatar alt="User Avatar" src={user.avatar} />
-               </Tooltip>
+               {members.map((member) => (
+                  <Tooltip key={member.id} title="codevcn" arrow>
+                     {member.avatar ? (
+                        <Avatar alt="User Avatar" src={member.avatar} />
+                     ) : (
+                        <Avatar>{member.fullName[0]}</Avatar>
+                     )}
+                  </Tooltip>
+               ))}
             </StyledAvatarGroup>
             <Tooltip title="Share this board with other people." arrow>
                <button className="flex gap-x-1 items-center h-[32px] bg-[#FFFFFF] py-1 px-2 text-secondary-text-cl font-medium rounded">
@@ -160,7 +155,7 @@ const Header = () => {
    }, [])
 
    return (
-      <header className="flex justify-between items-center flex-wrap min-h-top-nav overflow-x-hidden gap-y-3 gap-x-5 py-3 px-5 bg-[#0000003d] backdrop-blur-sm w-full">
+      <header className="flex justify-between items-center flex-wrap h-top-nav overflow-x-hidden gap-y-3 gap-x-5 py-3 px-5 bg-[#0000003d] backdrop-blur-sm w-full">
          {project && <EditableSection projectData={project} />}
       </header>
    )
@@ -172,7 +167,7 @@ export const MainBoard = () => {
          <Header />
          <Phases />
          <TaskDetails />
-         <CommentFileDetails />
+         <TaskFileDetails />
       </div>
    )
 }

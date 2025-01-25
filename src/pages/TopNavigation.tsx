@@ -1,6 +1,6 @@
 import { type MouseEvent, useRef, useState } from "react"
 import appLogo from "../assets/app-logo.png"
-import { Menu, MenuItem, Button, styled } from "@mui/material"
+import { Menu, MenuItem, Button, styled, Avatar } from "@mui/material"
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore"
 import SearchIcon from "@mui/icons-material/Search"
 import NotificationsIcon from "@mui/icons-material/Notifications"
@@ -70,7 +70,13 @@ const UserSection = () => {
             <NotificationsIcon className="text-white" fontSize="small" />
          </StyledIconButton>
          <StyledIconButton>
-            <img className="h-[24px] w-[24px]" src={user.avatar} alt="User Avatar" />
+            {user.avatar ? (
+               <Avatar src={user.avatar} alt="User Avatar" sx={{ height: 24, width: 24 }} />
+            ) : (
+               <Avatar alt="User Avatar" sx={{ height: 24, width: 24 }}>
+                  {user.fullName[0]}
+               </Avatar>
+            )}
          </StyledIconButton>
       </div>
    )

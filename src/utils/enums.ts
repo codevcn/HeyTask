@@ -3,3 +3,9 @@ export enum EAuthStatus {
    UNAUTHENTICATED = "UNAUTHENTICATED",
    UNKNOWN = "UNKNOWN",
 }
+
+export enum EUserRoles {
+   ADMIN = "USER_ROLE_ADMIN",
+   LEADER = "USER_ROLE_LEADER",
+   MEMBER = "USER_ROLE_MEMBER",
+}

@@ -1,6 +1,6 @@
 import { useUser } from "../../hooks/user"
 import { useAppSelector } from "../../hooks/redux"
-import { Skeleton, styled, Tooltip } from "@mui/material"
+import { Skeleton, styled, Tooltip, Avatar } from "@mui/material"
 import { useState } from "react"
 import ArrowLeftIcon from "@mui/icons-material/ArrowLeft"
 import SettingsIcon from "@mui/icons-material/Settings"
@@ -39,7 +39,17 @@ export const LeftSideNavigation = () => {
                <>
                   <div className="flex items-center justify-between gap-x-2 px-3 py-3 border-b border-divider-bgcl w-full">
                      <div className="flex items-center gap-x-2">
-                        <img src={user.avatar} alt="User Avatar" className="h-[32px] w-[32px]" />
+                        {user.avatar ? (
+                           <Avatar
+                              src={user.avatar}
+                              alt="User Avatar"
+                              sx={{ height: 32, width: 32 }}
+                           />
+                        ) : (
+                           <Avatar alt="User Avatar" sx={{ height: 32, width: 32 }}>
+                              {user.fullName[0]}
+                           </Avatar>
+                        )}
                         {project ? (
                            <div className="font-semibold truncate max-w-40">
                               <Tooltip title={project.title} arrow placement="bottom">

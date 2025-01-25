@@ -1,13 +1,4 @@
-import {
-   Fade,
-   Dialog,
-   styled,
-   TextField,
-   AvatarGroup,
-   Avatar,
-   Tooltip,
-   DialogContent,
-} from "@mui/material"
+import { Fade, Dialog, styled, TextField, Tooltip, DialogContent } from "@mui/material"
 import { FocusEvent, KeyboardEvent, useEffect, useState } from "react"
 import { EInternalEvents, eventEmitter } from "../../../utils/events"
 import SubtitlesIcon from "@mui/icons-material/Subtitles"
@@ -17,47 +8,20 @@ import { projectService } from "../../../services/project-service"
 import { toast } from "react-toastify"
 import axiosErrorHandler from "../../../utils/axios-error-handler"
 import { useAppDispatch, useAppSelector } from "../../../hooks/redux"
-import { setTaskData, updateTaskData } from "../../../redux/project/project-slice"
-import type { TTaskMemberData } from "../../../services/types"
-import AddIcon from "@mui/icons-material/Add"
+import {
+   addNewTaskMember,
+   removeTaskMember,
+   setTaskData,
+   updateTaskData,
+} from "../../../redux/project/project-slice"
 import GroupRemoveIcon from "@mui/icons-material/GroupRemove"
 import GroupAddIcon from "@mui/icons-material/GroupAdd"
 import GroupsIcon from "@mui/icons-material/Groups"
 import { Comments } from "./Comments"
 import { Description } from "./Description"
-
-type TTaskMemberProps = {
-   members: TTaskMemberData[]
-}
-
-const Members = ({ members }: TTaskMemberProps) => {
-   return (
-      <div className="pl-10">
-         <h3 className="text-regular-text-cl font-semibold text-sm">Members</h3>
-         <div className="flex items-center gap-x-2 mt-1">
-            <StyledAvatarGroup
-               max={5}
-               renderSurplus={(surplus) => <span>+{surplus.toString()[0]}</span>}
-            >
-               {members.map(({ avatar, id, fullName }) => (
-                  <Tooltip key={id} title={fullName} arrow>
-                     {avatar ? (
-                        <Avatar alt="User Avatar" src={avatar} />
-                     ) : (
-                        <Avatar alt="User Avatar">{fullName[0]}</Avatar>
-                     )}
-                  </Tooltip>
-               ))}
-            </StyledAvatarGroup>
-            <Tooltip title="Add member">
-               <button className="flex h-fit p-1 rounded-full bg-modal-btn-bgcl hover:bg-modal-btn-hover-bgcl">
-                  <AddIcon className="text-regular-text-cl" />
-               </button>
-            </Tooltip>
-         </div>
-      </div>
-   )
-}
+import { AddMemberBoard, TaskMembers } from "./TaskMembers"
+import { useUser } from "../../../hooks/user"
+import { checkIfUserInTaskSelector } from "../../../redux/project/selectors"
 
 type TTitleProps = {
    taskTitle: string
@@ -108,26 +72,65 @@ const Title = ({ taskTitle, onClose }: TTitleProps) => {
 }
 
 const Actions = () => {
+   const [anchorEle, setAnchorEle] = useState<HTMLButtonElement | null>(null)
+   const user = useUser()!
+   const isUserInTask = useAppSelector(checkIfUserInTaskSelector(user.id))
+   const dispatch = useAppDispatch()
+
+   const handleOpenAddMemberBoard = (e?: React.MouseEvent<HTMLButtonElement>) => {
+      if (e) {
+         setAnchorEle(e.currentTarget)
+      } else {
+         setAnchorEle(null)
+      }
+   }
+
+   const joinTask = () => {
+      dispatch(addNewTaskMember(user))
+   }
+
+   const leaveTask = () => {
+      dispatch(removeTaskMember(user.id))
+   }
+
    return (
       <section className="flex flex-col gap-y-2 w-[168px] text-regular-text-cl">
-         <Tooltip title="Join this task" arrow placement="left">
-            <button className="flex items-center gap-x-2 font-medium text-sm py-[6px] px-3 bg-modal-btn-bgcl rounded hover:bg-modal-btn-hover-bgcl">
-               <GroupRemoveIcon fontSize="small" />
-               <span>Join</span>
-            </button>
-         </Tooltip>
-         <Tooltip title="Leave this task" arrow placement="left">
-            <button className="flex items-center gap-x-2 font-medium text-sm py-[6px] px-3 bg-modal-btn-bgcl rounded hover:bg-modal-btn-hover-bgcl">
-               <GroupAddIcon fontSize="small" />
-               <span>Leave</span>
-            </button>
-         </Tooltip>
+         {isUserInTask ? (
+            <Tooltip title="Leave this task" arrow placement="left">
+               <button
+                  onClick={leaveTask}
+                  className="flex items-center gap-x-2 font-medium text-sm py-[6px] px-3 bg-modal-btn-bgcl rounded hover:bg-modal-btn-hover-bgcl"
+               >
+                  <GroupRemoveIcon fontSize="small" />
+                  <span>Leave</span>
+               </button>
+            </Tooltip>
+         ) : (
+            <Tooltip title="Join this task" arrow placement="left">
+               <button
+                  onClick={joinTask}
+                  className="flex items-center gap-x-2 font-medium text-sm py-[6px] px-3 bg-modal-btn-bgcl rounded hover:bg-modal-btn-hover-bgcl"
+               >
+                  <GroupAddIcon fontSize="small" />
+                  <span>Join</span>
+               </button>
+            </Tooltip>
+         )}
          <Tooltip title="View members of this task" arrow placement="left">
-            <button className="flex items-center gap-x-2 font-medium text-sm py-[6px] px-3 bg-modal-btn-bgcl rounded hover:bg-modal-btn-hover-bgcl">
+            <button
+               onClick={handleOpenAddMemberBoard}
+               className="flex items-center gap-x-2 font-medium text-sm py-[6px] px-3 bg-modal-btn-bgcl rounded hover:bg-modal-btn-hover-bgcl"
+            >
                <GroupsIcon fontSize="small" />
                <span>Members</span>
             </button>
          </Tooltip>
+         <AddMemberBoard
+            onCloseBoard={() => handleOpenAddMemberBoard()}
+            anchorEle={anchorEle}
+            anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+            transformOrigin={{ horizontal: "right", vertical: "top" }}
+         />
       </section>
    )
 }
@@ -189,7 +192,7 @@ export const TaskDetails = () => {
                      <Title onClose={closeModal} taskTitle={taskData.title} />
                      <div className="flex justify-between gap-x-3 mt-6">
                         <section className="w-full">
-                           <Members members={taskData.members || []} />
+                           <TaskMembers />
                            <Description description={taskData.description} />
                            <Comments comments={taskData.comments} />
                         </section>
@@ -232,21 +235,10 @@ const EditableTitle = styled(TextField)({
    },
 })
 
-const StyledAvatarGroup = styled(AvatarGroup)({
-   "& .MuiAvatarGroup-avatar": {
-      cursor: "pointer",
-      height: 32,
-      width: 32,
-      border: "none",
-      "&:hover": {
-         outline: "2px solid white",
-      },
-   },
-})
-
 const StyledDialog = styled(Dialog)({
    "& .MuiPaper-root": {
       borderRadius: 9,
+      backgroundColor: "var(--ht-modal-board-bgcl)",
       "& .MuiDialogContent-root": {
          backgroundColor: "var(--ht-modal-board-bgcl)",
       },

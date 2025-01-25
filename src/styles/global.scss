@@ -28,53 +28,74 @@ article {
    box-sizing: border-box;
 }
 
-h1 {
-   font-size: 2rem;
-}
-h2 {
-   font-size: 1.5rem;
-}
-h3 {
-   font-size: 1.3rem;
-}
-h4,
-p {
-   font-size: 1rem;
-}
-h5 {
-   font-size: 0.83rem;
-}
-h6 {
-   font-size: 0.67rem;
-}
-
-a {
-   color: var(--ht-confirm-btn-bgcl);
-
-   &:hover {
-      text-decoration: underline;
-   }
-}
-
-svg {
-   display: flex;
-}
-
-ol {
-   list-style: decimal;
-   color: var(--ht-regular-text-cl);
-
-   &::marker {
+.css-rich-text-content-section {
+   p,
+   a,
+   li,
+   div,
+   p,
+   section,
+   form,
+   button,
+   input,
+   textarea,
+   nav,
+   main,
+   footer,
+   header,
+   article {
       color: var(--ht-regular-text-cl);
    }
-}
 
-ul {
-   list-style: disc;
-   color: var(--ht-regular-text-cl);
+   h1 {
+      font-size: 2rem;
+   }
+   h2 {
+      font-size: 1.5rem;
+   }
+   h3 {
+      font-size: 1.3rem;
+   }
+   h4,
+   p,
+   li {
+      font-size: 14px;
+   }
+   h5 {
+      font-size: 0.83rem;
+   }
+   h6 {
+      font-size: 0.67rem;
+   }
 
-   &::marker {
+   a {
+      color: var(--ht-confirm-btn-bgcl);
+
+      &:hover {
+         text-decoration: underline;
+      }
+   }
+
+   svg {
+      display: flex;
+   }
+
+   ol {
+      list-style: decimal;
       color: var(--ht-regular-text-cl);
+
+      &::marker {
+         color: var(--ht-regular-text-cl);
+      }
+   }
+
+   ul {
+      list-style: disc;
+      color: var(--ht-regular-text-cl);
+
+      &::marker {
+         color: var(--ht-regular-text-cl);
+      }
    }
 }
 

@@ -17,12 +17,13 @@ export default {
             "confirm-btn-bgcl": "var(--ht-confirm-btn-bgcl)",
             "focused-textfield-bgcl": "var(--ht-focused-textfield-bgcl)",
             "rich-file-title-cl": "var(--ht-rich-file-title-cl)",
+            "modal-popover-bgcl": "var(--ht-modal-popover-bgcl)",
+            "delete-btn-bgcl": "var(--ht-delete-btn-bgcl)",
+            "delete-btn-hover-bgcl": "var(--ht-delete-btn-hover-bgcl)",
          },
          height: {
-            background: "calc(100% - var(--ht-top-nav-min-height))",
-         },
-         minHeight: {
-            "top-nav": "var(--ht-top-nav-min-height)",
+            background: "calc(100% - var(--ht-top-nav-height))",
+            "top-nav": "var(--ht-top-nav-height)",
          },
          width: {
             "left-side-nav": "var(--ht-left-side-nav-width)",
