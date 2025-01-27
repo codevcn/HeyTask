@@ -1,4 +1,3 @@
-import { useUser } from "../../hooks/user"
 import { useAppSelector } from "../../hooks/redux"
 import { Skeleton, styled, Tooltip, Avatar } from "@mui/material"
 import { useState } from "react"
@@ -6,12 +5,14 @@ import ArrowLeftIcon from "@mui/icons-material/ArrowLeft"
 import SettingsIcon from "@mui/icons-material/Settings"
 import { LogoLoading } from "../../components/Loadings"
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos"
+import { TUserData } from "../../services/types"
 
-export const drawerWidth = 260
+type TLeftSideNavigationProps = {
+   userData: TUserData
+}
 
-export const LeftSideNavigation = () => {
+export const LeftSideNavigation = ({ userData }: TLeftSideNavigationProps) => {
    const { project } = useAppSelector(({ project }) => project)
-   const user = useUser()!
    const [open, setOpen] = useState<boolean>(true)
 
    const setNavPosition = (openNav: boolean): string => {
@@ -39,15 +40,15 @@ export const LeftSideNavigation = () => {
                <>
                   <div className="flex items-center justify-between gap-x-2 px-3 py-3 border-b border-divider-bgcl w-full">
                      <div className="flex items-center gap-x-2">
-                        {user.avatar ? (
+                        {userData.avatar ? (
                            <Avatar
-                              src={user.avatar}
+                              src={userData.avatar}
                               alt="User Avatar"
                               sx={{ height: 32, width: 32 }}
                            />
                         ) : (
                            <Avatar alt="User Avatar" sx={{ height: 32, width: 32 }}>
-                              {user.fullName[0]}
+                              {userData.fullName[0]}
                            </Avatar>
                         )}
                         {project ? (

@@ -60,11 +60,10 @@ export const TaskFileDetails = () => {
 
    return (
       <StyledModal
-         keepMounted
          open={open}
          onClose={closeModal}
-         aria-hidden="true"
-         slotProps={{ backdrop: { sx: {} } }}
+         aria-labelledby="modal-modal-title"
+         aria-describedby="modal-modal-description"
       >
          <div className="flex relative bg-transparent text-white h-full w-full">
             <div

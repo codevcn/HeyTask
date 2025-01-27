@@ -1,5 +1,5 @@
 import { Avatar, styled, TextField, Tooltip } from "@mui/material"
-import type { TTaskItemPreviewData } from "../../services/types"
+import type { TTaskPreviewData } from "../../services/types"
 import ReorderIcon from "@mui/icons-material/Reorder"
 import AddIcon from "@mui/icons-material/Add"
 import { KeyboardEvent, useEffect, useMemo, useState } from "react"
@@ -24,20 +24,23 @@ import {
    TouchSensor,
    useSensor,
    useSensors,
+   DragOverEvent,
 } from "@dnd-kit/core"
 import { EInternalEvents, eventEmitter } from "../../utils/events"
 
 type TTaskPreviewProps = {
-   taskPreviewData: TTaskItemPreviewData
+   taskPreviewData: TTaskPreviewData
    className?: string
+   phaseId: number
 }
 
-const Task = ({ taskPreviewData, className }: TTaskPreviewProps) => {
-   const { id, firstMember, hasDescription, title } = taskPreviewData
+const Task = ({ taskPreviewData, className, phaseId }: TTaskPreviewProps) => {
+   const { id, taskMembers, hasDescription, title } = taskPreviewData
+   const firstMember = taskMembers?.at(0)
    const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id })
 
    const openTaskDetails = () => {
-      eventEmitter.emit(EInternalEvents.OPEN_PHASE_TASK_MODAL, true, id)
+      eventEmitter.emit(EInternalEvents.OPEN_TASK_DETAILS_MODAL, true, id, phaseId)
    }
 
    return (
@@ -99,7 +102,7 @@ const AddNewTask = ({ phaseId, finalTaskPosition }: TAddNewTaskProps) => {
             addNewTaskPreview({
                id: randomInteger(1, 1000),
                title,
-               firstMember: null,
+               taskMembers: null,
                hasDescription: false,
                phaseId,
                position: finalTaskPosition ? finalTaskPosition + 1 : 1,
@@ -167,11 +170,12 @@ const AddNewTask = ({ phaseId, finalTaskPosition }: TAddNewTaskProps) => {
 }
 
 type TOverlayItemProps = {
-   taskPreviewData: TTaskItemPreviewData
+   taskPreviewData: TTaskPreviewData
 }
 
 const OverlayItem = ({ taskPreviewData }: TOverlayItemProps) => {
-   const { firstMember, hasDescription, title } = taskPreviewData
+   const { taskMembers, hasDescription, title } = taskPreviewData
+   const firstMember = taskMembers?.at(0)
 
    return (
       <div className="bg-focused-textfield-bgcl cursor-pointer mb-2 rounded-lg py-2 px-3 pr-2 opacity-60 rotate-12">
@@ -206,11 +210,11 @@ const OverlayItem = ({ taskPreviewData }: TOverlayItemProps) => {
 
 type TTaskPreviewsProps = {
    phaseId: number
-   taskPreviews: TTaskItemPreviewData[] | null
+   taskPreviews: TTaskPreviewData[] | null
 }
 
 export const TaskPreviews = ({ taskPreviews, phaseId }: TTaskPreviewsProps) => {
-   const [dndItems, setDndItems] = useState<number[]>([])
+   const [dndItems, setDndItems] = useState<TTaskPreviewData["id"][]>([])
    const [draggingId, setDraggingId] = useState<number | null>(null)
    const sensors = useSensors(
       useSensor(MouseSensor, {
@@ -250,16 +254,22 @@ export const TaskPreviews = ({ taskPreviews, phaseId }: TTaskPreviewsProps) => {
    const initDndItems = () => {
       if (taskPreviews && taskPreviews.length > 0) {
          setDndItems((pre) => {
-            if (pre && pre.length > 0) {
-               const newTaskPreviews: number[] = []
-               for (const taskPreview of taskPreviews) {
-                  if (!pre.includes(taskPreview.id)) {
-                     newTaskPreviews.push(taskPreview.id)
+            if (taskPreviews.length !== pre.length) {
+               if (pre.length > 0) {
+                  const newPhases: number[] = []
+                  const filteredItems = pre.filter((dndItem) =>
+                     taskPreviews.some((task) => task.id === dndItem),
+                  )
+                  for (const task of taskPreviews) {
+                     if (!filteredItems.includes(task.id)) {
+                        newPhases.push(task.id)
+                     }
                   }
+                  return [...filteredItems, ...newPhases]
                }
-               return [...pre, ...newTaskPreviews]
+               return taskPreviews.map(({ id }) => id)
             }
-            return taskPreviews.map(({ id }) => id)
+            return pre
          })
       }
    }
@@ -268,52 +278,51 @@ export const TaskPreviews = ({ taskPreviews, phaseId }: TTaskPreviewsProps) => {
       initDndItems()
    }, [taskPreviews])
 
-   const sortedDndItems = useMemo<TTaskItemPreviewData[]>(() => {
+   const sortedDndItems = useMemo<TTaskPreviewData[]>(() => {
       if (dndItems && dndItems.length > 0 && taskPreviews && taskPreviews.length > 0) {
          return dndItems.map((item) => taskPreviews.find((task) => task.id === item)!)
       }
       return []
-   }, [dndItems, taskPreviews])
+   }, [dndItems])
 
-   const findTaskPreview = (
-      taskPreviews: TTaskItemPreviewData[],
-      taskId: number,
-   ): TTaskItemPreviewData => {
+   const findTaskPreview = (taskPreviews: TTaskPreviewData[], taskId: number): TTaskPreviewData => {
       return taskPreviews.find((task) => task.id === taskId)!
    }
 
    return (
       <>
-         <DndContext
+         {/* <DndContext
             sensors={sensors}
             collisionDetection={closestCenter}
             onDragStart={handleDragStart}
             onDragEnd={handleDragEnd}
             onDragCancel={handleDragCancel}
-         >
-            <SortableContext items={dndItems} strategy={verticalListSortingStrategy}>
-               <div className="flex flex-col flex-[1_1_auto] css-tasks-styled-scrollbar overflow-y-auto min-h-[70px] py-1 px-2">
-                  {sortedDndItems && sortedDndItems.length > 0 ? (
-                     sortedDndItems.map((task) => (
-                        <Task
-                           key={task.id}
-                           taskPreviewData={task}
-                           className={draggingId === task.id ? "opacity-0" : "opacity-100"}
-                        />
-                     ))
-                  ) : (
-                     <div className="text-regular-text-cl w-full text-center m-auto h-fit leading-tight">
-                        This phase has no task now.
-                     </div>
-                  )}
-               </div>
-            </SortableContext>
-            <DragOverlay>
-               {draggingId ? (
-                  <OverlayItem taskPreviewData={findTaskPreview(sortedDndItems, draggingId)} />
-               ) : null}
-            </DragOverlay>
-         </DndContext>
+            // onDragOver={handleDragOver}
+         > */}
+         <SortableContext items={dndItems} strategy={verticalListSortingStrategy}>
+            <div className="flex flex-col flex-[1_1_auto] css-tasks-styled-scrollbar overflow-y-auto min-h-[70px] py-1 px-2">
+               {sortedDndItems && sortedDndItems.length > 0 ? (
+                  sortedDndItems.map((task) => (
+                     <Task
+                        key={task.id}
+                        taskPreviewData={task}
+                        className={draggingId === task.id ? "opacity-0" : "opacity-100"}
+                        phaseId={phaseId}
+                     />
+                  ))
+               ) : (
+                  <div className="text-regular-text-cl w-full text-center m-auto h-fit leading-tight">
+                     This phase has no task now.
+                  </div>
+               )}
+            </div>
+         </SortableContext>
+         <DragOverlay>
+            {draggingId ? (
+               <OverlayItem taskPreviewData={findTaskPreview(sortedDndItems, draggingId)} />
+            ) : null}
+         </DragOverlay>
+         {/* </DndContext> */}
          <AddNewTask
             phaseId={phaseId}
             finalTaskPosition={sortedDndItems[sortedDndItems.length - 1]?.position || null}

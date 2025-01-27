@@ -5,15 +5,20 @@ import type {
    TPhaseData,
    TProjectData,
    TTaskData,
-   TTaskMemberData,
 } from "../../services/types"
-import type { TPhaseTaskPreview } from "../../utils/types"
+import type {
+   TAddNewTaskMemberAction,
+   TDeleteTaskAction,
+   TPhaseTaskPreview,
+   TRemoveTaskMemberAction,
+   TTaskDataState,
+} from "../../utils/types"
 
 type TInitialState = {
    project: TProjectData | null
    customization: TCustomizationData | null
    phases: TPhaseData[] | null
-   taskData: TTaskData | null
+   taskData: TTaskDataState | null
 }
 
 const initialState: TInitialState = {
@@ -35,6 +40,10 @@ export const projectSlice = createSlice({
       },
       setPhases: (state, action: PayloadAction<TPhaseData[]>) => {
          state.phases = action.payload
+      },
+      deletePhase: (state, action: PayloadAction<TPhaseData["id"]>) => {
+         const phaseIdToDelete = action.payload
+         state.phases = state.phases?.filter((phase) => phase.id !== phaseIdToDelete) || null
       },
       updateSinglePhase: (state, action: PayloadAction<TPhaseData>) => {
          const currentPhases = current(state).phases
@@ -74,7 +83,7 @@ export const projectSlice = createSlice({
       addNewPhase: (state, action: PayloadAction<TPhaseData>) => {
          state.phases?.push(action.payload)
       },
-      setTaskData: (state, action: PayloadAction<TTaskData | null>) => {
+      setTaskData: (state, action: PayloadAction<TTaskDataState | null>) => {
          state.taskData = action.payload
       },
       updateTaskData: (state, action: PayloadAction<Partial<TTaskData>>) => {
@@ -85,47 +94,90 @@ export const projectSlice = createSlice({
       },
       addNewComment: (state, action: PayloadAction<TCommentData>) => {
          const newComment = action.payload
-         const currentComments = state.taskData!.comments
+         const currentComments = state.taskData?.comments
          if (currentComments && currentComments.length > 0) {
             currentComments.push(newComment)
          } else {
-            state.taskData!.comments = [newComment]
+            if (state.taskData) {
+               state.taskData.comments = [newComment]
+            }
          }
       },
       editComment: (state, action: PayloadAction<Omit<TCommentData, "user">>) => {
          const updates = action.payload
-         const currentComments = state.taskData!.comments!
-         for (const comment of currentComments) {
-            if (comment.id === updates.id) {
-               comment.content = updates.content
-               comment.createdAt = updates.createdAt
+         const currentComments = state.taskData?.comments
+         if (currentComments) {
+            for (const comment of currentComments) {
+               if (comment.id === updates.id) {
+                  comment.content = updates.content
+                  comment.createdAt = updates.createdAt
+                  break
+               }
             }
          }
       },
       deleteComment: (state, action: PayloadAction<TCommentData["id"]>) => {
          const commentId = action.payload
-         state.taskData!.comments = state.taskData!.comments!.filter(
-            (comment) => comment.id !== commentId,
-         )
-      },
-      addNewTaskMember: (state, action: PayloadAction<TTaskMemberData>) => {
-         const newTaskMember = action.payload
-         const newTaskMemberId = newTaskMember.id
-         const currentMembers = state.taskData!.members
-         if (currentMembers && currentMembers.length > 0) {
-            if (!currentMembers.some((member) => member.id === newTaskMemberId)) {
-               currentMembers.push(newTaskMember)
-            }
-         } else {
-            state.taskData!.members = [newTaskMember]
+         const taskData = state.taskData
+         if (taskData) {
+            taskData.comments = taskData.comments!.filter((comment) => comment.id !== commentId)
          }
       },
-      removeTaskMember: (state, action: PayloadAction<TTaskMemberData["id"]>) => {
-         const taskMemberId = action.payload
-         const task = state.taskData
-         const currentMembers = task!.members
+      addNewTaskMember: (state, action: PayloadAction<TAddNewTaskMemberAction>) => {
+         const { taskMemberData, phaseId, taskId } = action.payload
+         const currentMembers = state.taskData?.members
          if (currentMembers && currentMembers.length > 0) {
-            task!.members = currentMembers.filter((member) => member.id !== taskMemberId)
+            currentMembers.push(taskMemberData)
+         } else {
+            if (state.taskData) {
+               state.taskData.members = [taskMemberData]
+            }
+         }
+         const taskPreviews = state.phases?.find((phase) => phase.id === phaseId)?.taskPreviews
+         if (taskPreviews) {
+            for (const taskPreview of taskPreviews) {
+               if (taskPreview.id === taskId) {
+                  if (taskPreview.taskMembers) {
+                     taskPreview.taskMembers.push(taskMemberData)
+                  } else {
+                     taskPreview.taskMembers = [taskMemberData]
+                  }
+                  break
+               }
+            }
+         }
+      },
+      removeTaskMember: (state, action: PayloadAction<TRemoveTaskMemberAction>) => {
+         const { memberId, phaseId, taskId } = action.payload
+         const task = state.taskData
+         if (task) {
+            const currentMembers = task.members
+            if (currentMembers && currentMembers.length > 0) {
+               task.members = currentMembers.filter((member) => member.id !== memberId)
+            }
+         }
+         const taskPreviews = state.phases?.find((phase) => phase.id === phaseId)?.taskPreviews
+         if (taskPreviews) {
+            for (const taskPreview of taskPreviews) {
+               if (taskPreview.id === taskId) {
+                  taskPreview.taskMembers =
+                     taskPreview.taskMembers?.filter((member) => member.id !== memberId) || null
+                  break
+               }
+            }
+         }
+      },
+      deleteTask: (state, action: PayloadAction<TDeleteTaskAction>) => {
+         const phaseId = action.payload.phaseId
+         const taskId = action.payload.taskId
+         const phase = state.phases?.find((phase) => phase.id === phaseId)
+         if (phase && phase.taskPreviews) {
+            phase.taskPreviews = phase.taskPreviews.filter(
+               (taskPreview) => taskPreview.id !== taskId,
+            )
+         }
+         if (state.taskData?.id === taskId) {
+            state.taskData = null
          }
       },
    },
@@ -146,4 +198,6 @@ export const {
    removeTaskMember,
    editComment,
    deleteComment,
+   deleteTask,
+   deletePhase,
 } = projectSlice.actions

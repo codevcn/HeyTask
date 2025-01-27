@@ -1,5 +1,5 @@
 import type { HttpStatusCode } from "axios"
-import type { TTaskItemPreviewData } from "../services/types"
+import type { TTaskData, TTaskMemberData, TTaskPreviewData } from "../services/types"
 
 export type TSuccess = {
    success: boolean
@@ -21,7 +21,7 @@ export type THttpErrorResBody =
      }
    | string
 
-export type TPhaseTaskPreview = TTaskItemPreviewData & {
+export type TPhaseTaskPreview = TTaskPreviewData & {
    phaseId: number
 }
 
@@ -36,3 +36,24 @@ export type TTinyMCEFilePickerCallback = (
    value: string,
    meta: Record<string, any>,
 ) => void
+
+export type TDeleteTaskAction = {
+   phaseId: number
+   taskId: number
+}
+
+export type TRemoveTaskMemberAction = {
+   phaseId: number
+   taskId: number
+   memberId: number
+}
+
+export type TAddNewTaskMemberAction = {
+   taskMemberData: TTaskMemberData
+   taskId: number
+   phaseId: number
+}
+
+export type TTaskDataState = TTaskData & {
+   phaseId: number
+}

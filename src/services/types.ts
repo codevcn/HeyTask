@@ -1,4 +1,4 @@
-import type { EUserRoles } from "../utils/enums"
+import type { EProjectRoles, EUserRoles } from "../utils/enums"
 
 export type TUserData = {
    id: number
@@ -20,11 +20,11 @@ export type TRegisterPayload = {
    reTypePassword: string
 }
 
-export type TProjectMemberData = {
-   id: number
-   fullName: string
-   avatar: string | null
+export type TUserInProjectData = {
+   projectRole: EProjectRoles
 }
+
+export type TProjectMemberData = TUserData & TUserInProjectData
 
 export type TProjectData = {
    id: number
@@ -37,11 +37,7 @@ export type TCustomizationData = {
    background: string | null
 }
 
-export type TTaskMemberData = {
-   id: number
-   fullName: string
-   avatar: string | null
-}
+export type TTaskMemberData = TProjectMemberData
 
 export type TCommentData = {
    id: number
@@ -58,18 +54,18 @@ export type TTaskData = {
    comments: TCommentData[] | null
 }
 
-export type TTaskItemPreviewData = {
+export type TTaskPreviewData = {
    id: number
    title: string
    hasDescription: boolean
-   firstMember: TTaskMemberData | null
+   taskMembers: TTaskMemberData[] | null
    position: number
 }
 
 export type TPhaseData = {
    id: number
    title: string
-   taskPreviews: TTaskItemPreviewData[] | null
+   taskPreviews: TTaskPreviewData[] | null
    position: number
 }
 

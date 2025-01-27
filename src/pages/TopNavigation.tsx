@@ -1,11 +1,13 @@
 import { type MouseEvent, useRef, useState } from "react"
 import appLogo from "../assets/app-logo.png"
-import { Menu, MenuItem, Button, styled, Avatar } from "@mui/material"
+import { Menu, MenuItem, Button, styled, Avatar, Popover } from "@mui/material"
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore"
 import SearchIcon from "@mui/icons-material/Search"
 import NotificationsIcon from "@mui/icons-material/Notifications"
 import { useUser } from "../hooks/user"
 import { StyledIconButton } from "../components/StyledIconButton"
+import LogoutIcon from "@mui/icons-material/Logout"
+import OpenInNewIcon from "@mui/icons-material/OpenInNew"
 
 type TActive = "projects" | "more" | undefined
 
@@ -53,23 +55,42 @@ const MenuList = () => {
    )
 }
 
-const UserSection = () => {
+const Search = () => {
+   return (
+      <div className="border border-[#8C9BAB] border-solid rounded hover:bg-hover-silver-bgcl mr-2">
+         <input
+            type="text"
+            className="text-[#8C9BAB] bg-transparent outline-none px-2 py-1 pr-3 text-sm"
+            placeholder="Tìm kiếm..."
+         />
+         <SearchIcon className="text-[#8C9BAB] mr-2" fontSize="small" />
+      </div>
+   )
+}
+
+const Notification = () => {
+   return (
+      <StyledIconButton>
+         <NotificationsIcon className="text-white" fontSize="small" />
+      </StyledIconButton>
+   )
+}
+
+const AccountMenu = () => {
    const user = useUser()!
+   const [anchorEle, setAnchorEle] = useState<HTMLButtonElement | null>(null)
+
+   const handleOpenAddMemberBoard = (e?: React.MouseEvent<HTMLButtonElement>) => {
+      if (e) {
+         setAnchorEle(e.currentTarget)
+      } else {
+         setAnchorEle(null)
+      }
+   }
 
    return (
-      <div className="flex items-center gap-x-1">
-         <div className="border border-[#8C9BAB] border-solid rounded hover:bg-hover-silver-bgcl mr-2">
-            <input
-               type="text"
-               className="text-[#8C9BAB] bg-transparent outline-none px-2 py-1 pr-3 text-sm"
-               placeholder="Tìm kiếm..."
-            />
-            <SearchIcon className="text-[#8C9BAB] mr-2" fontSize="small" />
-         </div>
-         <StyledIconButton>
-            <NotificationsIcon className="text-white" fontSize="small" />
-         </StyledIconButton>
-         <StyledIconButton>
+      <>
+         <StyledIconButton onClick={handleOpenAddMemberBoard}>
             {user.avatar ? (
                <Avatar src={user.avatar} alt="User Avatar" sx={{ height: 24, width: 24 }} />
             ) : (
@@ -78,7 +99,48 @@ const UserSection = () => {
                </Avatar>
             )}
          </StyledIconButton>
-      </div>
+         <StyledPopover
+            open={!!anchorEle}
+            anchorEl={anchorEle}
+            onClose={() => handleOpenAddMemberBoard()}
+            anchorOrigin={{
+               vertical: "bottom",
+               horizontal: "left",
+            }}
+         >
+            <div className="py-3 pt-5 text-regular-text-cl w-[300px]">
+               <h2 className="text-sm font-bold px-4 w-full">ACCOUNT</h2>
+               <div className="flex items-center gap-x-2 mt-3 px-4 w-full">
+                  {user.avatar ? (
+                     <Avatar src={user.avatar} sx={{ height: 40, width: 40 }} />
+                  ) : (
+                     <Avatar sx={{ height: 40, width: 40 }}>{user.fullName[0]}</Avatar>
+                  )}
+                  <div>
+                     <p className="font-semibold text-sm">{user.fullName}</p>
+                     <p className="font-normal text-xs">{user.email}</p>
+                  </div>
+               </div>
+               <div className="mt-4 w-full">
+                  <button className="flex items-center gap-x-3 justify-between mb-3 w-full px-4 py-1 hover:bg-modal-btn-hover-bgcl">
+                     <span className="text-sm">Manage account</span>
+                     <span>
+                        <OpenInNewIcon fontSize="small" />
+                     </span>
+                  </button>
+               </div>
+               <div className="bg-divider-bgcl h-[1px] w-[90%] mx-auto"></div>
+               <div className="mt-3 w-full">
+                  <button className="flex items-center gap-x-3 justify-between w-full px-4 py-1 hover:bg-modal-btn-hover-bgcl">
+                     <span className="text-sm">Logout</span>
+                     <span>
+                        <LogoutIcon fontSize="small" />
+                     </span>
+                  </button>
+               </div>
+            </div>
+         </StyledPopover>
+      </>
    )
 }
 
@@ -92,7 +154,11 @@ export const TopNavigation = () => {
             </div>
             <MenuList />
          </div>
-         <UserSection />
+         <div className="flex items-center gap-x-1">
+            <Search />
+            <Notification />
+            <AccountMenu />
+         </div>
       </nav>
    )
 }
@@ -103,5 +169,13 @@ const StyledButton = styled(Button)({
    textTransform: "none",
    "&:hover": {
       backgroundColor: "var(--ht-hover-silver-bgcl)",
+   },
+})
+
+const StyledPopover = styled(Popover)({
+   "& .MuiPaper-root": {
+      borderRadius: 6,
+      backgroundColor: "var(--ht-modal-popover-bgcl)",
+      border: "1px var(--ht-divider-bgcl) solid",
    },
 })

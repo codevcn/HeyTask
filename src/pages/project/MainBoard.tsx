@@ -16,6 +16,7 @@ import { useParams } from "react-router-dom"
 import type { TProjectPageParams } from "../../utils/types"
 import { TaskDetails } from "./TaskDetails/TaskDetails"
 import { TaskFileDetails } from "./TaskDetails/TaskFileDetails"
+import { useUserInProject } from "../../hooks/user"
 
 type TEditableSectionProps = {
    projectData: TProjectData
@@ -162,13 +163,17 @@ const Header = () => {
 }
 
 export const MainBoard = () => {
+   const userInProject = useUserInProject()
+
    return (
-      <div className="flex flex-col flex-1 text-white w-main-board">
-         <Header />
-         <Phases />
-         <TaskDetails />
-         <TaskFileDetails />
-      </div>
+      userInProject && (
+         <div className="flex flex-col flex-1 text-white w-main-board">
+            <Header />
+            <Phases />
+            <TaskDetails />
+            <TaskFileDetails />
+         </div>
+      )
    )
 }
 

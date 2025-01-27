@@ -6,9 +6,9 @@ import { toast } from "react-toastify"
 import axiosErrorHandler from "../utils/axios-error-handler"
 import { RichFileTitleTemplate } from "../components/NonInteractiveTemplates"
 import { renderToStaticMarkup } from "react-dom/server"
-import { EInternalEvents, eventEmitter } from "../utils/events"
 import { useState } from "react"
 import { LogoLoading } from "./Loadings"
+import { openFixedLoadingHandler } from "../utils/helpers"
 
 const { VITE_TINYMCE_API_KEY } = import.meta.env
 
@@ -49,7 +49,7 @@ export const CustomRichTextEditor = ({
       input.onchange = (e) => {
          const file = (e.target as HTMLInputElement | undefined)?.files?.[0]
          if (file && file instanceof File) {
-            eventEmitter.emit(EInternalEvents.OPEN_FIXED_LOADING, true)
+            openFixedLoadingHandler(true)
             projectService
                .uploadTaskFile(file)
                .then((res) => {
@@ -63,7 +63,7 @@ export const CustomRichTextEditor = ({
                   toast.error(axiosErrorHandler.handleHttpError(error).message)
                })
                .finally(() => {
-                  eventEmitter.emit(EInternalEvents.OPEN_FIXED_LOADING, false)
+                  openFixedLoadingHandler(false)
                })
          }
       }

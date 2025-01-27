@@ -1,20 +1,25 @@
-import { Avatar, Tooltip, AvatarGroup, styled, TextField } from "@mui/material"
+import { Avatar, Tooltip, AvatarGroup, styled, TextField, Popover } from "@mui/material"
 import { useMemo, useState } from "react"
 import CloseIcon from "@mui/icons-material/Close"
 import type { TProjectMemberData, TTaskMemberData } from "../../../services/types"
 import AddIcon from "@mui/icons-material/Add"
-import Popover from "@mui/material/Popover"
 import type { PopoverOrigin } from "@mui/material/Popover"
 import { useAppDispatch, useAppSelector } from "../../../hooks/redux"
-import { addNewTaskMember, removeTaskMember } from "../../../redux/project/project-slice"
+import { removeTaskMember } from "../../../redux/project/project-slice"
 import HighlightOffIcon from "@mui/icons-material/HighlightOff"
 import { getMembersSelector } from "../../../redux/project/selectors"
+import { useUserInProject } from "../../../hooks/user"
+import { EProjectRoles } from "../../../utils/enums"
+import { toast } from "react-toastify"
+import { addNewTaskMemberAction } from "../../../redux/project/actions"
 
 type TAddMemberBoardProps = {
    onCloseBoard: () => void
    anchorEle: HTMLButtonElement | null
    anchorOrigin?: PopoverOrigin
    transformOrigin?: PopoverOrigin
+   phaseId: number
+   taskId: number
 }
 
 export const AddMemberBoard = ({
@@ -22,10 +27,13 @@ export const AddMemberBoard = ({
    anchorEle,
    anchorOrigin,
    transformOrigin,
+   phaseId,
+   taskId,
 }: TAddMemberBoardProps) => {
    const { projectMembers, taskMembers } = useAppSelector(getMembersSelector())
    const [searchResult, setSearchResult] = useState<TProjectMemberData[]>()
    const dispatch = useAppDispatch()
+   const user = useUserInProject()!
 
    const filteredProjectMembers = useMemo<TProjectMemberData[]>(() => {
       const list = searchResult ? searchResult : projectMembers
@@ -48,9 +56,16 @@ export const AddMemberBoard = ({
 
    const handleAddRemoveTaskMember = (member: TTaskMemberData, isAdding: boolean) => {
       if (isAdding) {
-         dispatch(addNewTaskMember(member))
+         if (
+            user.projectRole === EProjectRoles.ADMIN ||
+            user.projectRole === EProjectRoles.LEADER
+         ) {
+            dispatch(addNewTaskMemberAction(member, phaseId, taskId))
+         } else {
+            toast.error("You must be admin or leader to assign a task")
+         }
       } else {
-         dispatch(removeTaskMember(member.id))
+         dispatch(removeTaskMember({ memberId: member.id, phaseId, taskId }))
       }
    }
 
@@ -166,23 +181,30 @@ const CurrentTaskMembers = () => {
    const taskMembers = useAppSelector(({ project }) => project.taskData!.members)
 
    return (
-      taskMembers &&
-      taskMembers.length > 0 &&
-      taskMembers.map(({ avatar, id, fullName }) => (
-         <Tooltip key={id} title={fullName} arrow>
-            {avatar ? (
-               <Avatar alt="User Avatar" src={avatar} sx={{ height: 30, width: 30 }} />
-            ) : (
-               <Avatar alt="User Avatar" sx={{ height: 30, width: 30 }}>
-                  {fullName[0]}
-               </Avatar>
-            )}
-         </Tooltip>
-      ))
+      <StyledAvatarGroup max={5} renderSurplus={(surplus) => <span>+{surplus.toString()[0]}</span>}>
+         {taskMembers &&
+            taskMembers.length > 0 &&
+            taskMembers.map(({ avatar, id, fullName }) => (
+               <Tooltip key={id} title={fullName} arrow>
+                  {avatar ? (
+                     <Avatar alt="User Avatar" src={avatar} sx={{ height: 30, width: 30 }} />
+                  ) : (
+                     <Avatar alt="User Avatar" sx={{ height: 30, width: 30 }}>
+                        {fullName[0]}
+                     </Avatar>
+                  )}
+               </Tooltip>
+            ))}
+      </StyledAvatarGroup>
    )
 }
 
-export const TaskMembers = () => {
+type TTaskMembersProps = {
+   phaseId: number
+   taskId: number
+}
+
+export const TaskMembers = ({ phaseId, taskId }: TTaskMembersProps) => {
    const [anchorEle, setAnchorEle] = useState<HTMLButtonElement | null>(null)
 
    const handleOpenAddMemberBoard = (e?: React.MouseEvent<HTMLButtonElement>) => {
@@ -197,22 +219,22 @@ export const TaskMembers = () => {
       <div className="pl-10">
          <h3 className="text-regular-text-cl font-semibold text-sm">Members</h3>
          <div className="flex items-center gap-x-2 mt-1">
-            <StyledAvatarGroup
-               max={5}
-               renderSurplus={(surplus) => <span>+{surplus.toString()[0]}</span>}
-            >
-               <CurrentTaskMembers />
-            </StyledAvatarGroup>
+            <CurrentTaskMembers />
             <Tooltip title="Add member">
                <button
                   onClick={handleOpenAddMemberBoard}
                   className="flex h-fit p-1 rounded-full bg-modal-btn-bgcl hover:bg-modal-btn-hover-bgcl"
                >
-                  <AddIcon className="text-regular-text-cl" />
+                  <AddIcon className="text-regular-text-cl" sx={{ height: 26, width: 26 }} />
                </button>
             </Tooltip>
          </div>
-         <AddMemberBoard anchorEle={anchorEle} onCloseBoard={() => handleOpenAddMemberBoard()} />
+         <AddMemberBoard
+            phaseId={phaseId}
+            taskId={taskId}
+            anchorEle={anchorEle}
+            onCloseBoard={() => handleOpenAddMemberBoard()}
+         />
       </div>
    )
 }

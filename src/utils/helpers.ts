@@ -1,9 +1,15 @@
 import dayjs from "dayjs"
+import { EInternalEvents, eventEmitter } from "./events"
 
 export const pureNavigator = (href: string): void => {
    window.location.href = href || "/"
 }
 
+/**
+ * Function to delay a period of time before continue to execute the next codes
+ * @param delayInMs time in miliseconds to wait
+ * @returns a promise with boolean value
+ */
 export const perfomDelay = (delayInMs: number): Promise<boolean> =>
    new Promise<boolean>((resolve) => {
       setTimeout(() => {
@@ -47,4 +53,8 @@ export const displayPreTimePeriod = (originalTime: Date | string): string => {
       return `${diffInDays} days ago`
    }
    return convertedTime.format("MMM DD YYYY")
+}
+
+export const openFixedLoadingHandler = (isOpen: boolean) => {
+   eventEmitter.emit(EInternalEvents.OPEN_FIXED_LOADING, isOpen)
 }

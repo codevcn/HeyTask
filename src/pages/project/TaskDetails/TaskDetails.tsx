@@ -1,4 +1,4 @@
-import { Fade, Dialog, styled, TextField, Tooltip, DialogContent } from "@mui/material"
+import { Fade, Dialog, styled, TextField, Tooltip, DialogContent, Popover } from "@mui/material"
 import { FocusEvent, KeyboardEvent, useEffect, useState } from "react"
 import { EInternalEvents, eventEmitter } from "../../../utils/events"
 import SubtitlesIcon from "@mui/icons-material/Subtitles"
@@ -9,7 +9,7 @@ import { toast } from "react-toastify"
 import axiosErrorHandler from "../../../utils/axios-error-handler"
 import { useAppDispatch, useAppSelector } from "../../../hooks/redux"
 import {
-   addNewTaskMember,
+   deleteTask,
    removeTaskMember,
    setTaskData,
    updateTaskData,
@@ -20,8 +20,11 @@ import GroupsIcon from "@mui/icons-material/Groups"
 import { Comments } from "./Comments"
 import { Description } from "./Description"
 import { AddMemberBoard, TaskMembers } from "./TaskMembers"
-import { useUser } from "../../../hooks/user"
 import { checkIfUserInTaskSelector } from "../../../redux/project/selectors"
+import DeleteIcon from "@mui/icons-material/Delete"
+import { useUserInProject } from "../../../hooks/user"
+import { EProjectRoles } from "../../../utils/enums"
+import { addNewTaskMemberAction } from "../../../redux/project/actions"
 
 type TTitleProps = {
    taskTitle: string
@@ -71,10 +74,89 @@ const Title = ({ taskTitle, onClose }: TTitleProps) => {
    )
 }
 
-const Actions = () => {
+type TDeleteTaskProps = {
+   phaseId: number
+   taskId: number
+}
+
+const DeleteTask = ({ phaseId, taskId }: TDeleteTaskProps) => {
    const [anchorEle, setAnchorEle] = useState<HTMLButtonElement | null>(null)
-   const user = useUser()!
-   const isUserInTask = useAppSelector(checkIfUserInTaskSelector(user.id))
+   const dispatch = useAppDispatch()
+   const user = useUserInProject()!
+
+   const handleOpenDeleteMemberBoard = (e?: React.MouseEvent<HTMLButtonElement>) => {
+      if (e) {
+         if (
+            user.projectRole === EProjectRoles.ADMIN ||
+            user.projectRole === EProjectRoles.LEADER
+         ) {
+            setAnchorEle(e.currentTarget)
+         } else {
+            toast.error("You must be admin or leader to delete a task")
+         }
+      } else {
+         setAnchorEle(null)
+      }
+   }
+
+   const deleteTaskHandler = () => {
+      dispatch(deleteTask({ phaseId, taskId }))
+      eventEmitter.emit(EInternalEvents.OPEN_TASK_DETAILS_MODAL, false, taskId, phaseId)
+   }
+
+   return (
+      <div className="flex flex-col gap-y-2 mt-1">
+         <Tooltip title="Delete this task" arrow placement="left">
+            <button
+               onClick={handleOpenDeleteMemberBoard}
+               className="flex items-center gap-x-2 py-[6px] px-3 bg-delete-btn-bgcl rounded hover:bg-delete-btn-hover-bgcl"
+            >
+               <DeleteIcon fontSize="small" className="text-black" />
+               <span className="font-bold text-sm text-black">Delete</span>
+            </button>
+         </Tooltip>
+
+         <StyledPopover
+            open={!!anchorEle}
+            anchorEl={anchorEle}
+            onClose={() => handleOpenDeleteMemberBoard()}
+            anchorOrigin={{
+               vertical: "bottom",
+               horizontal: "left",
+            }}
+         >
+            <div className="bg-modal-popover-bgcl rounded-md p-3 text-regular-text-cl w-[300px]">
+               <div className="relative w-full py-1">
+                  <h3 className="w-full text-center text-sm font-bold">Members</h3>
+                  <button
+                     onClick={() => handleOpenDeleteMemberBoard()}
+                     className="flex absolute right-0 top-0 p-1 rounded-md hover:bg-modal-btn-hover-bgcl"
+                  >
+                     <CloseIcon className="text-regular-text-cl" fontSize="small" />
+                  </button>
+               </div>
+               <p className="text-sm mt-2">Deleting a task is forever. There is no undo.</p>
+               <button
+                  onClick={deleteTaskHandler}
+                  className="text-sm mt-2 bg-delete-btn-bgcl rounded-md p-1 w-full text-black font-bold hover:bg-delete-btn-hover-bgcl"
+               >
+                  Delete task
+               </button>
+            </div>
+         </StyledPopover>
+      </div>
+   )
+}
+
+type TActionsProps = {
+   phaseId: number
+   taskId: number
+}
+
+const Actions = ({ phaseId, taskId }: TActionsProps) => {
+   const [anchorEle, setAnchorEle] = useState<HTMLButtonElement | null>(null)
+   const userInProject = useUserInProject()!
+   const isUserInTask = useAppSelector(checkIfUserInTaskSelector(userInProject.id))
    const dispatch = useAppDispatch()
 
    const handleOpenAddMemberBoard = (e?: React.MouseEvent<HTMLButtonElement>) => {
@@ -86,46 +168,54 @@ const Actions = () => {
    }
 
    const joinTask = () => {
-      dispatch(addNewTaskMember(user))
+      dispatch(addNewTaskMemberAction(userInProject, phaseId, taskId))
    }
 
    const leaveTask = () => {
-      dispatch(removeTaskMember(user.id))
+      dispatch(removeTaskMember({ memberId: userInProject.id, phaseId, taskId }))
    }
 
    return (
-      <section className="flex flex-col gap-y-2 w-[168px] text-regular-text-cl">
-         {isUserInTask ? (
-            <Tooltip title="Leave this task" arrow placement="left">
+      <section className="w-[168px] text-regular-text-cl">
+         <h3 className="text-xs">User actions</h3>
+         <div className="flex flex-col gap-y-2 mt-1">
+            {isUserInTask ? (
+               <Tooltip title="Leave this task" arrow placement="left">
+                  <button
+                     onClick={leaveTask}
+                     className="flex items-center gap-x-2 font-medium text-sm py-[6px] px-3 bg-modal-btn-bgcl rounded hover:bg-modal-btn-hover-bgcl"
+                  >
+                     <GroupRemoveIcon fontSize="small" />
+                     <span>Leave</span>
+                  </button>
+               </Tooltip>
+            ) : (
+               <Tooltip title="Join this task" arrow placement="left">
+                  <button
+                     onClick={joinTask}
+                     className="flex items-center gap-x-2 font-medium text-sm py-[6px] px-3 bg-modal-btn-bgcl rounded hover:bg-modal-btn-hover-bgcl"
+                  >
+                     <GroupAddIcon fontSize="small" />
+                     <span>Join</span>
+                  </button>
+               </Tooltip>
+            )}
+            <Tooltip title="View members of this task" arrow placement="left">
                <button
-                  onClick={leaveTask}
+                  onClick={handleOpenAddMemberBoard}
                   className="flex items-center gap-x-2 font-medium text-sm py-[6px] px-3 bg-modal-btn-bgcl rounded hover:bg-modal-btn-hover-bgcl"
                >
-                  <GroupRemoveIcon fontSize="small" />
-                  <span>Leave</span>
+                  <GroupsIcon fontSize="small" />
+                  <span>Members</span>
                </button>
             </Tooltip>
-         ) : (
-            <Tooltip title="Join this task" arrow placement="left">
-               <button
-                  onClick={joinTask}
-                  className="flex items-center gap-x-2 font-medium text-sm py-[6px] px-3 bg-modal-btn-bgcl rounded hover:bg-modal-btn-hover-bgcl"
-               >
-                  <GroupAddIcon fontSize="small" />
-                  <span>Join</span>
-               </button>
-            </Tooltip>
-         )}
-         <Tooltip title="View members of this task" arrow placement="left">
-            <button
-               onClick={handleOpenAddMemberBoard}
-               className="flex items-center gap-x-2 font-medium text-sm py-[6px] px-3 bg-modal-btn-bgcl rounded hover:bg-modal-btn-hover-bgcl"
-            >
-               <GroupsIcon fontSize="small" />
-               <span>Members</span>
-            </button>
-         </Tooltip>
+         </div>
+         <h3 className="text-xs mt-5">Task actions</h3>
+         <DeleteTask taskId={taskId} phaseId={phaseId} />
+
          <AddMemberBoard
+            phaseId={phaseId}
+            taskId={taskId}
             onCloseBoard={() => handleOpenAddMemberBoard()}
             anchorEle={anchorEle}
             anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
@@ -140,11 +230,11 @@ export const TaskDetails = () => {
    const dispatch = useAppDispatch()
    const [open, setOpen] = useState<boolean>(false)
 
-   const getTaskDetailsHandler = (taskId: number) => {
+   const getTaskDetailsHandler = (taskId: number, phaseId: number) => {
       projectService
          .getTaskDetails(taskId)
          .then((res) => {
-            dispatch(setTaskData(res))
+            dispatch(setTaskData({ ...res, phaseId }))
          })
          .catch((error) => {
             toast.error(axiosErrorHandler.handleHttpError(error).message)
@@ -152,21 +242,21 @@ export const TaskDetails = () => {
    }
 
    useEffect(() => {
-      eventEmitter.on(EInternalEvents.OPEN_PHASE_TASK_MODAL, (isOpen, taskId) => {
+      eventEmitter.on(EInternalEvents.OPEN_TASK_DETAILS_MODAL, (isOpen, taskId, phaseId) => {
          setOpen(isOpen)
          if (isOpen) {
             if (taskData) {
                if (taskId !== taskData.id) {
                   dispatch(setTaskData(null))
-                  getTaskDetailsHandler(taskId)
+                  getTaskDetailsHandler(taskId, phaseId)
                }
             } else {
-               getTaskDetailsHandler(taskId)
+               getTaskDetailsHandler(taskId, phaseId)
             }
          }
       })
       return () => {
-         eventEmitter.off(EInternalEvents.OPEN_PHASE_TASK_MODAL)
+         eventEmitter.off(EInternalEvents.OPEN_TASK_DETAILS_MODAL)
       }
    }, [taskData])
 
@@ -177,7 +267,6 @@ export const TaskDetails = () => {
    return (
       <StyledDialog
          TransitionComponent={Fade}
-         keepMounted
          open={open}
          onClose={closeModal}
          scroll="body"
@@ -192,11 +281,11 @@ export const TaskDetails = () => {
                      <Title onClose={closeModal} taskTitle={taskData.title} />
                      <div className="flex justify-between gap-x-3 mt-6">
                         <section className="w-full">
-                           <TaskMembers />
+                           <TaskMembers phaseId={taskData.phaseId} taskId={taskData.id} />
                            <Description description={taskData.description} />
                            <Comments comments={taskData.comments} />
                         </section>
-                        <Actions />
+                        <Actions phaseId={taskData.phaseId} taskId={taskData.id} />
                      </div>
                   </>
                ) : (
@@ -242,5 +331,13 @@ const StyledDialog = styled(Dialog)({
       "& .MuiDialogContent-root": {
          backgroundColor: "var(--ht-modal-board-bgcl)",
       },
+   },
+})
+
+const StyledPopover = styled(Popover)({
+   "& .MuiPaper-root": {
+      borderRadius: 6,
+      backgroundColor: "var(--ht-modal-popover-bgcl)",
+      border: "1px var(--ht-divider-bgcl) solid",
    },
 })

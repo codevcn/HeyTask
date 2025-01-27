@@ -25,11 +25,11 @@ export const LogoLoading = ({ className }: TLogoLoadingProps) => {
 }
 
 export const FixedLoading = () => {
-   const [loading, setLoading] = useState<boolean>(false)
+   const [open, setOpen] = useState<boolean>(false)
 
    useEffect(() => {
-      eventEmitter.on(EInternalEvents.OPEN_FIXED_LOADING, (isShown) => {
-         setLoading(isShown)
+      eventEmitter.on(EInternalEvents.OPEN_FIXED_LOADING, (isOpen) => {
+         setOpen(isOpen)
       })
       return () => {
          eventEmitter.off(EInternalEvents.OPEN_FIXED_LOADING)
@@ -37,8 +37,11 @@ export const FixedLoading = () => {
    }, [])
 
    return (
-      <div className="fixed z-[1500] top-0 left-0 w-screen h-fit" hidden={!loading}>
-         <LinearProgress />
+      <div
+         className="fixed z-[1500] top-0 left-0 w-screen h-fit text-confirm-btn-bgcl"
+         hidden={!open}
+      >
+         <LinearProgress color="inherit" />
       </div>
    )
 }

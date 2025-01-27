@@ -1,6 +1,6 @@
 import { Avatar, Popover, styled } from "@mui/material"
 import ChatIcon from "@mui/icons-material/Chat"
-import { useUser } from "../../../hooks/user"
+import { useUser, useUserInProject } from "../../../hooks/user"
 import { displayPreTimePeriod, randomInteger } from "../../../utils/helpers"
 import { addNewComment, deleteComment, editComment } from "../../../redux/project/project-slice"
 import type { TCommentData, TUserData } from "../../../services/types"
@@ -50,10 +50,8 @@ const DeleteComment = ({ commentId, createdAt }: TDeleteCommentProps) => {
             open={!!anchorEle}
             anchorEl={anchorEle}
             onClose={() => handleOpenDeleteMemberBoard()}
-            anchorOrigin={{
-               vertical: "bottom",
-               horizontal: "left",
-            }}
+            anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+            transformOrigin={{ horizontal: "right", vertical: "top" }}
          >
             <div className="bg-modal-popover-bgcl rounded-md p-3 text-regular-text-cl w-[300px]">
                <div className="relative w-full py-1">
@@ -198,7 +196,7 @@ const MakeNewComment = ({ onBlurEditor, onFocusEditor }: TUserEditorProps) => {
    const [openEditor, setOpenEditor] = useState<boolean>(false)
    const editorRef = useRef<TinyMCEEditor | null>(null)
    const dispatch = useAppDispatch()
-   const user = useUser()!
+   const user = useUserInProject()!
 
    const addNewCommentHandler = () => {
       const editor = editorRef.current
