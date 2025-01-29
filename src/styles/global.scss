@@ -99,7 +99,7 @@ article {
    }
 }
 
-.css-board-styled-scrollbar {
+.css-phases-styled-hr-scrollbar {
    scrollbar-color: #fff6 #00000026;
    scrollbar-width: auto;
 }
@@ -416,4 +416,19 @@ article {
    &:hover {
       text-decoration: underline;
    }
+}
+
+.css-styled-vt-scrollbar::-webkit-scrollbar {
+   width: 8px;
+}
+.css-styled-vt-scrollbar::-webkit-scrollbar-track {
+   background-color: var(--ht-scrollbar-track-bgcl);
+   border-radius: 5px;
+}
+.css-styled-vt-scrollbar::-webkit-scrollbar-thumb {
+   background-color: var(--ht-scrollbar-thumb-bgcl);
+   border-radius: 5px;
+}
+.css-styled-vt-scrollbar::-webkit-scrollbar-thumb:hover {
+   background-color: #54636d;
 }

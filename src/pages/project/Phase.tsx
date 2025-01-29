@@ -116,7 +116,7 @@ const PhaseActions = ({ phaseId }: TPhaseActionsProps) => {
 
 export const Phase = ({ phaseData, className }: TPhaseProps) => {
    const { taskPreviews, title, id } = phaseData
-   // const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id })
+   const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id })
    const dispatch = useAppDispatch()
    const [cssClass, setCssClass] = useState<string>("")
 
@@ -140,9 +140,9 @@ export const Phase = ({ phaseData, className }: TPhaseProps) => {
    }
 
    useEffect(() => {
-      eventEmitter.on(EInternalEvents.DROPPING_TASK_IN_PHASE, (payload, type) => {
+      eventEmitter.on(EInternalEvents.DRAGGING_TASK_IN_PHASE, (payload, type) => {
          if (payload === id) {
-            if (type === "start-dropping") {
+            if (type === "start-dragging") {
                setCssClass("outline outline-2 outline-outline-cl")
             } else {
                setCssClass("")
@@ -150,24 +150,24 @@ export const Phase = ({ phaseData, className }: TPhaseProps) => {
          }
       })
       return () => {
-         eventEmitter.off(EInternalEvents.DROPPING_TASK_IN_PHASE)
+         eventEmitter.off(EInternalEvents.DRAGGING_TASK_IN_PHASE)
       }
    }, [])
 
    return (
       <div
-      // style={{
-      //    transform: CSS.Transform.toString(transform),
-      //    transition,
-      // }}
+         style={{
+            transform: CSS.Transform.toString(transform),
+            transition,
+         }}
       >
          <div
             className={`flex flex-col relative m-0 h-fit max-h-full z-20 text-regular-text-cl bg-phase-bgcl w-[272px] rounded-xl ${className} ${cssClass}`}
          >
             <div
-               // ref={setNodeRef}
-               // {...attributes}
-               // {...listeners}
+               ref={setNodeRef}
+               {...attributes}
+               {...listeners}
                className="flex justify-between text-[#B6C2CF] gap-x-2 p-2 pb-1"
             >
                <div className="w-full">

@@ -8,23 +8,15 @@ import { projectService } from "../../../services/project-service"
 import { toast } from "react-toastify"
 import axiosErrorHandler from "../../../utils/axios-error-handler"
 import { useAppDispatch, useAppSelector } from "../../../hooks/redux"
-import {
-   deleteTask,
-   removeTaskMember,
-   setTaskData,
-   updateTaskData,
-} from "../../../redux/project/project-slice"
-import GroupRemoveIcon from "@mui/icons-material/GroupRemove"
-import GroupAddIcon from "@mui/icons-material/GroupAdd"
-import GroupsIcon from "@mui/icons-material/Groups"
+import { deleteTask, setTaskData, updateTaskData } from "../../../redux/project/project-slice"
 import { Comments } from "./Comments"
 import { Description } from "./Description"
-import { AddMemberBoard, TaskMembers } from "./TaskMembers"
-import { checkIfUserInTaskSelector } from "../../../redux/project/selectors"
+import { TaskMembers } from "./TaskMembers"
 import DeleteIcon from "@mui/icons-material/Delete"
 import { useUserInProject } from "../../../hooks/user"
 import { EProjectRoles } from "../../../utils/enums"
-import { addNewTaskMemberAction } from "../../../redux/project/actions"
+import { UserActions } from "./UserActions"
+import type { TTaskData } from "../../../services/types"
 
 type TTitleProps = {
    taskTitle: string
@@ -74,12 +66,12 @@ const Title = ({ taskTitle, onClose }: TTitleProps) => {
    )
 }
 
-type TDeleteTaskProps = {
+type TTaskActionsProps = {
    phaseId: number
    taskId: number
 }
 
-const DeleteTask = ({ phaseId, taskId }: TDeleteTaskProps) => {
+const TaskActions = ({ phaseId, taskId }: TTaskActionsProps) => {
    const [anchorEle, setAnchorEle] = useState<HTMLButtonElement | null>(null)
    const dispatch = useAppDispatch()
    const user = useUserInProject()!
@@ -105,16 +97,19 @@ const DeleteTask = ({ phaseId, taskId }: TDeleteTaskProps) => {
    }
 
    return (
-      <div className="flex flex-col gap-y-2 mt-1">
-         <Tooltip title="Delete this task" arrow placement="left">
-            <button
-               onClick={handleOpenDeleteMemberBoard}
-               className="flex items-center gap-x-2 py-[6px] px-3 bg-delete-btn-bgcl rounded hover:bg-delete-btn-hover-bgcl"
-            >
-               <DeleteIcon fontSize="small" className="text-black" />
-               <span className="font-bold text-sm text-black">Delete</span>
-            </button>
-         </Tooltip>
+      <>
+         <h3 className="text-xs mt-5">Task actions</h3>
+         <div className="flex flex-col gap-y-2 mt-1">
+            <Tooltip title="Delete this task" arrow placement="left">
+               <button
+                  onClick={handleOpenDeleteMemberBoard}
+                  className="flex items-center gap-x-2 py-[6px] px-3 bg-delete-btn-bgcl rounded hover:bg-delete-btn-hover-bgcl"
+               >
+                  <DeleteIcon fontSize="small" className="text-black" />
+                  <span className="font-bold text-sm text-black">Delete</span>
+               </button>
+            </Tooltip>
+         </div>
 
          <StyledPopover
             open={!!anchorEle}
@@ -122,7 +117,11 @@ const DeleteTask = ({ phaseId, taskId }: TDeleteTaskProps) => {
             onClose={() => handleOpenDeleteMemberBoard()}
             anchorOrigin={{
                vertical: "bottom",
-               horizontal: "left",
+               horizontal: "right",
+            }}
+            transformOrigin={{
+               vertical: "top",
+               horizontal: "right",
             }}
          >
             <div className="bg-modal-popover-bgcl rounded-md p-3 text-regular-text-cl w-[300px]">
@@ -144,83 +143,20 @@ const DeleteTask = ({ phaseId, taskId }: TDeleteTaskProps) => {
                </button>
             </div>
          </StyledPopover>
-      </div>
+      </>
    )
 }
 
 type TActionsProps = {
    phaseId: number
-   taskId: number
+   taskData: TTaskData
 }
 
-const Actions = ({ phaseId, taskId }: TActionsProps) => {
-   const [anchorEle, setAnchorEle] = useState<HTMLButtonElement | null>(null)
-   const userInProject = useUserInProject()!
-   const isUserInTask = useAppSelector(checkIfUserInTaskSelector(userInProject.id))
-   const dispatch = useAppDispatch()
-
-   const handleOpenAddMemberBoard = (e?: React.MouseEvent<HTMLButtonElement>) => {
-      if (e) {
-         setAnchorEle(e.currentTarget)
-      } else {
-         setAnchorEle(null)
-      }
-   }
-
-   const joinTask = () => {
-      dispatch(addNewTaskMemberAction(userInProject, phaseId, taskId))
-   }
-
-   const leaveTask = () => {
-      dispatch(removeTaskMember({ memberId: userInProject.id, phaseId, taskId }))
-   }
-
+const Actions = ({ phaseId, taskData }: TActionsProps) => {
    return (
       <section className="w-[168px] text-regular-text-cl">
-         <h3 className="text-xs">User actions</h3>
-         <div className="flex flex-col gap-y-2 mt-1">
-            {isUserInTask ? (
-               <Tooltip title="Leave this task" arrow placement="left">
-                  <button
-                     onClick={leaveTask}
-                     className="flex items-center gap-x-2 font-medium text-sm py-[6px] px-3 bg-modal-btn-bgcl rounded hover:bg-modal-btn-hover-bgcl"
-                  >
-                     <GroupRemoveIcon fontSize="small" />
-                     <span>Leave</span>
-                  </button>
-               </Tooltip>
-            ) : (
-               <Tooltip title="Join this task" arrow placement="left">
-                  <button
-                     onClick={joinTask}
-                     className="flex items-center gap-x-2 font-medium text-sm py-[6px] px-3 bg-modal-btn-bgcl rounded hover:bg-modal-btn-hover-bgcl"
-                  >
-                     <GroupAddIcon fontSize="small" />
-                     <span>Join</span>
-                  </button>
-               </Tooltip>
-            )}
-            <Tooltip title="View members of this task" arrow placement="left">
-               <button
-                  onClick={handleOpenAddMemberBoard}
-                  className="flex items-center gap-x-2 font-medium text-sm py-[6px] px-3 bg-modal-btn-bgcl rounded hover:bg-modal-btn-hover-bgcl"
-               >
-                  <GroupsIcon fontSize="small" />
-                  <span>Members</span>
-               </button>
-            </Tooltip>
-         </div>
-         <h3 className="text-xs mt-5">Task actions</h3>
-         <DeleteTask taskId={taskId} phaseId={phaseId} />
-
-         <AddMemberBoard
-            phaseId={phaseId}
-            taskId={taskId}
-            onCloseBoard={() => handleOpenAddMemberBoard()}
-            anchorEle={anchorEle}
-            anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
-            transformOrigin={{ horizontal: "right", vertical: "top" }}
-         />
+         <UserActions taskData={taskData} phaseId={phaseId} />
+         <TaskActions taskId={taskData.id} phaseId={phaseId} />
       </section>
    )
 }
@@ -285,7 +221,7 @@ export const TaskDetails = () => {
                            <Description description={taskData.description} />
                            <Comments comments={taskData.comments} />
                         </section>
-                        <Actions phaseId={taskData.phaseId} taskId={taskData.id} />
+                        <Actions phaseId={taskData.phaseId} taskData={taskData} />
                      </div>
                   </>
                ) : (

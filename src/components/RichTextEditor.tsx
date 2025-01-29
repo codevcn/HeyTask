@@ -81,6 +81,7 @@ export const CustomRichTextEditor = ({
             input.onchange = (e) => {
                const file = (e.target as HTMLInputElement | undefined)?.files?.[0]
                if (file && file instanceof File) {
+                  openFixedLoadingHandler(true)
                   projectService
                      .uploadTaskFile(file)
                      .then((res) => {
@@ -92,6 +93,9 @@ export const CustomRichTextEditor = ({
                      })
                      .catch((error) => {
                         toast.error(axiosErrorHandler.handleHttpError(error).message)
+                     })
+                     .finally(() => {
+                        openFixedLoadingHandler(false)
                      })
                }
             }

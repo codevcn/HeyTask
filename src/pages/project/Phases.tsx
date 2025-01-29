@@ -8,7 +8,7 @@ import {
    useSensors,
    DragOverlay,
 } from "@dnd-kit/core"
-import type { DragEndEvent, DragOverEvent, DragStartEvent } from "@dnd-kit/core"
+import type { DragEndEvent, DragStartEvent } from "@dnd-kit/core"
 import { arrayMove, SortableContext, horizontalListSortingStrategy } from "@dnd-kit/sortable"
 import { useAppDispatch, useAppSelector } from "../../hooks/redux"
 import { addNewPhase, setPhases } from "../../redux/project/project-slice"
@@ -187,42 +187,6 @@ export const Phases = () => {
       handleDragging()
    }
 
-   const handleDragOver = useCallback(
-      (event: DragOverEvent) => {
-         const { active, over } = event
-
-         if (!over) return
-
-         const activeList = listA.includes(active.id as string) ? listA : listB
-         const overList = listA.includes(over.id as string) ? listA : listB
-
-         // Nếu kéo trong cùng 1 danh sách, chỉ cần sắp xếp lại
-         if (activeList === overList) {
-            const activeIndex = activeList.indexOf(active.id as string)
-            const overIndex = overList.indexOf(over.id as string)
-
-            const updatedList = arrayMove(activeList, activeIndex, overIndex)
-
-            if (activeList === listA) {
-               setListA(updatedList)
-            } else {
-               setListB(updatedList)
-            }
-         } else {
-            // Nếu kéo giữa 2 danh sách
-            const activeIndex = activeList.indexOf(active.id as string)
-            activeList.splice(activeIndex, 1)
-
-            const overIndex = overList.indexOf(over.id as string)
-            overList.splice(overIndex + 1, 0, active.id as string)
-
-            setListA([...listA])
-            setListB([...listB])
-         }
-      },
-      [listA, listB],
-   )
-
    const initDndItems = () => {
       if (phases && phases.length > 0) {
          setDndItems((pre) => {
@@ -282,38 +246,37 @@ export const Phases = () => {
       <div className="grow relative">
          <div
             ref={refToScroll}
-            className="flex css-board-styled-scrollbar p-3 pb-0 gap-x-3 overflow-x-auto overflow-y-hidden absolute bottom-2 top-0 left-0 right-0"
+            className="flex css-phases-styled-hr-scrollbar p-3 pb-0 gap-x-3 overflow-x-auto overflow-y-hidden absolute bottom-2 top-0 left-0 right-0"
          >
             <DndContext
                sensors={sensors}
                collisionDetection={closestCenter}
-               // onDragEnd={handleDragEnd}
-               // onDragStart={(e) => handleDragging(e)}
-               // onDragCancel={() => handleDragging()}
-               onDragOver={handleDragOver}
+               onDragEnd={handleDragEnd}
+               onDragStart={(e) => handleDragging(e)}
+               onDragCancel={() => handleDragging()}
             >
-               {/* <SortableContext items={dndItems} strategy={horizontalListSortingStrategy}> */}
-               <div className="flex gap-x-3 relative box-border h-full pb-2">
-                  <DragScrollPlaceholder
-                     dndItemsCount={(mappedDndItems && mappedDndItems.length + 1) || 0}
-                     refToDrag={refToDrag}
-                  />
-                  {mappedDndItems &&
-                     mappedDndItems.length > 0 &&
-                     mappedDndItems.map((phase) => (
-                        <Phase
-                           key={phase.id}
-                           phaseData={phase}
-                           className={phase.id === draggingId ? "opacity-0" : "opacity-100"}
-                        />
-                     ))}
-               </div>
-               {/* </SortableContext> */}
-               {/* <DragOverlay>
+               <SortableContext items={dndItems} strategy={horizontalListSortingStrategy}>
+                  <div className="flex gap-x-3 relative box-border h-full pb-2">
+                     <DragScrollPlaceholder
+                        dndItemsCount={(mappedDndItems && mappedDndItems.length + 1) || 0}
+                        refToDrag={refToDrag}
+                     />
+                     {mappedDndItems &&
+                        mappedDndItems.length > 0 &&
+                        mappedDndItems.map((phase) => (
+                           <Phase
+                              key={phase.id}
+                              phaseData={phase}
+                              className={phase.id === draggingId ? "opacity-0" : "opacity-100"}
+                           />
+                        ))}
+                  </div>
+               </SortableContext>
+               <DragOverlay>
                   {draggingId ? (
                      <DragOverlayItem phaseData={findPhase(mappedDndItems, draggingId)} />
                   ) : null}
-               </DragOverlay> */}
+               </DragOverlay>
             </DndContext>
             <AddNewPhase
                finalPosition={mappedDndItems[mappedDndItems.length - 1]?.position || null}

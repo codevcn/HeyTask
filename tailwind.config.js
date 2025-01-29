@@ -20,6 +20,7 @@ export default {
             "modal-popover-bgcl": "var(--ht-modal-popover-bgcl)",
             "delete-btn-bgcl": "var(--ht-delete-btn-bgcl)",
             "delete-btn-hover-bgcl": "var(--ht-delete-btn-hover-bgcl)",
+            "confirm-btn-hover-bgcl": "var(--ht-confirm-btn-hover-bgcl)",
          },
          height: {
             background: "calc(100% - var(--ht-top-nav-height))",

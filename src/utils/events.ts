@@ -1,7 +1,7 @@
 import EventEmitter from "eventemitter3"
 
 export enum EInternalEvents {
-   DROPPING_TASK_IN_PHASE = "DROPPING_TASK_IN_PHASE",
+   DRAGGING_TASK_IN_PHASE = "DRAGGING_TASK_IN_PHASE",
    OPEN_TASK_DETAILS_MODAL = "OPEN_TASK_DETAILS_MODAL",
    SHOW_UPLOADED_FILE_DETAILS = "SHOW_UPLOADED_FILE_DETAILS",
    OPEN_FIXED_LOADING = "OPEN_FIXED_LOADING",
@@ -9,9 +9,9 @@ export enum EInternalEvents {
 }
 
 interface IEventEmitter {
-   [EInternalEvents.DROPPING_TASK_IN_PHASE]: (
+   [EInternalEvents.DRAGGING_TASK_IN_PHASE]: (
       phaseId: number,
-      type: "start-dropping" | "end-dropping",
+      type: "start-dragging" | "end-dragging",
    ) => void
    [EInternalEvents.OPEN_TASK_DETAILS_MODAL]: (
       isOpen: boolean,

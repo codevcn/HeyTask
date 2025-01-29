@@ -1,4 +1,4 @@
-import { Avatar, styled, TextField, Tooltip } from "@mui/material"
+import { Avatar, styled, TextField, Tooltip, AvatarGroup } from "@mui/material"
 import type { TTaskPreviewData } from "../../services/types"
 import ReorderIcon from "@mui/icons-material/Reorder"
 import AddIcon from "@mui/icons-material/Add"
@@ -24,7 +24,6 @@ import {
    TouchSensor,
    useSensor,
    useSensors,
-   DragOverEvent,
 } from "@dnd-kit/core"
 import { EInternalEvents, eventEmitter } from "../../utils/events"
 
@@ -36,7 +35,6 @@ type TTaskPreviewProps = {
 
 const Task = ({ taskPreviewData, className, phaseId }: TTaskPreviewProps) => {
    const { id, taskMembers, hasDescription, title } = taskPreviewData
-   const firstMember = taskMembers?.at(0)
    const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id })
 
    const openTaskDetails = () => {
@@ -66,21 +64,27 @@ const Task = ({ taskPreviewData, className, phaseId }: TTaskPreviewProps) => {
                      </div>
                   </Tooltip>
                )}
-               {firstMember && (
-                  <div>
-                     <Tooltip title={firstMember.fullName} arrow>
-                        {firstMember.avatar ? (
-                           <Avatar
-                              alt="User Avatar"
-                              src={firstMember.avatar}
-                              sx={{ height: 24, width: 24 }}
-                           />
-                        ) : (
-                           <Avatar sx={{ height: 24, width: 24 }}>{firstMember.fullName[0]}</Avatar>
-                        )}
-                     </Tooltip>
-                  </div>
-               )}
+               <StyledAvatarGroup max={3}>
+                  {taskMembers &&
+                     taskMembers.length > 0 &&
+                     taskMembers.map(({ fullName, avatar, id }) => (
+                        <button className="h-fit w-fit" key={id}>
+                           <Tooltip title={fullName} arrow>
+                              {avatar ? (
+                                 <Avatar
+                                    alt="User Avatar"
+                                    src={avatar}
+                                    sx={{ height: 24, width: 24 }}
+                                 />
+                              ) : (
+                                 <Avatar alt="User Avatar" sx={{ height: 24, width: 24 }}>
+                                    {fullName[0]}
+                                 </Avatar>
+                              )}
+                           </Tooltip>
+                        </button>
+                     ))}
+               </StyledAvatarGroup>
             </div>
          </div>
       </div>
@@ -228,7 +232,7 @@ export const TaskPreviews = ({ taskPreviews, phaseId }: TTaskPreviewsProps) => {
 
    const handleDragStart = (e: DragStartEvent) => {
       setDraggingId(e.active.id as number)
-      eventEmitter.emit(EInternalEvents.DROPPING_TASK_IN_PHASE, phaseId, "start-dropping")
+      eventEmitter.emit(EInternalEvents.DRAGGING_TASK_IN_PHASE, phaseId, "start-dragging")
    }
 
    const handleDragEnd = (e: DragEndEvent) => {
@@ -243,12 +247,12 @@ export const TaskPreviews = ({ taskPreviews, phaseId }: TTaskPreviewsProps) => {
          }
       }
       setDraggingId(null)
-      eventEmitter.emit(EInternalEvents.DROPPING_TASK_IN_PHASE, phaseId, "end-dropping")
+      eventEmitter.emit(EInternalEvents.DRAGGING_TASK_IN_PHASE, phaseId, "end-dragging")
    }
 
    const handleDragCancel = () => {
       setDraggingId(null)
-      eventEmitter.emit(EInternalEvents.DROPPING_TASK_IN_PHASE, phaseId, "end-dropping")
+      eventEmitter.emit(EInternalEvents.DRAGGING_TASK_IN_PHASE, phaseId, "end-dragging")
    }
 
    const initDndItems = () => {
@@ -291,38 +295,37 @@ export const TaskPreviews = ({ taskPreviews, phaseId }: TTaskPreviewsProps) => {
 
    return (
       <>
-         {/* <DndContext
+         <DndContext
             sensors={sensors}
             collisionDetection={closestCenter}
             onDragStart={handleDragStart}
             onDragEnd={handleDragEnd}
             onDragCancel={handleDragCancel}
-            // onDragOver={handleDragOver}
-         > */}
-         <SortableContext items={dndItems} strategy={verticalListSortingStrategy}>
-            <div className="flex flex-col flex-[1_1_auto] css-tasks-styled-scrollbar overflow-y-auto min-h-[70px] py-1 px-2">
-               {sortedDndItems && sortedDndItems.length > 0 ? (
-                  sortedDndItems.map((task) => (
-                     <Task
-                        key={task.id}
-                        taskPreviewData={task}
-                        className={draggingId === task.id ? "opacity-0" : "opacity-100"}
-                        phaseId={phaseId}
-                     />
-                  ))
-               ) : (
-                  <div className="text-regular-text-cl w-full text-center m-auto h-fit leading-tight">
-                     This phase has no task now.
-                  </div>
-               )}
-            </div>
-         </SortableContext>
-         <DragOverlay>
-            {draggingId ? (
-               <OverlayItem taskPreviewData={findTaskPreview(sortedDndItems, draggingId)} />
-            ) : null}
-         </DragOverlay>
-         {/* </DndContext> */}
+         >
+            <SortableContext items={dndItems} strategy={verticalListSortingStrategy}>
+               <div className="flex flex-col flex-[1_1_auto] css-tasks-styled-scrollbar overflow-y-auto min-h-[70px] py-1 px-2">
+                  {sortedDndItems && sortedDndItems.length > 0 ? (
+                     sortedDndItems.map((task) => (
+                        <Task
+                           key={task.id}
+                           taskPreviewData={task}
+                           className={draggingId === task.id ? "opacity-0" : "opacity-100"}
+                           phaseId={phaseId}
+                        />
+                     ))
+                  ) : (
+                     <div className="text-regular-text-cl w-full text-center m-auto h-fit leading-tight">
+                        This phase has no task now.
+                     </div>
+                  )}
+               </div>
+            </SortableContext>
+            <DragOverlay>
+               {draggingId ? (
+                  <OverlayItem taskPreviewData={findTaskPreview(sortedDndItems, draggingId)} />
+               ) : null}
+            </DragOverlay>
+         </DndContext>
          <AddNewTask
             phaseId={phaseId}
             finalTaskPosition={sortedDndItems[sortedDndItems.length - 1]?.position || null}
@@ -330,6 +333,15 @@ export const TaskPreviews = ({ taskPreviews, phaseId }: TTaskPreviewsProps) => {
       </>
    )
 }
+
+const StyledAvatarGroup = styled(AvatarGroup)({
+   "& .MuiAvatarGroup-avatar": {
+      cursor: "pointer",
+      height: 28,
+      width: 28,
+      border: "none",
+   },
+})
 
 const EditableTitle = styled(TextField)({
    width: "100%",

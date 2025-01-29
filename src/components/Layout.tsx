@@ -3,6 +3,8 @@ import { ToastContainer } from "react-toastify"
 import { RouteGuard } from "./ResourceGuard"
 import { useEffect } from "react"
 import { FixedLoading } from "./Loadings"
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs"
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider"
 
 const nonGuardRoutes: string[] = ["/", "/login", "/register"]
 
@@ -30,7 +32,9 @@ export default function Layout() {
       <div className="h-full text-sm">
          <FixedLoading />
          <RouteGuard nonGuardRoutes={nonGuardRoutes}>
-            <Outlet />
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+               <Outlet />
+            </LocalizationProvider>
          </RouteGuard>
          <ToastContainer
             position="top-right"

@@ -131,7 +131,7 @@ class ProjectService {
                   title: "Lời mở đầu",
                   hasDescription: true,
                   position: 1,
-                  taskMembers: null,
+                  taskMembers: taskMembers.slice(0, 5),
                },
                {
                   id: 3,
