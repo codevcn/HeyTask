@@ -268,6 +268,7 @@ class ProjectService {
          members: null,
          title: "Web do homework okay?",
          comments: null,
+         dueDate: "2025-01-30T08:39:41.890Z",
       }
       return data
    }

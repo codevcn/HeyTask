@@ -219,10 +219,10 @@ const EditableTitle = styled(TextField)({
 const StyledPopover = styled(Popover)({
    "& .MuiPaper-root": {
       borderRadius: 8,
-      backgroundColor: "#282E33",
+      backgroundColor: "var(--ht-modal-popover-bgcl)",
       height: "fit-content",
       "& .MuiList-root": {
-         backgroundColor: "#282E33",
+         backgroundColor: "var(--ht-modal-popover-bgcl)",
          borderRadius: 8,
       },
    },

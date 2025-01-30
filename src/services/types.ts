@@ -52,7 +52,6 @@ export type TTaskData = {
    description: string | null
    members: TTaskMemberData[] | null
    comments: TCommentData[] | null
-   startDate: string | null
    dueDate: string | null
 }
 

@@ -17,6 +17,7 @@ import { useUserInProject } from "../../../hooks/user"
 import { EProjectRoles } from "../../../utils/enums"
 import { UserActions } from "./UserActions"
 import type { TTaskData } from "../../../services/types"
+import { TaskDueDate } from "./Dates"
 
 type TTitleProps = {
    taskTitle: string
@@ -217,7 +218,10 @@ export const TaskDetails = () => {
                      <Title onClose={closeModal} taskTitle={taskData.title} />
                      <div className="flex justify-between gap-x-3 mt-6">
                         <section className="w-full">
-                           <TaskMembers phaseId={taskData.phaseId} taskId={taskData.id} />
+                           <div className="flex gap-5">
+                              <TaskMembers phaseId={taskData.phaseId} taskId={taskData.id} />
+                              <TaskDueDate dueDate={taskData.dueDate} />
+                           </div>
                            <Description description={taskData.description} />
                            <Comments comments={taskData.comments} />
                         </section>

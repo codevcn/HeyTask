@@ -265,7 +265,7 @@ article {
    }
 
    .tox-dialog {
-      background-color: #282e33;
+      background-color: var(--ht-modal-popover-bgcl);
       color: var(--ht-regular-text-cl);
 
       .tox-dialog__header {
