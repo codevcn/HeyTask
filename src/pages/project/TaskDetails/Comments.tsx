@@ -137,17 +137,14 @@ const UserComment = ({ commentData, onFocusEditor, onBlurEditor, userData }: TUs
          </div>
          {openEditor ? (
             <div className="w-full">
-               <div
-                  className="css-rich-text-editor-wrapper"
-                  id={`editor-wrapper-edit-comment-${id}`}
-               >
-                  <CustomRichTextEditor
-                     editorRef={editorRef}
-                     defaultContent={content || undefined}
-                     onFocus={() => onFocusEditor(`editor-wrapper-edit-comment-${id}`)}
-                     onBlur={() => onBlurEditor(`editor-wrapper-edit-comment-${id}`)}
-                  />
-               </div>
+               <CustomRichTextEditor
+                  editorRef={editorRef}
+                  defaultContent={content || undefined}
+                  onFocus={() => onFocusEditor(`editor-wrapper-edit-comment-${id}`)}
+                  onBlur={() => onBlurEditor(`editor-wrapper-edit-comment-${id}`)}
+                  wrapperClassName="css-rich-text-editor-wrapper"
+                  wrapperId={`editor-wrapper-edit-comment-${id}`}
+               />
                <div className="flex gap-x-3 mt-2">
                   <button
                      onClick={editCommentHandler}
@@ -249,14 +246,14 @@ const MakeNewComment = ({ onBlurEditor, onFocusEditor }: TUserEditorProps) => {
             Write a comment...
          </button>
          <div className="w-full" hidden={!openEditor}>
-            <div className="css-rich-text-editor-wrapper" id="editor-wrapper-make-new-comment">
-               <CustomRichTextEditor
-                  editorRef={editorRef}
-                  placeholder="Write your comment here..."
-                  onFocus={() => onBlurEditor("editor-wrapper-make-new-comment")}
-                  onBlur={() => onFocusEditor("editor-wrapper-make-new-comment")}
-               />
-            </div>
+            <CustomRichTextEditor
+               editorRef={editorRef}
+               placeholder="Write your comment here..."
+               onFocus={() => onBlurEditor("editor-wrapper-make-new-comment")}
+               onBlur={() => onFocusEditor("editor-wrapper-make-new-comment")}
+               wrapperId="editor-wrapper-make-new-comment"
+               wrapperClassName="css-rich-text-editor-wrapper"
+            />
             <div className="flex gap-x-3 mt-2">
                <button
                   onClick={addNewCommentHandler}
@@ -328,6 +325,6 @@ const StyledPopover = styled(Popover)({
    "& .MuiPaper-root": {
       borderRadius: 6,
       backgroundColor: "var(--ht-modal-popover-bgcl)",
-      border: "1px var(--ht-divider-bgcl) solid",
+      border: "1px var(--ht-regular-border-cl) solid",
    },
 })

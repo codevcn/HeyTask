@@ -13,13 +13,14 @@ import { openFixedLoadingHandler } from "../utils/helpers"
 const { VITE_TINYMCE_API_KEY } = import.meta.env
 
 type TRichTextEditorProps = {
-   onFocus: () => void
-   onBlur: () => void
    editorRef: React.MutableRefObject<TinyMCEEditor | null>
    placeholder?: string
    defaultContent?: string
    cssFilePath?: string
    wrapperClassName?: string
+   wrapperId?: string
+   onFocus?: () => void
+   onBlur?: () => void
 }
 
 export const CustomRichTextEditor = ({
@@ -30,8 +31,9 @@ export const CustomRichTextEditor = ({
    defaultContent,
    cssFilePath,
    wrapperClassName,
+   wrapperId,
 }: TRichTextEditorProps) => {
-   const [isReady, setIsReady] = useState<boolean>(true)
+   const [isReady, setIsReady] = useState<boolean>(false)
 
    const plugins: string = "autolink lists link image fullscreen code autoresize"
 
@@ -103,13 +105,13 @@ export const CustomRichTextEditor = ({
          },
       })
       setTimeout(() => {
-         setIsReady(false)
+         setIsReady(true)
       }, 500)
    }
 
    return (
       <>
-         <div hidden={isReady} className={wrapperClassName || ""}>
+         <div hidden={!isReady} id={wrapperId || ""} className={wrapperClassName || ""}>
             <Editor
                apiKey={VITE_TINYMCE_API_KEY}
                onInit={(_evt, editor) => (editorRef.current = editor)}
@@ -129,11 +131,11 @@ export const CustomRichTextEditor = ({
                   file_picker_callback: pickingImage,
                   setup: onInitRichTextEditor,
                }}
-               onFocus={() => onFocus()}
-               onBlur={() => onBlur()}
+               onFocus={onFocus ? () => onFocus() : () => {}}
+               onBlur={onBlur ? () => onBlur() : () => {}}
             />
          </div>
-         <div hidden={!isReady} className="flex py-5 w-full bg-focused-textfield-bgcl">
+         <div hidden={isReady} className="flex py-5 w-full bg-focused-textfield-bgcl">
             <LogoLoading className="m-auto -translate-y-2" />
          </div>
       </>

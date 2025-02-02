@@ -6,9 +6,8 @@ import { setProject } from "../../redux/project/project-slice"
 import { FocusEvent, KeyboardEvent, useEffect, useRef, useState } from "react"
 import StarOutlineIcon from "@mui/icons-material/StarOutline"
 import GroupIcon from "@mui/icons-material/Group"
-import GroupAddIcon from "@mui/icons-material/GroupAdd"
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz"
-import { AvatarGroup, Avatar, styled, Tooltip } from "@mui/material"
+import { Tooltip } from "@mui/material"
 import { Phases } from "./Phases"
 import type { TProjectData } from "../../services/types"
 import { measureTextWidth } from "../../utils/helpers"
@@ -17,6 +16,8 @@ import type { TProjectPageParams } from "../../utils/types"
 import { TaskDetails } from "./TaskDetails/TaskDetails"
 import { TaskFileDetails } from "./TaskDetails/TaskFileDetails"
 import { useUserInProject } from "../../hooks/user"
+import { AboutPhase } from "./Phase/AboutPhase"
+import { ShareProject } from "./ShareProject"
 
 type TEditableSectionProps = {
    projectData: TProjectData
@@ -24,7 +25,7 @@ type TEditableSectionProps = {
 
 const EditableSection = ({ projectData }: TEditableSectionProps) => {
    const [isEditing, setIsEditing] = useState<boolean>(false)
-   const { title, members } = projectData
+   const { title } = projectData
    const titleInputRef = useRef<HTMLInputElement | null>(null)
    const dispatch = useAppDispatch()
 
@@ -103,31 +104,6 @@ const EditableSection = ({ projectData }: TEditableSectionProps) => {
                </button>
             </Tooltip>
          </div>
-         <div className="flex gap-x-3 items-center">
-            <StyledAvatarGroup
-               max={3}
-               renderSurplus={(surplus) => <span>+{surplus.toString()[0]}</span>}
-            >
-               {members.map((member) => (
-                  <Tooltip key={member.id} title="codevcn" arrow>
-                     {member.avatar ? (
-                        <Avatar alt="User Avatar" src={member.avatar} />
-                     ) : (
-                        <Avatar>{member.fullName[0]}</Avatar>
-                     )}
-                  </Tooltip>
-               ))}
-            </StyledAvatarGroup>
-            <Tooltip title="Share this board with other people." arrow>
-               <button className="flex gap-x-1 items-center h-[32px] bg-[#FFFFFF] py-1 px-2 text-secondary-text-cl font-medium rounded">
-                  <GroupAddIcon fontSize="small" />
-                  <span>Share</span>
-               </button>
-            </Tooltip>
-            <button className="p-1 rounded-sm hover:bg-[#ffffff33]">
-               <MoreHorizIcon fontSize="small" />
-            </button>
-         </div>
       </>
    )
 }
@@ -157,7 +133,17 @@ const Header = () => {
 
    return (
       <header className="flex justify-between items-center flex-wrap h-top-nav overflow-x-hidden gap-y-3 gap-x-5 py-3 px-5 bg-[#0000003d] backdrop-blur-sm w-full">
-         {project && <EditableSection projectData={project} />}
+         {project && (
+            <>
+               <EditableSection projectData={project} />
+               <div className="flex gap-x-3 items-center">
+                  <ShareProject projectData={project} />
+                  <button className="p-1 rounded-sm hover:bg-[#ffffff33]">
+                     <MoreHorizIcon fontSize="small" />
+                  </button>
+               </div>
+            </>
+         )}
       </header>
    )
 }
@@ -172,19 +158,8 @@ export const MainBoard = () => {
             <Phases />
             <TaskDetails />
             <TaskFileDetails />
+            <AboutPhase />
          </div>
       )
    )
 }
-
-const StyledAvatarGroup = styled(AvatarGroup)({
-   "& .MuiAvatarGroup-avatar": {
-      cursor: "pointer",
-      height: 28,
-      width: 28,
-      border: "none",
-      "&:hover": {
-         outline: "2px solid white",
-      },
-   },
-})

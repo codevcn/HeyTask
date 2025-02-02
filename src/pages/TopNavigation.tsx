@@ -129,10 +129,10 @@ const AccountMenu = () => {
                      </span>
                   </button>
                </div>
-               <div className="bg-divider-bgcl h-[1px] w-[90%] mx-auto"></div>
+               <div className="bg-regular-border-cl h-[1px] w-[90%] mx-auto"></div>
                <div className="mt-3 w-full">
-                  <button className="flex items-center gap-x-3 justify-between w-full px-4 py-1 hover:bg-modal-btn-hover-bgcl">
-                     <span className="text-sm">Logout</span>
+                  <button className="flex items-center gap-x-3 justify-between w-full px-4 py-1 hover:bg-[#ff2d1f66]">
+                     <span className="text-sm font-bold">Logout</span>
                      <span>
                         <LogoutIcon fontSize="small" />
                      </span>
@@ -146,7 +146,7 @@ const AccountMenu = () => {
 
 export const TopNavigation = () => {
    return (
-      <nav className="flex justify-between gap-x-5 h-top-nav bg-top-nav-bgcl py-2 px-4 border-b border-divider-bgcl">
+      <nav className="flex justify-between gap-x-5 h-top-nav bg-top-nav-bgcl py-2 px-4 border-b border-regular-border-cl">
          <div className="flex gap-x-5">
             <div className="flex gap-x-[5px] items-center text-[#9EACBA] cursor-pointer">
                <img src={appLogo} alt="App Logo" className="h-[1.2rem]" />
@@ -176,6 +176,6 @@ const StyledPopover = styled(Popover)({
    "& .MuiPaper-root": {
       borderRadius: 6,
       backgroundColor: "var(--ht-modal-popover-bgcl)",
-      border: "1px var(--ht-divider-bgcl) solid",
+      border: "1px var(--ht-regular-border-cl) solid",
    },
 })

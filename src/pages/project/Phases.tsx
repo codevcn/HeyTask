@@ -1,4 +1,4 @@
-import { KeyboardEvent, LegacyRef, useEffect, useMemo, useState } from "react"
+import { KeyboardEvent, LegacyRef, useEffect, useState } from "react"
 import {
    DndContext,
    closestCenter,
@@ -23,13 +23,13 @@ import { TaskPreviews } from "./TaskPreviews"
 import AddIcon from "@mui/icons-material/Add"
 import CloseIcon from "@mui/icons-material/Close"
 import { randomInteger } from "../../utils/helpers"
-import { Phase } from "./Phase"
+import { Phase } from "./Phase/Phase"
 
 type TAddNewPhaseProps = {
-   finalPosition: number | null
+   currentFinalPos: number | null
 }
 
-const AddNewPhase = ({ finalPosition }: TAddNewPhaseProps) => {
+const AddNewPhase = ({ currentFinalPos }: TAddNewPhaseProps) => {
    const [isAdding, setIsAdding] = useState<boolean>(false)
    const dispatch = useAppDispatch()
 
@@ -40,7 +40,8 @@ const AddNewPhase = ({ finalPosition }: TAddNewPhaseProps) => {
                id: randomInteger(1, 1000),
                title,
                taskPreviews: null,
-               position: finalPosition ? finalPosition + 1 : 1,
+               position: currentFinalPos ? currentFinalPos + 1 : 1,
+               description: null,
             }),
          )
       }
@@ -158,10 +159,11 @@ export const Phases = () => {
       }),
       useSensor(TouchSensor),
    )
-   const [dndItems, setDndItems] = useState<number[]>([])
+   const [dndItems, setDndItems] = useState<TPhaseData[]>([])
    const [refToScroll, refToDrag] = useDragScroll()
    const [draggingId, setDraggingId] = useState<number | null>(null)
    const dispatch = useAppDispatch()
+   const dndItemIds: TPhaseData["id"][] = dndItems.map((phase) => phase.id)
 
    const handleDragging = (e?: DragStartEvent) => {
       if (e) {
@@ -178,13 +180,13 @@ export const Phases = () => {
             setDndItems((pre) => {
                return arrayMove(
                   pre,
-                  pre.indexOf(active.id as number),
-                  pre.indexOf(over.id as number),
+                  pre.findIndex((phase) => phase.id === active.id),
+                  pre.findIndex((phase) => phase.id === over.id),
                )
             })
          }
       }
-      handleDragging()
+      setDraggingId(null)
    }
 
    const initDndItems = () => {
@@ -192,20 +194,23 @@ export const Phases = () => {
          setDndItems((pre) => {
             if (phases.length !== pre.length) {
                if (pre.length > 0) {
-                  const newPhases: number[] = []
-                  const filteredItems = pre.filter((dndItem) =>
-                     phases.some((phase) => phase.id === dndItem),
-                  )
-                  for (const phase of phases) {
-                     if (!filteredItems.includes(phase.id)) {
-                        newPhases.push(phase.id)
-                     }
+                  const matchItems: TPhaseData[] = []
+                  for (const dndItem of pre) {
+                     const dndItemId = dndItem.id
+                     const matchItem = phases.find((phase) => phase.id === dndItemId)
+                     if (matchItem) matchItems.push(matchItem)
                   }
-                  return [...filteredItems, ...newPhases]
+                  const newPhases: TPhaseData[] = []
+                  for (const phase of phases) {
+                     const phaseId = phase.id
+                     if (!matchItems.some((dndItem) => dndItem.id === phaseId))
+                        newPhases.push(phase)
+                  }
+                  return [...matchItems, ...newPhases]
                }
-               return phases.map(({ id }) => id)
+               return phases
             }
-            return pre
+            return pre.map((dndItem) => phases.find((phase) => phase.id === dndItem.id)!)
          })
       }
    }
@@ -231,14 +236,7 @@ export const Phases = () => {
       }
    }, [])
 
-   const mappedDndItems = useMemo<TPhaseData[]>(() => {
-      if (dndItems.length > 0 && phases && phases.length > 0) {
-         return dndItems.map((item) => phases.find((phase) => phase.id === item)!)
-      }
-      return []
-   }, [dndItems])
-
-   const findPhase = (phases: TPhaseData[], phaseId: number): TPhaseData => {
+   const findPhaseById = (phases: TPhaseData[], phaseId: number): TPhaseData => {
       return phases.find((phase) => phase.id === phaseId)!
    }
 
@@ -255,15 +253,15 @@ export const Phases = () => {
                onDragStart={(e) => handleDragging(e)}
                onDragCancel={() => handleDragging()}
             >
-               <SortableContext items={dndItems} strategy={horizontalListSortingStrategy}>
+               <SortableContext items={dndItemIds} strategy={horizontalListSortingStrategy}>
                   <div className="flex gap-x-3 relative box-border h-full pb-2">
                      <DragScrollPlaceholder
-                        dndItemsCount={(mappedDndItems && mappedDndItems.length + 1) || 0}
+                        dndItemsCount={(dndItems && dndItems.length + 1) || 0}
                         refToDrag={refToDrag}
                      />
-                     {mappedDndItems &&
-                        mappedDndItems.length > 0 &&
-                        mappedDndItems.map((phase) => (
+                     {dndItems &&
+                        dndItems.length > 0 &&
+                        dndItems.map((phase) => (
                            <Phase
                               key={phase.id}
                               phaseData={phase}
@@ -274,13 +272,11 @@ export const Phases = () => {
                </SortableContext>
                <DragOverlay>
                   {draggingId ? (
-                     <DragOverlayItem phaseData={findPhase(mappedDndItems, draggingId)} />
+                     <DragOverlayItem phaseData={findPhaseById(dndItems, draggingId)} />
                   ) : null}
                </DragOverlay>
             </DndContext>
-            <AddNewPhase
-               finalPosition={mappedDndItems[mappedDndItems.length - 1]?.position || null}
-            />
+            <AddNewPhase currentFinalPos={dndItems[dndItems.length - 1]?.position || null} />
          </div>
       </div>
    )

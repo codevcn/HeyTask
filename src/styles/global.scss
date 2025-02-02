@@ -28,7 +28,17 @@ article {
    box-sizing: border-box;
 }
 
+hr {
+   background-color: var(--ht-divider-cl);
+   border: 0;
+   height: 1px;
+   padding: 0;
+   width: 100%;
+}
+
 .css-rich-text-content-section {
+   color: var(--ht-regular-text-cl);
+
    p,
    a,
    li,
@@ -44,7 +54,7 @@ article {
    footer,
    header,
    article {
-      color: var(--ht-regular-text-cl);
+      color: inherit;
    }
 
    h1 {
@@ -80,21 +90,26 @@ article {
       display: flex;
    }
 
+   ol,
+   ul {
+      margin-left: 17px;
+   }
+
    ol {
       list-style: decimal;
-      color: var(--ht-regular-text-cl);
+      color: inherit;
 
       &::marker {
-         color: var(--ht-regular-text-cl);
+         color: inherit;
       }
    }
 
    ul {
       list-style: disc;
-      color: var(--ht-regular-text-cl);
+      color: inherit;
 
       &::marker {
-         color: var(--ht-regular-text-cl);
+         color: inherit;
       }
    }
 }
@@ -392,20 +407,6 @@ article {
             }
          }
       }
-   }
-}
-
-.css-task-details-description {
-   ol,
-   ul {
-      margin-left: 16px;
-   }
-}
-
-.css-task-details-user-comment {
-   ol,
-   ul {
-      margin-left: 18px;
    }
 }
 

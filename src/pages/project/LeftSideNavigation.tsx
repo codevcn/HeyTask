@@ -1,5 +1,5 @@
 import { useAppSelector } from "../../hooks/redux"
-import { Skeleton, styled, Tooltip, Avatar } from "@mui/material"
+import { Tooltip, Avatar } from "@mui/material"
 import { useState } from "react"
 import ArrowLeftIcon from "@mui/icons-material/ArrowLeft"
 import SettingsIcon from "@mui/icons-material/Settings"
@@ -31,14 +31,14 @@ export const LeftSideNavigation = ({ userData }: TLeftSideNavigationProps) => {
 
    return (
       <nav
-         className={`bg-top-nav-bgcl text-regular-text-cl relative overflow-x-visible transition-[width] h-full border-r border-divider-bgcl ${setNavPosition(open)}`}
+         className={`bg-top-nav-bgcl text-regular-text-cl relative overflow-x-visible transition-[width] h-full border-r border-regular-border-cl ${setNavPosition(open)}`}
       >
          <div
-            className={`flex flex-col h-full w-full transition-transform ${setNavContentPosition(open)}`}
+            className={`flex flex-col h-full w-full overflow-y-hidden transition-transform ${setNavContentPosition(open)}`}
          >
             {project ? (
                <>
-                  <div className="flex items-center justify-between gap-x-2 px-3 py-3 border-b border-divider-bgcl w-full">
+                  <div className="flex items-center justify-between gap-x-2 px-3 py-3 border-b border-regular-border-cl w-full">
                      <div className="flex items-center gap-x-2">
                         {userData.avatar ? (
                            <Avatar
@@ -51,15 +51,11 @@ export const LeftSideNavigation = ({ userData }: TLeftSideNavigationProps) => {
                               {userData.fullName[0]}
                            </Avatar>
                         )}
-                        {project ? (
-                           <div className="font-semibold truncate max-w-40">
-                              <Tooltip title={project.title} arrow placement="bottom">
-                                 <span>{project.title}</span>
-                              </Tooltip>
-                           </div>
-                        ) : (
-                           <StyledSkeleton height={32} width={150} />
-                        )}
+                        <div className="font-semibold truncate max-w-40">
+                           <Tooltip title={project.title} arrow placement="bottom">
+                              <span>{project.title}</span>
+                           </Tooltip>
+                        </div>
                      </div>
                      <button
                         onClick={() => setOpen(false)}
@@ -68,7 +64,7 @@ export const LeftSideNavigation = ({ userData }: TLeftSideNavigationProps) => {
                         <ArrowLeftIcon fontSize="large" />
                      </button>
                   </div>
-                  <div className="py-3 border-b border-divider-bgcl">
+                  <div className="py-3 border-b border-regular-border-cl">
                      <div className="flex items-center gap-x-2 text-regular-text-cl py-2 px-3 hover:bg-hover-silver-bgcl cursor-pointer">
                         <SettingsIcon sx={{ fontSize: 16 }} />
                         <span>Menu Item</span>
@@ -82,7 +78,7 @@ export const LeftSideNavigation = ({ userData }: TLeftSideNavigationProps) => {
                         <span>Menu Item</span>
                      </div>
                   </div>
-                  <div className="py-3 border-b border-divider-bgcl">
+                  <div className="py-3 border-b border-regular-border-cl">
                      <div className="flex items-center gap-x-2 text-regular-text-cl py-2 px-3 hover:bg-hover-silver-bgcl cursor-pointer">
                         <SettingsIcon sx={{ fontSize: 16 }} />
                         <span>Menu Item</span>
@@ -118,14 +114,10 @@ export const LeftSideNavigation = ({ userData }: TLeftSideNavigationProps) => {
          <button
             hidden={open}
             onClick={() => setOpen(true)}
-            className="flex absolute top-4 right-0 translate-x-1/2 border-divider-bgcl z-20 p-[5px] border border-solid rounded-full bg-top-nav-bgcl hover:bg-hover-silver-bgcl"
+            className="flex absolute top-4 right-0 translate-x-1/2 border-regular-border-cl z-20 p-[5px] border border-solid rounded-full bg-top-nav-bgcl hover:bg-hover-silver-bgcl"
          >
             <ArrowForwardIosIcon sx={{ fontSize: 14, margin: "auto" }} />
          </button>
       </nav>
    )
 }
-
-const StyledSkeleton = styled(Skeleton)({
-   backgroundColor: "#ffffff24",
-})

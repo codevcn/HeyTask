@@ -7,7 +7,7 @@ export default {
             "regular-text-cl": "var(--ht-regular-text-cl)",
             "top-nav-bgcl": "var(--ht-top-nav-bgcl)",
             "hover-silver-bgcl": "var(--ht-hover-silver-bgcl)",
-            "divider-bgcl": "var(--ht-divider-bgcl)",
+            "regular-border-cl": "var(--ht-regular-border-cl)",
             "secondary-text-cl": "var(--ht-secondary-text-cl)",
             "phase-bgcl": "var(--ht-phase-bgcl)",
             "modal-board-bgcl": "var(--ht-modal-board-bgcl)",

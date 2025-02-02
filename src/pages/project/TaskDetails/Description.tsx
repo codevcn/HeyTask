@@ -24,6 +24,7 @@ export const Description = ({ description }: TDescriptionProps) => {
          editorWrapper.style.borderColor = type === "focus" ? "var(--ht-outline-cl)" : "transparent"
       }
    }
+
    const saveDescription = () => {
       const editor = editorRef.current
       if (editor) {
@@ -55,7 +56,7 @@ export const Description = ({ description }: TDescriptionProps) => {
          <div className="mt-2 pl-10 w-full">
             {!openEditor &&
                (description ? (
-                  <div className="css-task-details-description leading-tight">
+                  <div className="leading-tight">
                      <CustomRichTextContent content={description} />
                   </div>
                ) : (
@@ -64,14 +65,13 @@ export const Description = ({ description }: TDescriptionProps) => {
                   </div>
                ))}
             <div className="w-full" hidden={!openEditor} ref={editorsContainerRef}>
-               <div className="css-rich-text-editor-wrapper">
-                  <CustomRichTextEditor
-                     editorRef={editorRef}
-                     defaultContent={description || undefined}
-                     onFocus={() => focusBlurEditor("editor-wrapper-make-new-comment", "focus")}
-                     onBlur={() => focusBlurEditor("editor-wrapper-make-new-comment", "blur")}
-                  />
-               </div>
+               <CustomRichTextEditor
+                  editorRef={editorRef}
+                  defaultContent={description || undefined}
+                  onFocus={() => focusBlurEditor("editor-wrapper-make-new-comment", "focus")}
+                  onBlur={() => focusBlurEditor("editor-wrapper-make-new-comment", "blur")}
+                  wrapperClassName="css-rich-text-editor-wrapper"
+               />
                <div className="flex gap-x-3 mt-2">
                   <button
                      onClick={saveDescription}

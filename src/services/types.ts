@@ -68,6 +68,7 @@ export type TPhaseData = {
    title: string
    taskPreviews: TTaskPreviewData[] | null
    position: number
+   description: string | null
 }
 
 export type TTaskFileData = {

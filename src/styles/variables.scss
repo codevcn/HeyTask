@@ -6,26 +6,27 @@
    --ht-selected-text-cl: var(--ht-outline-cl);
 
    // outline
+   --ht-regular-border-cl: #ffffff36;
    --ht-outline-cl: #85b8ff;
+   --ht-divider-cl: #a6c5e229;
 
    // background color
    --ht-top-nav-bgcl: #1f2123;
    --ht-phase-bgcl: #101204;
+   --ht-focused-textfield-bgcl: #22272b;
    --ht-modal-board-bgcl: #323940;
    --ht-modal-btn-bgcl: #a1bdd914;
-   --ht-focused-textfield-bgcl: #22272b;
-   --ht-divider-bgcl: #ffffff36;
    --ht-confirm-btn-bgcl: #579dff;
+   --ht-confirm-btn-hover-bgcl: #85b8ff;
+   --ht-delete-btn-bgcl: #f87168;
+   --ht-delete-btn-hover-bgcl: #fd9891;
    --ht-logo-loading-bar-bgcl: var(--ht-regular-text-cl);
    --ht-modal-popover-bgcl: #282e33;
-   --ht-delete-btn-bgcl: #f87168;
    --ht-scrollbar-thumb-bgcl: #455159;
    --ht-scrollbar-thumb-hover-bgcl: #54636d;
    --ht-scrollbar-track-bgcl: #323940;
    --ht-hover-silver-bgcl: #333c43;
    --ht-modal-btn-hover-bgcl: #a6c5e229;
-   --ht-delete-btn-hover-bgcl: #fd9891;
-   --ht-confirm-btn-hover-bgcl: #85b8ff;
 
    // height
    --ht-top-nav-height: 56px;

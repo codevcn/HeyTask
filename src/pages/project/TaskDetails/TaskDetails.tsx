@@ -77,7 +77,7 @@ const TaskActions = ({ phaseId, taskId }: TTaskActionsProps) => {
    const dispatch = useAppDispatch()
    const user = useUserInProject()!
 
-   const handleOpenDeleteMemberBoard = (e?: React.MouseEvent<HTMLButtonElement>) => {
+   const handleOpenDeleteTaskBoard = (e?: React.MouseEvent<HTMLButtonElement>) => {
       if (e) {
          if (
             user.projectRole === EProjectRoles.ADMIN ||
@@ -103,7 +103,7 @@ const TaskActions = ({ phaseId, taskId }: TTaskActionsProps) => {
          <div className="flex flex-col gap-y-2 mt-1">
             <Tooltip title="Delete this task" arrow placement="left">
                <button
-                  onClick={handleOpenDeleteMemberBoard}
+                  onClick={handleOpenDeleteTaskBoard}
                   className="flex items-center gap-x-2 py-[6px] px-3 bg-delete-btn-bgcl rounded hover:bg-delete-btn-hover-bgcl"
                >
                   <DeleteIcon fontSize="small" className="text-black" />
@@ -115,7 +115,7 @@ const TaskActions = ({ phaseId, taskId }: TTaskActionsProps) => {
          <StyledPopover
             open={!!anchorEle}
             anchorEl={anchorEle}
-            onClose={() => handleOpenDeleteMemberBoard()}
+            onClose={() => handleOpenDeleteTaskBoard()}
             anchorOrigin={{
                vertical: "bottom",
                horizontal: "right",
@@ -127,9 +127,9 @@ const TaskActions = ({ phaseId, taskId }: TTaskActionsProps) => {
          >
             <div className="bg-modal-popover-bgcl rounded-md p-3 text-regular-text-cl w-[300px]">
                <div className="relative w-full py-1">
-                  <h3 className="w-full text-center text-sm font-bold">Members</h3>
+                  <h3 className="w-full text-center text-sm font-bold">Delete task</h3>
                   <button
-                     onClick={() => handleOpenDeleteMemberBoard()}
+                     onClick={() => handleOpenDeleteTaskBoard()}
                      className="flex absolute right-0 top-0 p-1 rounded-md hover:bg-modal-btn-hover-bgcl"
                   >
                      <CloseIcon className="text-regular-text-cl" fontSize="small" />
@@ -278,6 +278,6 @@ const StyledPopover = styled(Popover)({
    "& .MuiPaper-root": {
       borderRadius: 6,
       backgroundColor: "var(--ht-modal-popover-bgcl)",
-      border: "1px var(--ht-divider-bgcl) solid",
+      border: "1px var(--ht-regular-border-cl) solid",
    },
 })

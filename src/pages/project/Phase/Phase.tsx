@@ -1,28 +1,23 @@
 import { FocusEvent, KeyboardEvent, MouseEvent, useEffect, useRef, useState } from "react"
 import { useSortable } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
-import { useAppDispatch } from "../../hooks/redux"
-import { deletePhase, updateSinglePhase } from "../../redux/project/project-slice"
-import type { TPhaseData } from "../../services/types"
+import { useAppDispatch } from "../../../hooks/redux"
+import { deletePhase, updateSinglePhase } from "../../../redux/project/project-slice"
+import type { TPhaseData } from "../../../services/types"
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz"
 import { styled, TextField, Tooltip } from "@mui/material"
-import { TaskPreviews } from "./TaskPreviews"
+import { TaskPreviews } from "../TaskPreviews"
 import CloseIcon from "@mui/icons-material/Close"
-import { EInternalEvents, eventEmitter } from "../../utils/events"
+import { EInternalEvents, eventEmitter } from "../../../utils/events"
 import { Fade, Popover } from "@mui/material"
 
-type TPhaseProps = {
-   phaseData: TPhaseData
-   className?: string
-}
-
-type TPhaseActions = "copy-phase" | "delete-phase" | "move-phase"
+type TPhaseActions = "copy-phase" | "delete-phase" | "move-phase" | "add-desc"
 
 type TPhaseActionsProps = {
-   phaseId: number
+   phaseData: TPhaseData
 }
 
-const PhaseActions = ({ phaseId }: TPhaseActionsProps) => {
+const PhaseActions = ({ phaseData }: TPhaseActionsProps) => {
    const [open, setOpen] = useState<boolean>(false)
    const anchorEleRef = useRef<HTMLButtonElement | null>(null)
    const dispatch = useAppDispatch()
@@ -34,7 +29,10 @@ const PhaseActions = ({ phaseId }: TPhaseActionsProps) => {
          case "move-phase":
             break
          case "delete-phase":
-            dispatch(deletePhase(phaseId))
+            dispatch(deletePhase(phaseData.id))
+            break
+         case "add-desc":
+            eventEmitter.emit(EInternalEvents.OPEN_ADD_PHASE_DESCRIPTION, true, phaseData)
             break
       }
       setOpen(false)
@@ -76,7 +74,7 @@ const PhaseActions = ({ phaseId }: TPhaseActionsProps) => {
                horizontal: "left",
             }}
          >
-            <div className="bg-transparent min-w-52 py-1 pb-3 border border-solid border-divider-bgcl rounded-lg">
+            <div className="bg-transparent min-w-52 py-1 pb-3 border border-solid border-regular-border-cl rounded-lg">
                <header className="flex py-1 px-2 items-center">
                   <h3 className="grow text-regular-text-cl font-semibold text-sm text-center">
                      Phase actions
@@ -107,11 +105,22 @@ const PhaseActions = ({ phaseId }: TPhaseActionsProps) => {
                   >
                      Move Phase
                   </li>
+                  <li
+                     onClick={() => hanleActions("add-desc")}
+                     className="cursor-pointer hover:bg-hover-silver-bgcl py-[6px] px-3 text-regular-text-cl text-sm font-medium"
+                  >
+                     Description
+                  </li>
                </ul>
             </div>
          </StyledPopover>
       </>
    )
+}
+
+type TPhaseProps = {
+   phaseData: TPhaseData
+   className?: string
 }
 
 export const Phase = ({ phaseData, className }: TPhaseProps) => {
@@ -181,7 +190,7 @@ export const Phase = ({ phaseData, className }: TPhaseProps) => {
                      onMouseDown={(e) => e.stopPropagation()}
                   />
                </div>
-               <PhaseActions phaseId={id} />
+               <PhaseActions phaseData={phaseData} />
             </div>
             <TaskPreviews phaseId={id} taskPreviews={taskPreviews} />
          </div>

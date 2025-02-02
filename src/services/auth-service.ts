@@ -24,7 +24,7 @@ class AuthService {
          email: "demo-email@mail.ru",
          fullName: "demo name",
          avatar: "https://trello-logos.s3.amazonaws.com/7c17ee5f87fa99637dce66430e395d97/170.png",
-         role: EUserRoles.ADMIN,
+         role: EUserRoles.USER,
       }
       return data
    }

@@ -1,5 +1,6 @@
 import type { HttpStatusCode } from "axios"
 import type { TTaskData, TTaskMemberData, TTaskPreviewData } from "../services/types"
+import type { PopoverOrigin } from "@mui/material"
 
 export type TSuccess = {
    success: boolean
@@ -56,4 +57,16 @@ export type TAddNewTaskMemberAction = {
 
 export type TTaskDataState = TTaskData & {
    phaseId: number
+}
+
+export type TAddMembersBoardData = {
+   anchorEle: HTMLButtonElement | null
+   anchorOrigin?: PopoverOrigin
+   transformOrigin?: PopoverOrigin
+   phaseId: number
+   taskId: number
+}
+
+export type TTaskDatesBoardData = {
+   anchorEle: HTMLButtonElement | null
 }

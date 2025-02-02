@@ -7,7 +7,7 @@ import {
    InputLabel,
    Select,
 } from "@mui/material"
-import { useAppDispatch } from "../../../hooks/redux"
+import { useAppDispatch, useAppSelector } from "../../../hooks/redux"
 import { updateTaskData } from "../../../redux/project/project-slice"
 import { useCallback, useEffect, useRef, useState } from "react"
 import CloseIcon from "@mui/icons-material/Close"
@@ -17,12 +17,11 @@ import { TimeField } from "@mui/x-date-pickers/TimeField"
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs"
 import { DateField } from "@mui/x-date-pickers/DateField"
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown"
-
-type TDatesBoardProps = {
-   dueDate: string | null
-   onOpenDatesBoard: (e?: React.MouseEvent<HTMLButtonElement>) => void
-   anchorEle: HTMLButtonElement | null
-}
+import { useUserInProject } from "../../../hooks/user"
+import { EProjectRoles } from "../../../utils/enums"
+import { toast } from "react-toastify"
+import type { TTaskDatesBoardData } from "../../../utils/types"
+import { EInternalEvents, eventEmitter } from "../../../utils/events"
 
 enum EDuteDateReminder {
    MINUTES_BEFORE_0 = "0m",
@@ -30,11 +29,16 @@ enum EDuteDateReminder {
    MINUTES_BEFORE_10 = "10m",
 }
 
-export const DatesBoard = ({ dueDate, onOpenDatesBoard, anchorEle }: TDatesBoardProps) => {
-   const [newDueDate, setNewDueDate] = useState<Dayjs | null>(dayjs(dueDate))
+const DatesBoard = () => {
+   const [boardData, setBoardData] = useState<TTaskDatesBoardData>()
+   const { taskData } = useAppSelector(({ project }) => project)
+   const [newDueDate, setNewDueDate] = useState<Dayjs | null>(null)
    const dateAdapter = new AdapterDayjs()
    const reminderRef = useRef<HTMLInputElement>()
+   const userInProject = useUserInProject()!
    const dispatch = useAppDispatch()
+
+   const anchorEle = boardData?.anchorEle || null
 
    const handleTypeDate = (date: Dayjs | null) => {
       setNewDueDate(date)
@@ -42,22 +46,44 @@ export const DatesBoard = ({ dueDate, onOpenDatesBoard, anchorEle }: TDatesBoard
 
    const saveDates = useCallback(() => {
       if (newDueDate) {
-         console.log(">>> task reminder:", reminderRef.current?.value)
-         dispatch(updateTaskData({ dueDate: newDueDate.toISOString() }))
-         onOpenDatesBoard()
+         if (
+            userInProject.projectRole === EProjectRoles.LEADER ||
+            userInProject.projectRole === EProjectRoles.ADMIN
+         ) {
+            //>>> add reminder if need
+            dispatch(updateTaskData({ dueDate: newDueDate.toISOString() }))
+         } else {
+            toast.error("You must be Admin or Leader to assign due dates")
+         }
       }
    }, [newDueDate])
 
    useEffect(() => {
-      setNewDueDate(dayjs(dueDate))
-   }, [dueDate])
+      if (taskData) {
+         const taskDueDate = taskData.dueDate
+         setNewDueDate(taskDueDate ? dayjs(taskDueDate) : null)
+      }
+   }, [taskData])
+
+   useEffect(() => {
+      eventEmitter.on(EInternalEvents.OPEN_TASK_DATES_BOARD, (boardData) => {
+         setBoardData(boardData)
+      })
+      return () => {
+         eventEmitter.off(EInternalEvents.OPEN_TASK_DATES_BOARD)
+      }
+   }, [])
+
+   const handleCloseBoard = () => {
+      setBoardData((pre) => (pre ? { ...pre, anchorEle: null } : undefined))
+   }
 
    return (
       <>
          <StyledPopover
             open={!!anchorEle}
             anchorEl={anchorEle}
-            onClose={() => onOpenDatesBoard()}
+            onClose={handleCloseBoard}
             anchorOrigin={{
                vertical: "bottom",
                horizontal: "right",
@@ -68,15 +94,15 @@ export const DatesBoard = ({ dueDate, onOpenDatesBoard, anchorEle }: TDatesBoard
             }}
          >
             <div className="bg-modal-popover-bgcl rounded-md pt-3 text-regular-text-cl w-[300px]">
-               <div className="relative w-full py-1 px-3">
+               <header className="relative w-full py-1 px-3">
                   <h3 className="w-full text-center text-sm font-bold">Dates</h3>
                   <button
-                     onClick={() => onOpenDatesBoard()}
+                     onClick={handleCloseBoard}
                      className="flex absolute right-3 top-0 p-1 rounded-md hover:bg-modal-btn-hover-bgcl"
                   >
                      <CloseIcon className="text-regular-text-cl" fontSize="small" />
                   </button>
-               </div>
+               </header>
                <div className="max-h-[435px] px-3 overflow-y-auto mt-2 css-styled-vt-scrollbar">
                   <div className="w-full">
                      <StyledDateCalendar
@@ -119,7 +145,8 @@ export const DatesBoard = ({ dueDate, onOpenDatesBoard, anchorEle }: TDatesBoard
                         className=""
                         MenuProps={{
                            MenuListProps: {
-                              className: "bg-modal-popover-bgcl bor border border-divider-bgcl",
+                              className:
+                                 "bg-modal-popover-bgcl bor border border-regular-border-cl",
                            },
                         }}
                         inputRef={reminderRef}
@@ -149,7 +176,7 @@ export const DatesBoard = ({ dueDate, onOpenDatesBoard, anchorEle }: TDatesBoard
                         Save
                      </button>
                      <button
-                        onClick={() => onOpenDatesBoard()}
+                        onClick={handleCloseBoard}
                         className="mt-2 w-full rounded bg-modal-btn-bgcl p-1 hover:bg-modal-btn-hover-bgcl text-regular-text-cl text-sm font-semibold"
                      >
                         Cancel
@@ -167,14 +194,10 @@ type TTaskDueDateProps = {
 }
 
 export const TaskDueDate = ({ dueDate }: TTaskDueDateProps) => {
-   const [anchorEle, setAnchorEle] = useState<HTMLButtonElement | null>(null)
-
-   const openAssignDueDates = (e?: React.MouseEvent<HTMLButtonElement>) => {
-      if (e) {
-         setAnchorEle(e.currentTarget)
-      } else {
-         setAnchorEle(null)
-      }
+   const openDueDatesBoard = (e: React.MouseEvent<HTMLButtonElement>) => {
+      eventEmitter.emit(EInternalEvents.OPEN_TASK_DATES_BOARD, {
+         anchorEle: e.currentTarget,
+      })
    }
 
    return (
@@ -182,17 +205,13 @@ export const TaskDueDate = ({ dueDate }: TTaskDueDateProps) => {
          <div className="flex flex-col text-regular-text-cl">
             <h3 className="text-sm font-bold mb-1">Due Date</h3>
             <button
-               onClick={openAssignDueDates}
+               onClick={openDueDatesBoard}
                className="flex items-center grow gap-x-2 bg-modal-btn-bgcl hover:bg-modal-btn-hover-bgcl rounded py-1 px-2"
             >
                <span className="text-sm">{dayjs(dueDate).format("LLL")}</span>
                <KeyboardArrowDownIcon fontSize="small" className="text-regular-text-cl" />
             </button>
-            <DatesBoard
-               dueDate={dueDate}
-               anchorEle={anchorEle}
-               onOpenDatesBoard={openAssignDueDates}
-            />
+            <DatesBoard />
          </div>
       )
    )
@@ -202,7 +221,7 @@ const StyledPopover = styled(Popover)({
    "& .MuiPaper-root": {
       borderRadius: 6,
       backgroundColor: "var(--ht-modal-popover-bgcl)",
-      border: "1px var(--ht-divider-bgcl) solid",
+      border: "1px var(--ht-regular-border-cl) solid",
    },
 })
 
@@ -285,7 +304,7 @@ const DueDateTimeStyling = {
          },
          "& .MuiOutlinedInput-notchedOutline": {
             borderWidth: 2,
-            borderColor: "var(--ht-divider-bgcl)",
+            borderColor: "var(--ht-regular-border-cl)",
          },
          "&:hover .MuiOutlinedInput-notchedOutline": {
             borderColor: "var(--ht-outline-cl)",
@@ -314,7 +333,7 @@ const StyledSelectReminder = styled(Select)({
       },
       "& .MuiOutlinedInput-notchedOutline": {
          borderWidth: 2,
-         borderColor: "var(--ht-divider-bgcl)",
+         borderColor: "var(--ht-regular-border-cl)",
       },
       "&:hover .MuiOutlinedInput-notchedOutline": {
          borderColor: "var(--ht-outline-cl)",

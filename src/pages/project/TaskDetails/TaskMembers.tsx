@@ -1,9 +1,8 @@
 import { Avatar, Tooltip, AvatarGroup, styled, TextField, Popover } from "@mui/material"
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import CloseIcon from "@mui/icons-material/Close"
 import type { TProjectMemberData, TTaskMemberData } from "../../../services/types"
 import AddIcon from "@mui/icons-material/Add"
-import type { PopoverOrigin } from "@mui/material/Popover"
 import { useAppDispatch, useAppSelector } from "../../../hooks/redux"
 import { removeTaskMember } from "../../../redux/project/project-slice"
 import HighlightOffIcon from "@mui/icons-material/HighlightOff"
@@ -12,28 +11,16 @@ import { useUserInProject } from "../../../hooks/user"
 import { EProjectRoles } from "../../../utils/enums"
 import { toast } from "react-toastify"
 import { addNewTaskMemberAction } from "../../../redux/project/actions"
+import { EInternalEvents, eventEmitter } from "../../../utils/events"
+import type { TAddMembersBoardData } from "../../../utils/types"
 
-type TAddMemberBoardProps = {
-   onCloseBoard: () => void
-   anchorEle: HTMLButtonElement | null
-   anchorOrigin?: PopoverOrigin
-   transformOrigin?: PopoverOrigin
-   phaseId: number
-   taskId: number
-}
-
-export const AddMemberBoard = ({
-   onCloseBoard,
-   anchorEle,
-   anchorOrigin,
-   transformOrigin,
-   phaseId,
-   taskId,
-}: TAddMemberBoardProps) => {
+const AddMemberBoard = () => {
    const { projectMembers, taskMembers } = useAppSelector(getMembersSelector())
    const [searchResult, setSearchResult] = useState<TProjectMemberData[]>()
    const dispatch = useAppDispatch()
    const user = useUserInProject()!
+   const [boardData, setBoardData] = useState<TAddMembersBoardData>()
+   const anchorEle = boardData?.anchorEle || null
 
    const filteredProjectMembers = useMemo<TProjectMemberData[]>(() => {
       const list = searchResult ? searchResult : projectMembers
@@ -48,13 +35,18 @@ export const AddMemberBoard = ({
    const searchingMember = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
       const inputValue = e.target.value
       if (inputValue && inputValue.length > 0) {
-         setSearchResult(projectMembers.filter((member) => member.fullName.includes(inputValue)))
+         setSearchResult(projectMembers.filter(({ fullName }) => fullName.includes(inputValue)))
       } else {
          setSearchResult(undefined)
       }
    }
 
-   const handleAddRemoveTaskMember = (member: TTaskMemberData, isAdding: boolean) => {
+   const handleAddRemoveTaskMember = (
+      member: TTaskMemberData,
+      isAdding: boolean,
+      phaseId: number,
+      taskId: number,
+   ) => {
       if (isAdding) {
          if (
             user.projectRole === EProjectRoles.ADMIN ||
@@ -70,9 +62,18 @@ export const AddMemberBoard = ({
    }
 
    const handleCloseBoard = () => {
-      onCloseBoard()
+      setBoardData((pre) => (pre ? { ...pre, anchorEle: null } : undefined))
       setSearchResult(undefined)
    }
+
+   useEffect(() => {
+      eventEmitter.on(EInternalEvents.OPEN_ADD_TASK_MEMBERS_BOARD, (boardData) => {
+         setBoardData(boardData)
+      })
+      return () => {
+         eventEmitter.off(EInternalEvents.OPEN_ADD_TASK_MEMBERS_BOARD)
+      }
+   }, [])
 
    return (
       <StyledPopover
@@ -80,46 +81,100 @@ export const AddMemberBoard = ({
          anchorEl={anchorEle}
          onClose={handleCloseBoard}
          anchorOrigin={
-            anchorOrigin || {
+            boardData?.anchorOrigin || {
                vertical: "bottom",
                horizontal: "left",
             }
          }
          transformOrigin={
-            transformOrigin || {
+            boardData?.transformOrigin || {
                vertical: "top",
                horizontal: "left",
             }
          }
       >
-         <div className="bg-modal-popover-bgcl rounded-md p-3 text-regular-text-cl w-[300px]">
-            <div className="relative w-full py-1">
-               <h3 className="w-full text-center text-sm font-bold">Members</h3>
-               <button
-                  onClick={handleCloseBoard}
-                  className="flex absolute right-0 top-0 p-1 rounded-md hover:bg-modal-btn-hover-bgcl"
-               >
-                  <CloseIcon className="text-regular-text-cl" fontSize="small" />
-               </button>
-            </div>
-            <div className="w-full mt-2">
-               <SearchInput
-                  multiline
-                  fullWidth
-                  maxRows={5}
-                  placeholder="Search members..."
-                  variant="outlined"
-                  onChange={searchingMember}
-               />
-            </div>
-            {!searchResult && (
+         {boardData ? (
+            <div className="bg-modal-popover-bgcl rounded-md p-3 text-regular-text-cl w-[300px]">
+               <header className="relative w-full py-1">
+                  <h3 className="w-full text-center text-sm font-bold">Members</h3>
+                  <button
+                     onClick={handleCloseBoard}
+                     className="flex absolute right-0 top-0 p-1 rounded-md hover:bg-modal-btn-hover-bgcl"
+                  >
+                     <CloseIcon className="text-regular-text-cl" fontSize="small" />
+                  </button>
+               </header>
+               <div className="w-full mt-2">
+                  <SearchInput
+                     multiline
+                     fullWidth
+                     maxRows={5}
+                     placeholder="Search members..."
+                     variant="outlined"
+                     onChange={searchingMember}
+                  />
+               </div>
+               {!searchResult && (
+                  <div className="mt-3 w-full">
+                     <h3 className="text-sm font-bold">Card members</h3>
+                     <div className="mt-2">
+                        {(taskMembers || []).map((member) => (
+                           <div
+                              key={member.id}
+                              className="flex relative items-center gap-x-2 p-1 rounded-md cursor-pointer hover:bg-modal-btn-hover-bgcl"
+                           >
+                              {member.avatar ? (
+                                 <Avatar
+                                    alt="User Avatar"
+                                    src={member.avatar}
+                                    sx={{ height: 30, width: 30 }}
+                                 />
+                              ) : (
+                                 <Avatar sx={{ height: 30, width: 30 }}>
+                                    {member.fullName[0]}
+                                 </Avatar>
+                              )}
+                              <span className="text-sm text-regular-text-cl">
+                                 {member.fullName}
+                              </span>
+                              <Tooltip title="Remove member">
+                                 <button
+                                    onClick={() =>
+                                       handleAddRemoveTaskMember(
+                                          member,
+                                          false,
+                                          boardData.phaseId,
+                                          boardData.taskId,
+                                       )
+                                    }
+                                    className="absolute right-2 top-1/2 -translate-y-1/2"
+                                 >
+                                    <HighlightOffIcon
+                                       fontSize="small"
+                                       className="hover:scale-110"
+                                    />
+                                 </button>
+                              </Tooltip>
+                           </div>
+                        ))}
+                     </div>
+                  </div>
+               )}
                <div className="mt-3 w-full">
-                  <h3 className="text-sm font-bold">Card members</h3>
+                  <h3 className="text-sm font-bold">Project members</h3>
                   <div className="mt-2">
-                     {(taskMembers || []).map((member) => (
+                     {filteredProjectMembers.map((member) => (
                         <div
                            key={member.id}
-                           className="flex relative items-center gap-x-2 p-1 rounded-md cursor-pointer hover:bg-modal-btn-hover-bgcl"
+                           className="flex items-center gap-x-2 p-1 rounded-md cursor-pointer hover:bg-modal-btn-hover-bgcl"
+                           onClick={() =>
+                              handleAddRemoveTaskMember(
+                                 member,
+                                 true,
+                                 boardData.phaseId,
+                                 boardData.taskId,
+                              )
+                           }
                         >
                            {member.avatar ? (
                               <Avatar
@@ -131,48 +186,19 @@ export const AddMemberBoard = ({
                               <Avatar sx={{ height: 30, width: 30 }}>{member.fullName[0]}</Avatar>
                            )}
                            <span className="text-sm text-regular-text-cl">{member.fullName}</span>
-                           <Tooltip title="Remove member">
-                              <button
-                                 onClick={() => handleAddRemoveTaskMember(member, false)}
-                                 className="absolute right-2 top-1/2 -translate-y-1/2"
-                              >
-                                 <HighlightOffIcon fontSize="small" className="hover:scale-110" />
-                              </button>
-                           </Tooltip>
                         </div>
                      ))}
                   </div>
-               </div>
-            )}
-            <div className="mt-3 w-full">
-               <h3 className="text-sm font-bold">Project members</h3>
-               <div className="mt-2">
-                  {filteredProjectMembers.map((member) => (
-                     <div
-                        key={member.id}
-                        className="flex items-center gap-x-2 p-1 rounded-md cursor-pointer hover:bg-modal-btn-hover-bgcl"
-                        onClick={() => handleAddRemoveTaskMember(member, true)}
-                     >
-                        {member.avatar ? (
-                           <Avatar
-                              alt="User Avatar"
-                              src={member.avatar}
-                              sx={{ height: 30, width: 30 }}
-                           />
-                        ) : (
-                           <Avatar sx={{ height: 30, width: 30 }}>{member.fullName[0]}</Avatar>
-                        )}
-                        <span className="text-sm text-regular-text-cl">{member.fullName}</span>
+                  {filteredProjectMembers.length === 0 && (
+                     <div className="w-full text-regular-text-cl font-medium italic text-sm text-center mt-4">
+                        No member found
                      </div>
-                  ))}
+                  )}
                </div>
-               {filteredProjectMembers.length === 0 && (
-                  <div className="w-full text-regular-text-cl font-medium italic text-sm text-center mt-4">
-                     No member found
-                  </div>
-               )}
             </div>
-         </div>
+         ) : (
+            <span></span>
+         )}
       </StyledPopover>
    )
 }
@@ -205,14 +231,12 @@ type TTaskMembersProps = {
 }
 
 export const TaskMembers = ({ phaseId, taskId }: TTaskMembersProps) => {
-   const [anchorEle, setAnchorEle] = useState<HTMLButtonElement | null>(null)
-
-   const handleOpenAddMemberBoard = (e?: React.MouseEvent<HTMLButtonElement>) => {
-      if (e) {
-         setAnchorEle(e.currentTarget)
-      } else {
-         setAnchorEle(null)
-      }
+   const openAddMemberBoard = (e: React.MouseEvent<HTMLButtonElement>) => {
+      eventEmitter.emit(EInternalEvents.OPEN_ADD_TASK_MEMBERS_BOARD, {
+         anchorEle: e.currentTarget,
+         phaseId,
+         taskId,
+      })
    }
 
    return (
@@ -222,19 +246,14 @@ export const TaskMembers = ({ phaseId, taskId }: TTaskMembersProps) => {
             <CurrentTaskMembers />
             <Tooltip title="Add member">
                <button
-                  onClick={handleOpenAddMemberBoard}
+                  onClick={openAddMemberBoard}
                   className="flex h-fit p-1 rounded-full bg-modal-btn-bgcl hover:bg-modal-btn-hover-bgcl"
                >
                   <AddIcon className="text-regular-text-cl" sx={{ height: 26, width: 26 }} />
                </button>
             </Tooltip>
          </div>
-         <AddMemberBoard
-            phaseId={phaseId}
-            taskId={taskId}
-            anchorEle={anchorEle}
-            onCloseBoard={() => handleOpenAddMemberBoard()}
-         />
+         <AddMemberBoard />
       </div>
    )
 }
@@ -255,7 +274,7 @@ const StyledPopover = styled(Popover)({
    "& .MuiPaper-root": {
       borderRadius: 6,
       backgroundColor: "var(--ht-modal-popover-bgcl)",
-      border: "1px var(--ht-divider-bgcl) solid",
+      border: "1px var(--ht-regular-border-cl) solid",
    },
 })
 

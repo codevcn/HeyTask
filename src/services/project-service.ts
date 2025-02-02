@@ -93,7 +93,7 @@ class ProjectService {
    async getUserInfoInProject(userId: number): Promise<TUserInProjectData> {
       await perfomDelay(1000)
       const data: TUserInProjectData = {
-         projectRole: EProjectRoles.LEADER,
+         projectRole: EProjectRoles.MEMBER,
       }
       return data
    }
@@ -125,6 +125,7 @@ class ProjectService {
             id: 1,
             title: "Todo",
             position: 1,
+            description: "desc 1",
             taskPreviews: [
                {
                   id: 1,
@@ -146,6 +147,7 @@ class ProjectService {
             id: 2,
             title: "In Progress",
             position: 2,
+            description: "desc 2",
             taskPreviews: [
                {
                   id: 4,
@@ -209,6 +211,7 @@ class ProjectService {
             id: 3,
             title: "Complete",
             position: 3,
+            description: "desc 3",
             taskPreviews: [
                {
                   id: 11,
@@ -223,6 +226,7 @@ class ProjectService {
             id: 4,
             title: "Done",
             position: 4,
+            description: "desc 4",
             taskPreviews: [
                {
                   id: 9,
@@ -237,6 +241,7 @@ class ProjectService {
             id: 5,
             title: "Need Help",
             position: 5,
+            description: "desc 5",
             taskPreviews: [
                {
                   id: 10,

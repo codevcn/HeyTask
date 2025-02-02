@@ -1,4 +1,4 @@
-import { createSlice, current, PayloadAction } from "@reduxjs/toolkit"
+import { createSlice, PayloadAction } from "@reduxjs/toolkit"
 import type {
    TCommentData,
    TCustomizationData,
@@ -46,21 +46,16 @@ export const projectSlice = createSlice({
          state.phases = state.phases?.filter((phase) => phase.id !== phaseIdToDelete) || null
       },
       updateSinglePhase: (state, action: PayloadAction<TPhaseData>) => {
-         const currentPhases = current(state).phases
-         const newPhase = action.payload
-         state.phases = currentPhases
-            ? currentPhases.map((phase) => {
-                 if (phase.id === newPhase.id) {
-                    return { ...phase, ...newPhase }
-                 }
-                 return phase
-              })
-            : null
+         const updates = action.payload
+         const updatesId = updates.id
+         const phase = state.phases?.find((phase) => phase.id === updatesId)
+         if (phase) {
+            Object.assign(phase, updates)
+         }
       },
       updateTaskPreview: (state, action: PayloadAction<TPhaseTaskPreview>) => {
-         const currentPhases = current(state).phases
          const updates = action.payload
-         const currentTaskPreviews = currentPhases?.find(
+         const currentTaskPreviews = state.phases?.find(
             (phase) => phase.id === updates.phaseId,
          )?.taskPreviews
          const taskPreview = currentTaskPreviews?.find((task) => task.id === updates.id)

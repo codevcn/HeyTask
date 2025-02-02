@@ -7,87 +7,9 @@ import GroupsIcon from "@mui/icons-material/Groups"
 import { checkIfUserInTaskSelector } from "../../../redux/project/selectors"
 import { useUserInProject } from "../../../hooks/user"
 import { addNewTaskMemberAction } from "../../../redux/project/actions"
-import { useState } from "react"
-import { AddMemberBoard } from "./TaskMembers"
 import type { TTaskData } from "../../../services/types"
-import { DatesBoard } from "./Dates"
 import AccessTimeIcon from "@mui/icons-material/AccessTime"
-
-type TDatesProps = {
-   dueDate: string | null
-}
-
-const Dates = ({ dueDate }: TDatesProps) => {
-   const [anchorEle, setAnchorEle] = useState<HTMLButtonElement | null>(null)
-
-   const openAssignDueDates = (e?: React.MouseEvent<HTMLButtonElement>) => {
-      if (e) {
-         setAnchorEle(e.currentTarget)
-      } else {
-         setAnchorEle(null)
-      }
-   }
-
-   return (
-      <>
-         <Tooltip title="View members of this task" arrow placement="left">
-            <button
-               onClick={openAssignDueDates}
-               className="flex items-center gap-x-2 font-medium text-sm py-[6px] px-3 bg-modal-btn-bgcl rounded hover:bg-modal-btn-hover-bgcl"
-            >
-               <AccessTimeIcon fontSize="small" />
-               <span>Dates</span>
-            </button>
-         </Tooltip>
-
-         <DatesBoard
-            anchorEle={anchorEle}
-            onOpenDatesBoard={openAssignDueDates}
-            dueDate={dueDate}
-         />
-      </>
-   )
-}
-
-type TMembersProps = {
-   phaseId: number
-   taskId: number
-}
-
-const TaskMembers = ({ phaseId, taskId }: TMembersProps) => {
-   const [anchorEle, setAnchorEle] = useState<HTMLButtonElement | null>(null)
-
-   const handleOpenAddMemberBoard = (e?: React.MouseEvent<HTMLButtonElement>) => {
-      if (e) {
-         setAnchorEle(e.currentTarget)
-      } else {
-         setAnchorEle(null)
-      }
-   }
-
-   return (
-      <>
-         <Tooltip title="View members of this task" arrow placement="left">
-            <button
-               onClick={handleOpenAddMemberBoard}
-               className="flex items-center gap-x-2 font-medium text-sm py-[6px] px-3 bg-modal-btn-bgcl rounded hover:bg-modal-btn-hover-bgcl"
-            >
-               <GroupsIcon fontSize="small" />
-               <span>Members</span>
-            </button>
-         </Tooltip>
-
-         <AddMemberBoard
-            phaseId={phaseId}
-            taskId={taskId}
-            onCloseBoard={() => handleOpenAddMemberBoard()}
-            anchorEle={anchorEle}
-            anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
-            transformOrigin={{ horizontal: "right", vertical: "top" }}
-         />
-      </>
-   )
-}
+import { EInternalEvents, eventEmitter } from "../../../utils/events"
 
 type TUserActionsProps = {
    phaseId: number
@@ -106,6 +28,22 @@ export const UserActions = ({ phaseId, taskData }: TUserActionsProps) => {
 
    const leaveTask = () => {
       dispatch(removeTaskMember({ memberId: userInProject.id, phaseId, taskId: id }))
+   }
+
+   const handleOpenAddMemberBoard = (e: React.MouseEvent<HTMLButtonElement>) => {
+      eventEmitter.emit(EInternalEvents.OPEN_ADD_TASK_MEMBERS_BOARD, {
+         anchorEle: e.currentTarget,
+         phaseId,
+         taskId: taskData.id,
+         anchorOrigin: { horizontal: "right", vertical: "bottom" },
+         transformOrigin: { horizontal: "right", vertical: "top" },
+      })
+   }
+
+   const openDueDatesBoard = (e: React.MouseEvent<HTMLButtonElement>) => {
+      eventEmitter.emit(EInternalEvents.OPEN_TASK_DATES_BOARD, {
+         anchorEle: e.currentTarget,
+      })
    }
 
    return (
@@ -133,8 +71,24 @@ export const UserActions = ({ phaseId, taskData }: TUserActionsProps) => {
                   </button>
                </Tooltip>
             )}
-            <TaskMembers taskId={id} phaseId={phaseId} />
-            <Dates dueDate={taskData.dueDate} />
+            <Tooltip title="View members of this task" arrow placement="left">
+               <button
+                  onClick={handleOpenAddMemberBoard}
+                  className="flex items-center gap-x-2 font-medium text-sm py-[6px] px-3 bg-modal-btn-bgcl rounded hover:bg-modal-btn-hover-bgcl"
+               >
+                  <GroupsIcon fontSize="small" />
+                  <span>Members</span>
+               </button>
+            </Tooltip>
+            <Tooltip title="View members of this task" arrow placement="left">
+               <button
+                  onClick={openDueDatesBoard}
+                  className="flex items-center gap-x-2 font-medium text-sm py-[6px] px-3 bg-modal-btn-bgcl rounded hover:bg-modal-btn-hover-bgcl"
+               >
+                  <AccessTimeIcon fontSize="small" />
+                  <span>Dates</span>
+               </button>
+            </Tooltip>
          </div>
       </>
    )

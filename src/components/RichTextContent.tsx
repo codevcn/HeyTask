@@ -4,9 +4,10 @@ import { EInternalEvents, eventEmitter } from "../utils/events"
 
 type TRichTextContentProps = {
    content: string
+   wrapperClassName?: string
 }
 
-export const CustomRichTextContent = ({ content }: TRichTextContentProps) => {
+export const CustomRichTextContent = ({ content, wrapperClassName }: TRichTextContentProps) => {
    const contentWrapperRef = useRef<HTMLDivElement>(null)
 
    const initClickOnFileHandlers = () => {
@@ -15,7 +16,8 @@ export const CustomRichTextContent = ({ content }: TRichTextContentProps) => {
       )
       if (fileTitles && fileTitles.length > 0) {
          for (const fileTitle of fileTitles) {
-            fileTitle.onclick = () => {
+            fileTitle.onclick = (e) => {
+               e.stopPropagation()
                const { htFileId: fileId } = fileTitle.dataset
                if (fileId && fileId.length > 0) {
                   if (fileId) {
@@ -34,7 +36,7 @@ export const CustomRichTextContent = ({ content }: TRichTextContentProps) => {
    return (
       <div
          ref={contentWrapperRef}
-         className="css-rich-text-content-section"
+         className={`css-rich-text-content-section ${wrapperClassName || ""}`}
          dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(content) }}
       ></div>
    )
