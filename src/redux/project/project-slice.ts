@@ -4,6 +4,7 @@ import type {
    TCustomizationData,
    TPhaseData,
    TProjectData,
+   TProjectMemberData,
    TTaskData,
 } from "../../services/types"
 import type {
@@ -175,6 +176,21 @@ export const projectSlice = createSlice({
             state.taskData = null
          }
       },
+      updateMemberInProject: (state, action: PayloadAction<Partial<TProjectMemberData>>) => {
+         const updates = action.payload
+         const memberId = updates.id
+         if (memberId) {
+            const member = state.project?.members.find((mem) => mem.id === memberId)
+            if (member) {
+               Object.assign(member, updates)
+            }
+         }
+      },
+      removeMemberFromProject: (state, action: PayloadAction<TProjectMemberData["id"]>) => {
+         const memberId = action.payload
+         const project = state.project!
+         project.members = project.members.filter((member) => member.id !== memberId)
+      },
    },
 })
 
@@ -195,4 +211,6 @@ export const {
    deleteComment,
    deleteTask,
    deletePhase,
+   updateMemberInProject,
+   removeMemberFromProject,
 } = projectSlice.actions

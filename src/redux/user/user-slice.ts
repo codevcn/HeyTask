@@ -21,7 +21,13 @@ export const userSlice = createSlice({
       setUserInProject: (state, action: PayloadAction<TUserInProjectData>) => {
          state.userInProject = action.payload
       },
+      updateUserInProject: (state, action: PayloadAction<Partial<TUserInProjectData>>) => {
+         const currentData = state.userInProject
+         if (currentData) {
+            Object.assign(currentData, action.payload)
+         }
+      },
    },
 })
 
-export const { setUser, setUserInProject } = userSlice.actions
+export const { setUser, setUserInProject, updateUserInProject } = userSlice.actions

@@ -9,6 +9,7 @@ import type {
    TUploadedFileData,
    TTaskMemberData,
    TUserInProjectData,
+   TProjectMemberData,
 } from "./types"
 import { EProjectRoles, EUserRoles } from "../utils/enums"
 
@@ -89,11 +90,55 @@ export const taskMembers: TTaskMemberData[] = [
    },
 ]
 
+export const projectMembers: TProjectMemberData[] = [
+   {
+      id: 1,
+      avatar: "https://trello-logos.s3.amazonaws.com/7c17ee5f87fa99637dce66430e395d97/170.png",
+      fullName: "full codevcn",
+      email: "demo-email@mail.ru",
+      role: EUserRoles.USER,
+      projectRole: EProjectRoles.ADMIN,
+   },
+   {
+      id: 7,
+      avatar: null,
+      fullName: "Baba",
+      email: "demo-email@mair.sa",
+      role: EUserRoles.USER,
+      projectRole: EProjectRoles.MEMBER,
+   },
+   {
+      id: 8,
+      avatar: null,
+      fullName: "Baba 2",
+      email: "demo-email@mais.sb",
+      role: EUserRoles.USER,
+      projectRole: EProjectRoles.MEMBER,
+   },
+   {
+      id: 9,
+      avatar: null,
+      fullName: "Bimmmmmmmmmmmmm 123",
+      email: "demo-email@mait.sc",
+      role: EUserRoles.USER,
+      projectRole: EProjectRoles.MEMBER,
+   },
+   {
+      id: 4,
+      avatar:
+         "https://trello-members.s3.amazonaws.com/65b078657d14de9327fcae56/a0cea1a61f9f6f57630a7aeb1f97f679/170.png",
+      fullName: "lele vcn",
+      email: "demo-email@maio.rx",
+      role: EUserRoles.USER,
+      projectRole: EProjectRoles.MEMBER,
+   },
+]
+
 class ProjectService {
    async getUserInfoInProject(userId: number): Promise<TUserInProjectData> {
       await perfomDelay(1000)
       const data: TUserInProjectData = {
-         projectRole: EProjectRoles.MEMBER,
+         projectRole: EProjectRoles.ADMIN,
       }
       return data
    }
@@ -103,7 +148,8 @@ class ProjectService {
       const data: TProjectData = {
          title: "VCN Project",
          id: projectId,
-         members: taskMembers,
+         members: projectMembers,
+         invitationLink: "http://localhost:5173/projects/1",
       }
       return data
    }
@@ -306,13 +352,17 @@ class ProjectService {
       return data
    }
 
-   async downloadTaskFile(): Promise<any> {
+   async downloadTaskFile(): Promise<void> {
       await perfomDelay(1000)
       const { data } = await axios.get(
          "https://www.dropbox.com/scl/fi/ywyj0fc0dh5duf9dtlx3k/Bai-tap-Thuc-hanh-SQL.pdf?rlkey=xwebotclt9umt4njwul48pwt9&st=3yzhcmdq&dl=1",
          { responseType: "blob" },
       )
       console.log(">>> data:", data)
+   }
+
+   async leaveProject(): Promise<void> {
+      await perfomDelay(1000)
    }
 }
 

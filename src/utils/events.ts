@@ -1,6 +1,7 @@
 import EventEmitter from "eventemitter3"
 import type { TPhaseData } from "../services/types"
 import type { TAddMembersBoardData, TTaskDatesBoardData } from "./types"
+import type { SnackbarOrigin } from "@mui/material/Snackbar"
 
 export enum EInternalEvents {
    DRAGGING_TASK_IN_PHASE = "DRAGGING_TASK_IN_PHASE",
@@ -11,6 +12,7 @@ export enum EInternalEvents {
    OPEN_ADD_PHASE_DESCRIPTION = "OPEN_ADD_PHASE_DESCRIPTION",
    OPEN_ADD_TASK_MEMBERS_BOARD = "OPEN_ADD_TASK_MEMBERS_BOARD",
    OPEN_TASK_DATES_BOARD = "OPEN_TASK_DATES_BOARD",
+   OPEN_APP_SNACKBAR = "OPEN_APP_SNACKBAR",
 }
 
 interface IEventEmitter {
@@ -29,6 +31,10 @@ interface IEventEmitter {
    [EInternalEvents.OPEN_ADD_PHASE_DESCRIPTION]: (isOpen: boolean, phaseData: TPhaseData) => void
    [EInternalEvents.OPEN_ADD_TASK_MEMBERS_BOARD]: (boardData: TAddMembersBoardData) => void
    [EInternalEvents.OPEN_TASK_DATES_BOARD]: (boardData: TTaskDatesBoardData) => void
+   [EInternalEvents.OPEN_APP_SNACKBAR]: (
+      message: string | JSX.Element,
+      anchorOrigin?: SnackbarOrigin,
+   ) => void
 }
 
 export const eventEmitter = new EventEmitter<IEventEmitter>()

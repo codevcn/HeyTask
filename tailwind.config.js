@@ -21,6 +21,9 @@ export default {
             "delete-btn-bgcl": "var(--ht-delete-btn-bgcl)",
             "delete-btn-hover-bgcl": "var(--ht-delete-btn-hover-bgcl)",
             "confirm-btn-hover-bgcl": "var(--ht-confirm-btn-hover-bgcl)",
+            "divider-cl": "var(--ht-divider-cl)",
+            "modal-text-cl": "var(--ht-modal-text-cl)",
+            "success-text-cl": "var(--ht-success-text-cl)",
          },
          height: {
             background: "calc(100% - var(--ht-top-nav-height))",

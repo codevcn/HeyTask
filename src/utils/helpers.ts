@@ -1,8 +1,14 @@
 import dayjs from "dayjs"
 import { EInternalEvents, eventEmitter } from "./events"
+import type { SnackbarOrigin } from "@mui/material"
+import { EProjectRoles } from "./enums"
 
-export const pureNavigator = (href: string): void => {
-   window.location.href = href || "/"
+export const pureNavigator = (href: string, isReloadPage?: boolean): void => {
+   if (isReloadPage) {
+      window.location.reload()
+   } else {
+      window.location.href = href || "/"
+   }
 }
 
 /**
@@ -55,6 +61,23 @@ export const displayPreTimePeriod = (originalTime: Date | string): string => {
    return convertedTime.format("MMM DD YYYY")
 }
 
-export const openFixedLoadingHandler = (isOpen: boolean) => {
+export const openFixedLoadingHandler = (isOpen: boolean): void => {
    eventEmitter.emit(EInternalEvents.OPEN_FIXED_LOADING, isOpen)
+}
+
+export const openAppSnackbarHandler = (
+   message: string | JSX.Element,
+   anchorOrigin?: SnackbarOrigin,
+): void => {
+   eventEmitter.emit(EInternalEvents.OPEN_APP_SNACKBAR, message, anchorOrigin)
+}
+
+export const displayProjectRole = (projectRole: EProjectRoles): string => {
+   switch (projectRole) {
+      case EProjectRoles.ADMIN:
+         return "Admin"
+      case EProjectRoles.LEADER:
+         return "Leader"
+   }
+   return "Member"
 }

@@ -28,6 +28,10 @@ article {
    box-sizing: border-box;
 }
 
+input {
+   outline: none;
+}
+
 hr {
    background-color: var(--ht-divider-cl);
    border: 0;

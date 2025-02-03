@@ -5,6 +5,7 @@ import { useEffect } from "react"
 import { FixedLoading } from "./Loadings"
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs"
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider"
+import { AppSnackbar } from "./Snackbar"
 
 const nonGuardRoutes: string[] = ["/", "/login", "/register"]
 
@@ -47,6 +48,7 @@ export default function Layout() {
             draggable
             pauseOnHover
          />
+         <AppSnackbar />
       </div>
    )
 }

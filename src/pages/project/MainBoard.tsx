@@ -9,7 +9,7 @@ import GroupIcon from "@mui/icons-material/Group"
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz"
 import { Tooltip } from "@mui/material"
 import { Phases } from "./Phases"
-import type { TProjectData } from "../../services/types"
+import type { TProjectData, TUserInProjectData } from "../../services/types"
 import { measureTextWidth } from "../../utils/helpers"
 import { useParams } from "react-router-dom"
 import type { TProjectPageParams } from "../../utils/types"
@@ -18,6 +18,7 @@ import { TaskFileDetails } from "./TaskDetails/TaskFileDetails"
 import { useUserInProject } from "../../hooks/user"
 import { AboutPhase } from "./Phase/AboutPhase"
 import { ShareProject } from "./ShareProject"
+import { EProjectRoles } from "../../utils/enums"
 
 type TEditableSectionProps = {
    projectData: TProjectData
@@ -108,7 +109,11 @@ const EditableSection = ({ projectData }: TEditableSectionProps) => {
    )
 }
 
-const Header = () => {
+type THeaderProps = {
+   userInProject: TUserInProjectData
+}
+
+const Header = ({ userInProject }: THeaderProps) => {
    const { project } = useAppSelector(({ project }) => project)
    const dispatch = useAppDispatch()
    const { projectId } = useParams<TProjectPageParams>()
@@ -137,7 +142,9 @@ const Header = () => {
             <>
                <EditableSection projectData={project} />
                <div className="flex gap-x-3 items-center">
-                  <ShareProject projectData={project} />
+                  {userInProject.projectRole === EProjectRoles.ADMIN && (
+                     <ShareProject projectData={project} />
+                  )}
                   <button className="p-1 rounded-sm hover:bg-[#ffffff33]">
                      <MoreHorizIcon fontSize="small" />
                   </button>
@@ -154,7 +161,7 @@ export const MainBoard = () => {
    return (
       userInProject && (
          <div className="flex flex-col flex-1 text-white w-main-board">
-            <Header />
+            <Header userInProject={userInProject} />
             <Phases />
             <TaskDetails />
             <TaskFileDetails />

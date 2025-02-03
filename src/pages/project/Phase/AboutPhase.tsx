@@ -41,11 +41,16 @@ export const AboutPhase = () => {
       }
    }
 
+   const handleCloseBoard = () => {
+      setOpenEditor(false)
+      setOpen(false)
+   }
+
    return (
       <StyledDialog
          TransitionComponent={Fade}
          open={open}
-         onClose={() => setOpen(false)}
+         onClose={handleCloseBoard}
          scroll="body"
          maxWidth="sm"
          fullWidth
@@ -58,7 +63,7 @@ export const AboutPhase = () => {
                      About phase
                   </h3>
                   <button
-                     onClick={() => setOpen(false)}
+                     onClick={handleCloseBoard}
                      className="flex absolute right-0 top-0 p-1 rounded-md hover:bg-modal-btn-hover-bgcl"
                   >
                      <CloseIcon className="text-regular-text-cl" fontSize="small" />

@@ -30,6 +30,7 @@ export type TProjectData = {
    id: number
    title: string
    members: TProjectMemberData[]
+   invitationLink: string
 }
 
 export type TCustomizationData = {
