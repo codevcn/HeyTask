@@ -6,7 +6,7 @@ import Layout from "./components/Layout"
 import Page404 from "./pages/Page404"
 import "react-toastify/dist/ReactToastify.css"
 import RegisterPage from "./pages/auth/RegisterPage"
-import ProjectPage from "./pages/project/ProjectPage"
+import ProjectPage from "./pages/projects/ProjectPage"
 
 const App = () => {
    return (

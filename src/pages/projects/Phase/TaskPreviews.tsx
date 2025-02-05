@@ -1,12 +1,12 @@
 import { Avatar, styled, TextField, Tooltip, AvatarGroup } from "@mui/material"
-import type { TTaskPreviewData } from "../../services/types"
+import type { TTaskPreviewData } from "../../../services/types"
 import ReorderIcon from "@mui/icons-material/Reorder"
 import AddIcon from "@mui/icons-material/Add"
-import { KeyboardEvent, useEffect, useMemo, useState } from "react"
+import { KeyboardEvent, useMemo, useState } from "react"
 import CloseIcon from "@mui/icons-material/Close"
-import { addNewTaskPreview } from "../../redux/project/project-slice"
-import { useAppDispatch } from "../../hooks/redux"
-import { randomInteger } from "../../utils/helpers"
+import { addNewTaskPreview, updateSinglePhase } from "../../../redux/project/project-slice"
+import { useAppDispatch } from "../../../hooks/redux"
+import { randomInteger } from "../../../utils/helpers"
 import {
    arrayMove,
    SortableContext,
@@ -25,7 +25,7 @@ import {
    useSensor,
    useSensors,
 } from "@dnd-kit/core"
-import { EInternalEvents, eventEmitter } from "../../utils/events"
+import { EInternalEvents, eventEmitter } from "../../../utils/events"
 
 type TTaskPreviewProps = {
    taskPreviewData: TTaskPreviewData
@@ -214,11 +214,10 @@ const OverlayItem = ({ taskPreviewData }: TOverlayItemProps) => {
 
 type TTaskPreviewsProps = {
    phaseId: number
-   taskPreviews: TTaskPreviewData[] | null
+   taskPreviews: TTaskPreviewData[]
 }
 
 export const TaskPreviews = ({ taskPreviews, phaseId }: TTaskPreviewsProps) => {
-   const [dndItems, setDndItems] = useState<TTaskPreviewData["id"][]>([])
    const [draggingId, setDraggingId] = useState<number | null>(null)
    const sensors = useSensors(
       useSensor(MouseSensor, {
@@ -229,6 +228,8 @@ export const TaskPreviews = ({ taskPreviews, phaseId }: TTaskPreviewsProps) => {
       }),
       useSensor(TouchSensor),
    )
+   const dispatch = useAppDispatch()
+   const dndItems: TTaskPreviewData["id"][] = taskPreviews.map((task) => task.id)
 
    const handleDragStart = (e: DragStartEvent) => {
       setDraggingId(e.active.id as number)
@@ -239,10 +240,20 @@ export const TaskPreviews = ({ taskPreviews, phaseId }: TTaskPreviewsProps) => {
       const { active, over } = e
       if (over) {
          if (active.id !== over.id) {
-            setDndItems((items) => {
-               const oldIndex = items.indexOf(active.id as number)
-               const newIndex = items.indexOf(over.id as number)
-               return arrayMove(items, oldIndex, newIndex)
+            dispatch((dispatch, getState) => {
+               const preTaskPreviews = getState().project.phases?.find(
+                  (phase) => phase.id === phaseId,
+               )?.taskPreviews
+               if (preTaskPreviews && preTaskPreviews.length > 0) {
+                  const fromIndex = preTaskPreviews.findIndex((task) => task.id === active.id)
+                  const toIndex = preTaskPreviews.findIndex((task) => task.id === over.id)
+                  dispatch(
+                     updateSinglePhase({
+                        id: phaseId,
+                        taskPreviews: arrayMove(preTaskPreviews, fromIndex, toIndex),
+                     }),
+                  )
+               }
             })
          }
       }
@@ -254,33 +265,6 @@ export const TaskPreviews = ({ taskPreviews, phaseId }: TTaskPreviewsProps) => {
       setDraggingId(null)
       eventEmitter.emit(EInternalEvents.DRAGGING_TASK_IN_PHASE, phaseId, "end-dragging")
    }
-
-   const initDndItems = () => {
-      if (taskPreviews && taskPreviews.length > 0) {
-         setDndItems((pre) => {
-            if (taskPreviews.length !== pre.length) {
-               if (pre.length > 0) {
-                  const newPhases: number[] = []
-                  const filteredItems = pre.filter((dndItem) =>
-                     taskPreviews.some((task) => task.id === dndItem),
-                  )
-                  for (const task of taskPreviews) {
-                     if (!filteredItems.includes(task.id)) {
-                        newPhases.push(task.id)
-                     }
-                  }
-                  return [...filteredItems, ...newPhases]
-               }
-               return taskPreviews.map(({ id }) => id)
-            }
-            return pre
-         })
-      }
-   }
-
-   useEffect(() => {
-      initDndItems()
-   }, [taskPreviews])
 
    const sortedDndItems = useMemo<TTaskPreviewData[]>(() => {
       if (dndItems && dndItems.length > 0 && taskPreviews && taskPreviews.length > 0) {

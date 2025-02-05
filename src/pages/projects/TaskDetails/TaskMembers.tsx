@@ -8,17 +8,17 @@ import { removeTaskMember } from "../../../redux/project/project-slice"
 import HighlightOffIcon from "@mui/icons-material/HighlightOff"
 import { getMembersSelector } from "../../../redux/project/selectors"
 import { useUserInProject } from "../../../hooks/user"
-import { EProjectRoles } from "../../../utils/enums"
 import { toast } from "react-toastify"
 import { addNewTaskMemberAction } from "../../../redux/project/actions"
 import { EInternalEvents, eventEmitter } from "../../../utils/events"
 import type { TAddMembersBoardData } from "../../../utils/types"
+import { checkUserPermission } from "../../../configs/user-permissions"
 
 const AddMemberBoard = () => {
    const { projectMembers, taskMembers } = useAppSelector(getMembersSelector())
    const [searchResult, setSearchResult] = useState<TProjectMemberData[]>()
    const dispatch = useAppDispatch()
-   const user = useUserInProject()!
+   const userInProject = useUserInProject()!
    const [boardData, setBoardData] = useState<TAddMembersBoardData>()
    const anchorEle = boardData?.anchorEle || null
 
@@ -48,10 +48,7 @@ const AddMemberBoard = () => {
       taskId: number,
    ) => {
       if (isAdding) {
-         if (
-            user.projectRole === EProjectRoles.ADMIN ||
-            user.projectRole === EProjectRoles.LEADER
-         ) {
+         if (checkUserPermission(userInProject.projectRole, "add-remove-task-member")) {
             dispatch(addNewTaskMemberAction(member, phaseId, taskId))
          } else {
             toast.error("You must be admin or leader to assign a task")

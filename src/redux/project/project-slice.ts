@@ -46,12 +46,14 @@ export const projectSlice = createSlice({
          const phaseIdToDelete = action.payload
          state.phases = state.phases?.filter((phase) => phase.id !== phaseIdToDelete) || null
       },
-      updateSinglePhase: (state, action: PayloadAction<TPhaseData>) => {
+      updateSinglePhase: (state, action: PayloadAction<Partial<TPhaseData>>) => {
          const updates = action.payload
          const updatesId = updates.id
-         const phase = state.phases?.find((phase) => phase.id === updatesId)
-         if (phase) {
-            Object.assign(phase, updates)
+         if (updatesId) {
+            const phase = state.phases?.find((phase) => phase.id === updatesId)
+            if (phase) {
+               Object.assign(phase, updates)
+            }
          }
       },
       updateTaskPreview: (state, action: PayloadAction<TPhaseTaskPreview>) => {

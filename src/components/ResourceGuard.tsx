@@ -1,19 +1,25 @@
 import { useLocation, useNavigate } from "react-router-dom"
 import { useAppDispatch, useAppSelector } from "../hooks/redux"
 import { useEffect, useState } from "react"
-import { EAuthStatus } from "../utils/enums"
+import { EAuthStatus, EProjectRoles } from "../utils/enums"
 import { RouteLoading } from "./Loadings"
 import { useUser } from "../hooks/user"
 import { authService } from "../services/auth-service"
 import { setAuthStatus } from "../redux/auth/auth-slice"
 import { setUser } from "../redux/user/user-slice"
 import { toast } from "react-toastify"
+import {
+   checkUserPermission,
+   checkUserPermissions,
+   type TAllPermissions,
+} from "../configs/user-permissions"
 
 type TGuardProps = {
    children: JSX.Element
+   fallback?: JSX.Element
 }
 
-const AuthGuard = ({ children }: TGuardProps) => {
+const AuthGuard = ({ children, fallback }: TGuardProps) => {
    const { authStatus } = useAppSelector(({ auth }) => auth)
    const user = useUser()
    const [isValid, setIsValid] = useState<boolean>(false)
@@ -44,7 +50,7 @@ const AuthGuard = ({ children }: TGuardProps) => {
       return children
    }
 
-   return <RouteLoading />
+   return fallback || <></>
 }
 
 type TResourceGuardProps = {
@@ -56,5 +62,27 @@ export const RouteGuard = ({ children, nonGuardRoutes }: TResourceGuardProps) =>
    if (nonGuardRoutes.includes(useLocation().pathname)) {
       return children
    }
-   return <AuthGuard>{children}</AuthGuard>
+   return <AuthGuard fallback={<RouteLoading />}>{children}</AuthGuard>
+}
+
+type TProjectRoleGuardProps = {
+   children: JSX.Element
+   permissions: TAllPermissions[]
+   userProjectRole: EProjectRoles
+   fallback?: JSX.Element
+}
+
+export const ProjectRoleGuard = ({
+   children,
+   permissions,
+   userProjectRole,
+   fallback,
+}: TProjectRoleGuardProps) => {
+   if (permissions.length > 1 && checkUserPermissions(userProjectRole, ...permissions)) {
+      return children
+   }
+   if (permissions.length === 1 && checkUserPermission(userProjectRole, permissions[0])) {
+      return children
+   }
+   return fallback || <></>
 }

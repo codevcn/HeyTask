@@ -9,7 +9,7 @@ import GroupIcon from "@mui/icons-material/Group"
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz"
 import { Tooltip } from "@mui/material"
 import { Phases } from "./Phases"
-import type { TProjectData, TUserInProjectData } from "../../services/types"
+import type { TProjectData, TProjectMemberData, TUserInProjectData } from "../../services/types"
 import { measureTextWidth } from "../../utils/helpers"
 import { useParams } from "react-router-dom"
 import type { TProjectPageParams } from "../../utils/types"
@@ -17,14 +17,17 @@ import { TaskDetails } from "./TaskDetails/TaskDetails"
 import { TaskFileDetails } from "./TaskDetails/TaskFileDetails"
 import { useUserInProject } from "../../hooks/user"
 import { AboutPhase } from "./Phase/AboutPhase"
-import { ShareProject } from "./ShareProject"
-import { EProjectRoles } from "../../utils/enums"
+import { ShareProject } from "./ShareProject/ShareProject"
+import { checkUserPermission } from "../../configs/user-permissions"
+import { ProjectMenu } from "./ProjectMenu/ProjectMenu"
+import { EInternalEvents, eventEmitter } from "../../utils/events"
 
 type TEditableSectionProps = {
    projectData: TProjectData
+   userInProject: TUserInProjectData
 }
 
-const EditableSection = ({ projectData }: TEditableSectionProps) => {
+const EditableSection = ({ projectData, userInProject }: TEditableSectionProps) => {
    const [isEditing, setIsEditing] = useState<boolean>(false)
    const { title } = projectData
    const titleInputRef = useRef<HTMLInputElement | null>(null)
@@ -56,8 +59,10 @@ const EditableSection = ({ projectData }: TEditableSectionProps) => {
    }
 
    const startToEditTitleInput = () => {
-      editingTitleInput()
-      setIsEditing(true)
+      if (checkUserPermission(userInProject.projectRole, "CRUD-project")) {
+         editingTitleInput()
+         setIsEditing(true)
+      }
    }
 
    useEffect(() => {
@@ -110,7 +115,7 @@ const EditableSection = ({ projectData }: TEditableSectionProps) => {
 }
 
 type THeaderProps = {
-   userInProject: TUserInProjectData
+   userInProject: TProjectMemberData
 }
 
 const Header = ({ userInProject }: THeaderProps) => {
@@ -130,6 +135,10 @@ const Header = ({ userInProject }: THeaderProps) => {
          .finally(() => {})
    }
 
+   const openProjectMenu = () => {
+      eventEmitter.emit(EInternalEvents.OPEN_PROJECT_MENU, true)
+   }
+
    useEffect(() => {
       if (!project && projectId) {
          getProjectHandler(parseInt(projectId))
@@ -140,15 +149,14 @@ const Header = ({ userInProject }: THeaderProps) => {
       <header className="flex justify-between items-center flex-wrap h-top-nav overflow-x-hidden gap-y-3 gap-x-5 py-3 px-5 bg-[#0000003d] backdrop-blur-sm w-full">
          {project && (
             <>
-               <EditableSection projectData={project} />
+               <EditableSection projectData={project} userInProject={userInProject} />
                <div className="flex gap-x-3 items-center">
-                  {userInProject.projectRole === EProjectRoles.ADMIN && (
-                     <ShareProject projectData={project} />
-                  )}
-                  <button className="p-1 rounded-sm hover:bg-[#ffffff33]">
+                  <ShareProject projectData={project} />
+                  <button onClick={openProjectMenu} className="p-1 rounded-sm hover:bg-[#ffffff33]">
                      <MoreHorizIcon fontSize="small" />
                   </button>
                </div>
+               <ProjectMenu />
             </>
          )}
       </header>
@@ -162,7 +170,7 @@ export const MainBoard = () => {
       userInProject && (
          <div className="flex flex-col flex-1 text-white w-main-board">
             <Header userInProject={userInProject} />
-            <Phases />
+            <Phases userInProject={userInProject} />
             <TaskDetails />
             <TaskFileDetails />
             <AboutPhase />

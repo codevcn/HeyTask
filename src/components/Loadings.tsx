@@ -16,7 +16,7 @@ type TLogoLoadingProps = Partial<{
 
 export const LogoLoading = ({ className }: TLogoLoadingProps) => {
    return (
-      <div className={`css-logo-loading-container ${className || ""}`}>
+      <div className={`${className || ""} css-logo-loading-container`}>
          <div className="css-logo-loading-bar__bar-1"></div>
          <div className="css-logo-loading-bar__bar-2"></div>
          <div className="css-logo-loading-bar__bar-3"></div>

@@ -1,4 +1,4 @@
-import { FocusEvent, KeyboardEvent, MouseEvent, useEffect, useRef, useState } from "react"
+import { FocusEvent, KeyboardEvent, useEffect, useState } from "react"
 import { useSortable } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
 import { useAppDispatch } from "../../../hooks/redux"
@@ -6,20 +6,21 @@ import { deletePhase, updateSinglePhase } from "../../../redux/project/project-s
 import type { TPhaseData } from "../../../services/types"
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz"
 import { styled, TextField, Tooltip } from "@mui/material"
-import { TaskPreviews } from "../TaskPreviews"
+import { TaskPreviews } from "./TaskPreviews"
 import CloseIcon from "@mui/icons-material/Close"
 import { EInternalEvents, eventEmitter } from "../../../utils/events"
 import { Fade, Popover } from "@mui/material"
+import { checkUserPermission } from "../../../configs/user-permissions"
+import { useUserInProject } from "../../../hooks/user"
 
-type TPhaseActions = "copy-phase" | "delete-phase" | "move-phase" | "add-desc"
+type TPhaseActions = "copy-phase" | "delete-phase" | "move-phase" | "description"
 
 type TPhaseActionsProps = {
    phaseData: TPhaseData
 }
 
 const PhaseActions = ({ phaseData }: TPhaseActionsProps) => {
-   const [open, setOpen] = useState<boolean>(false)
-   const anchorEleRef = useRef<HTMLButtonElement | null>(null)
+   const [anchorEle, setAnchorEle] = useState<HTMLButtonElement>()
    const dispatch = useAppDispatch()
 
    const hanleActions = (type: TPhaseActions) => {
@@ -31,38 +32,32 @@ const PhaseActions = ({ phaseData }: TPhaseActionsProps) => {
          case "delete-phase":
             dispatch(deletePhase(phaseData.id))
             break
-         case "add-desc":
+         case "description":
             eventEmitter.emit(EInternalEvents.OPEN_ADD_PHASE_DESCRIPTION, true, phaseData)
             break
       }
-      setOpen(false)
+      setAnchorEle(undefined)
    }
 
-   const handleOpenActions = (e?: MouseEvent<HTMLButtonElement>) => {
+   const handleOpenActions = (e?: React.MouseEvent<HTMLButtonElement>) => {
       if (e) {
-         anchorEleRef.current = e.currentTarget
-         setOpen(true)
+         setAnchorEle(e.currentTarget)
       } else {
-         anchorEleRef.current = null
-         setOpen(false)
+         setAnchorEle(undefined)
       }
    }
 
    return (
       <>
          <Tooltip title="List actions" arrow>
-            <button
-               className="p-1 h-fit rounded-sm hover:bg-[#282F27]"
-               ref={anchorEleRef}
-               onClick={handleOpenActions}
-            >
+            <button className="p-1 h-fit rounded-sm hover:bg-[#282F27]" onClick={handleOpenActions}>
                <MoreHorizIcon fontSize="small" />
             </button>
          </Tooltip>
 
          <StyledPopover
-            anchorEl={anchorEleRef.current}
-            open={open}
+            anchorEl={anchorEle}
+            open={!!anchorEle}
             onClose={() => handleOpenActions()}
             TransitionComponent={Fade}
             anchorOrigin={{
@@ -106,7 +101,7 @@ const PhaseActions = ({ phaseData }: TPhaseActionsProps) => {
                      Move Phase
                   </li>
                   <li
-                     onClick={() => hanleActions("add-desc")}
+                     onClick={() => hanleActions("description")}
                      className="cursor-pointer hover:bg-hover-silver-bgcl py-[6px] px-3 text-regular-text-cl text-sm font-medium"
                   >
                      Description
@@ -128,6 +123,7 @@ export const Phase = ({ phaseData, className }: TPhaseProps) => {
    const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id })
    const dispatch = useAppDispatch()
    const [cssClass, setCssClass] = useState<string>("")
+   const userInProject = useUserInProject()!
 
    const quitEditing = (newTitle: string) => {
       if (newTitle && newTitle.length > 0) {
@@ -177,7 +173,7 @@ export const Phase = ({ phaseData, className }: TPhaseProps) => {
                ref={setNodeRef}
                {...attributes}
                {...listeners}
-               className="flex justify-between text-[#B6C2CF] gap-x-2 p-2 pb-1"
+               className="flex justify-between text-[#B6C2CF] gap-x-2 p-2 pb-1 cursor-grab active:cursor-grabbing"
             >
                <div className="w-full">
                   <EditableTitle
@@ -188,11 +184,16 @@ export const Phase = ({ phaseData, className }: TPhaseProps) => {
                      variant="outlined"
                      onBlur={blurListTitleInput}
                      onMouseDown={(e) => e.stopPropagation()}
+                     sx={{
+                        pointerEvents: checkUserPermission(userInProject.projectRole, "CRUD-phase")
+                           ? "auto"
+                           : "none",
+                     }}
                   />
                </div>
                <PhaseActions phaseData={phaseData} />
             </div>
-            <TaskPreviews phaseId={id} taskPreviews={taskPreviews} />
+            <TaskPreviews phaseId={id} taskPreviews={taskPreviews || []} />
          </div>
       </div>
    )

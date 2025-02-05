@@ -31,14 +31,14 @@ export const LeftSideNavigation = ({ userData }: TLeftSideNavigationProps) => {
 
    return (
       <nav
-         className={`bg-top-nav-bgcl text-regular-text-cl relative overflow-x-visible transition-[width] h-full border-r border-regular-border-cl ${setNavPosition(open)}`}
+         className={`${setNavPosition(open)} bg-top-nav-bgcl text-regular-text-cl relative overflow-x-visible transition-[width] h-full border-r border-divider-cl`}
       >
          <div
-            className={`flex flex-col h-full w-full overflow-y-hidden transition-transform ${setNavContentPosition(open)}`}
+            className={`${setNavContentPosition(open)} flex flex-col h-full w-full overflow-y-hidden transition-transform`}
          >
             {project ? (
                <>
-                  <div className="flex items-center justify-between gap-x-2 px-3 py-3 border-b border-regular-border-cl w-full">
+                  <div className="flex items-center justify-between gap-x-2 px-3 py-3 border-b border-divider-cl w-full">
                      <div className="flex items-center gap-x-2">
                         {userData.avatar ? (
                            <Avatar
@@ -64,7 +64,7 @@ export const LeftSideNavigation = ({ userData }: TLeftSideNavigationProps) => {
                         <ArrowLeftIcon fontSize="large" />
                      </button>
                   </div>
-                  <div className="py-3 border-b border-regular-border-cl">
+                  <div className="py-3 border-b border-divider-cl">
                      <div className="flex items-center gap-x-2 text-regular-text-cl py-2 px-3 hover:bg-hover-silver-bgcl cursor-pointer">
                         <SettingsIcon sx={{ fontSize: 16 }} />
                         <span>Menu Item</span>
@@ -78,7 +78,7 @@ export const LeftSideNavigation = ({ userData }: TLeftSideNavigationProps) => {
                         <span>Menu Item</span>
                      </div>
                   </div>
-                  <div className="py-3 border-b border-regular-border-cl">
+                  <div className="py-3 border-b border-divider-cl">
                      <div className="flex items-center gap-x-2 text-regular-text-cl py-2 px-3 hover:bg-hover-silver-bgcl cursor-pointer">
                         <SettingsIcon sx={{ fontSize: 16 }} />
                         <span>Menu Item</span>
@@ -114,7 +114,7 @@ export const LeftSideNavigation = ({ userData }: TLeftSideNavigationProps) => {
          <button
             hidden={open}
             onClick={() => setOpen(true)}
-            className="flex absolute top-4 right-0 translate-x-1/2 border-regular-border-cl z-20 p-[5px] border border-solid rounded-full bg-top-nav-bgcl hover:bg-hover-silver-bgcl"
+            className="flex absolute top-4 right-0 translate-x-1/2 border-divider-cl z-20 p-[5px] border border-solid rounded-full bg-top-nav-bgcl hover:bg-hover-silver-bgcl"
          >
             <ArrowForwardIosIcon sx={{ fontSize: 14, margin: "auto" }} />
          </button>

@@ -13,6 +13,7 @@ export enum EInternalEvents {
    OPEN_ADD_TASK_MEMBERS_BOARD = "OPEN_ADD_TASK_MEMBERS_BOARD",
    OPEN_TASK_DATES_BOARD = "OPEN_TASK_DATES_BOARD",
    OPEN_APP_SNACKBAR = "OPEN_APP_SNACKBAR",
+   OPEN_PROJECT_MENU = "OPEN_PROJECT_MENU",
 }
 
 interface IEventEmitter {
@@ -35,6 +36,7 @@ interface IEventEmitter {
       message: string | JSX.Element,
       anchorOrigin?: SnackbarOrigin,
    ) => void
+   [EInternalEvents.OPEN_PROJECT_MENU]: (isOpen: boolean) => void
 }
 
 export const eventEmitter = new EventEmitter<IEventEmitter>()

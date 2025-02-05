@@ -15,15 +15,17 @@ import { addNewPhase, setPhases } from "../../redux/project/project-slice"
 import { projectService } from "../../services/project-service"
 import { toast } from "react-toastify"
 import axiosErrorHandler from "../../utils/axios-error-handler"
-import type { TPhaseData } from "../../services/types"
+import type { TPhaseData, TProjectMemberData } from "../../services/types"
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz"
 import { styled, TextField, Tooltip } from "@mui/material"
 import { useDragScroll } from "../../hooks/drag-scroll"
-import { TaskPreviews } from "./TaskPreviews"
+import { TaskPreviews } from "./Phase/TaskPreviews"
 import AddIcon from "@mui/icons-material/Add"
 import CloseIcon from "@mui/icons-material/Close"
 import { randomInteger } from "../../utils/helpers"
 import { Phase } from "./Phase/Phase"
+import { checkUserPermission } from "../../configs/user-permissions"
+import { ProjectRoleGuard } from "../../components/ResourceGuard"
 
 type TAddNewPhaseProps = {
    currentFinalPos: number | null
@@ -142,14 +144,18 @@ const DragOverlayItem = ({ phaseData }: TDragOverlayItemProps) => {
                   </button>
                </Tooltip>
             </div>
-            <TaskPreviews phaseId={id} taskPreviews={taskPreviews} />
+            <TaskPreviews phaseId={id} taskPreviews={taskPreviews || []} />
          </div>
       </div>
    )
 }
 
-export const Phases = () => {
-   const { phases } = useAppSelector(({ project }) => project)
+type TPhasesCanDragAndDropProps = {
+   phases: TPhaseData[]
+   userInProject: TProjectMemberData
+}
+
+const PhasesCanDragAndDrop = ({ phases, userInProject }: TPhasesCanDragAndDropProps) => {
    const sensors = useSensors(
       useSensor(MouseSensor, {
          activationConstraint: {
@@ -159,11 +165,10 @@ export const Phases = () => {
       }),
       useSensor(TouchSensor),
    )
-   const [dndItems, setDndItems] = useState<TPhaseData[]>([])
    const [refToScroll, refToDrag] = useDragScroll()
    const [draggingId, setDraggingId] = useState<number | null>(null)
    const dispatch = useAppDispatch()
-   const dndItemIds: TPhaseData["id"][] = dndItems.map((phase) => phase.id)
+   const dndItems: TPhaseData["id"][] = phases.map((phase) => phase.id)
 
    const handleDragging = (e?: DragStartEvent) => {
       if (e) {
@@ -177,64 +182,18 @@ export const Phases = () => {
       const { over, active } = e
       if (over) {
          if (active.id !== over.id) {
-            setDndItems((pre) => {
-               return arrayMove(
-                  pre,
-                  pre.findIndex((phase) => phase.id === active.id),
-                  pre.findIndex((phase) => phase.id === over.id),
-               )
+            dispatch((dispatch, getState) => {
+               const prePhases = getState().project.phases
+               if (prePhases && prePhases.length > 0) {
+                  const fromIndex = prePhases.findIndex((phase) => phase.id === active.id)
+                  const toIndex = prePhases.findIndex((phase) => phase.id === over.id)
+                  dispatch(setPhases(arrayMove(prePhases, fromIndex, toIndex)))
+               }
             })
          }
       }
       setDraggingId(null)
    }
-
-   const initDndItems = () => {
-      if (phases && phases.length > 0) {
-         setDndItems((pre) => {
-            if (phases.length !== pre.length) {
-               if (pre.length > 0) {
-                  const matchItems: TPhaseData[] = []
-                  for (const dndItem of pre) {
-                     const dndItemId = dndItem.id
-                     const matchItem = phases.find((phase) => phase.id === dndItemId)
-                     if (matchItem) matchItems.push(matchItem)
-                  }
-                  const newPhases: TPhaseData[] = []
-                  for (const phase of phases) {
-                     const phaseId = phase.id
-                     if (!matchItems.some((dndItem) => dndItem.id === phaseId))
-                        newPhases.push(phase)
-                  }
-                  return [...matchItems, ...newPhases]
-               }
-               return phases
-            }
-            return pre.map((dndItem) => phases.find((phase) => phase.id === dndItem.id)!)
-         })
-      }
-   }
-
-   useEffect(() => {
-      initDndItems()
-   }, [phases])
-
-   const getPhases = () => {
-      projectService
-         .getPhases()
-         .then((res) => {
-            dispatch(setPhases(res))
-         })
-         .catch((error) => {
-            toast.error(axiosErrorHandler.handleHttpError(error).message)
-         })
-   }
-
-   useEffect(() => {
-      if (!phases) {
-         getPhases()
-      }
-   }, [])
 
    const findPhaseById = (phases: TPhaseData[], phaseId: number): TPhaseData => {
       return phases.find((phase) => phase.id === phaseId)!
@@ -253,15 +212,15 @@ export const Phases = () => {
                onDragStart={(e) => handleDragging(e)}
                onDragCancel={() => handleDragging()}
             >
-               <SortableContext items={dndItemIds} strategy={horizontalListSortingStrategy}>
+               <SortableContext items={dndItems} strategy={horizontalListSortingStrategy}>
                   <div className="flex gap-x-3 relative box-border h-full pb-2">
                      <DragScrollPlaceholder
-                        dndItemsCount={(dndItems && dndItems.length + 1) || 0}
+                        dndItemsCount={(phases && phases.length + 1) || 0}
                         refToDrag={refToDrag}
                      />
-                     {dndItems &&
-                        dndItems.length > 0 &&
-                        dndItems.map((phase) => (
+                     {phases &&
+                        phases.length > 0 &&
+                        phases.map((phase) => (
                            <Phase
                               key={phase.id}
                               phaseData={phase}
@@ -272,13 +231,77 @@ export const Phases = () => {
                </SortableContext>
                <DragOverlay>
                   {draggingId ? (
-                     <DragOverlayItem phaseData={findPhaseById(dndItems, draggingId)} />
+                     <DragOverlayItem phaseData={findPhaseById(phases, draggingId)} />
                   ) : null}
                </DragOverlay>
             </DndContext>
-            <AddNewPhase currentFinalPos={dndItems[dndItems.length - 1]?.position || null} />
+            <ProjectRoleGuard
+               userProjectRole={userInProject.projectRole}
+               permissions={["CRUD-phase"]}
+            >
+               <AddNewPhase currentFinalPos={phases[phases.length - 1]?.position || null} />
+            </ProjectRoleGuard>
          </div>
       </div>
+   )
+}
+
+type TFixedPhasesProps = {
+   phases: TPhaseData[]
+}
+
+const FixedPhases = ({ phases }: TFixedPhasesProps) => {
+   const [refToScroll, refToDrag] = useDragScroll()
+
+   return (
+      <div className="grow relative">
+         <div
+            ref={refToScroll}
+            className="flex css-phases-styled-hr-scrollbar p-3 pb-0 gap-x-3 overflow-x-auto overflow-y-hidden absolute bottom-2 top-0 left-0 right-0"
+         >
+            <div className="flex gap-x-3 relative box-border h-full pb-2">
+               <DragScrollPlaceholder
+                  dndItemsCount={(phases && phases.length + 1) || 0}
+                  refToDrag={refToDrag}
+               />
+               {phases &&
+                  phases.length > 0 &&
+                  phases.map((phase) => <Phase key={phase.id} phaseData={phase} />)}
+            </div>
+         </div>
+      </div>
+   )
+}
+
+type TCanDragAndDropProps = {
+   userInProject: TProjectMemberData
+}
+
+export const Phases = ({ userInProject }: TCanDragAndDropProps) => {
+   const { phases } = useAppSelector(({ project }) => project)
+   const dispatch = useAppDispatch()
+
+   const getPhases = () => {
+      projectService
+         .getPhases()
+         .then((res) => {
+            dispatch(setPhases(res))
+         })
+         .catch((error) => {
+            toast.error(axiosErrorHandler.handleHttpError(error).message)
+         })
+   }
+
+   useEffect(() => {
+      if (!phases) {
+         getPhases()
+      }
+   }, [])
+
+   return checkUserPermission(userInProject.projectRole, "arrange-phase-task") ? (
+      <PhasesCanDragAndDrop userInProject={userInProject} phases={phases || []} />
+   ) : (
+      <FixedPhases phases={phases || []} />
    )
 }
 

@@ -18,10 +18,10 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs"
 import { DateField } from "@mui/x-date-pickers/DateField"
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown"
 import { useUserInProject } from "../../../hooks/user"
-import { EProjectRoles } from "../../../utils/enums"
 import { toast } from "react-toastify"
 import type { TTaskDatesBoardData } from "../../../utils/types"
 import { EInternalEvents, eventEmitter } from "../../../utils/events"
+import { checkUserPermission } from "../../../configs/user-permissions"
 
 enum EDuteDateReminder {
    MINUTES_BEFORE_0 = "0m",
@@ -46,10 +46,7 @@ const DatesBoard = () => {
 
    const saveDates = useCallback(() => {
       if (newDueDate) {
-         if (
-            userInProject.projectRole === EProjectRoles.LEADER ||
-            userInProject.projectRole === EProjectRoles.ADMIN
-         ) {
+         if (checkUserPermission(userInProject.projectRole, "assign-due-date")) {
             //>>> add reminder if need
             dispatch(updateTaskData({ dueDate: newDueDate.toISOString() }))
          } else {

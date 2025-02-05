@@ -127,13 +127,14 @@ hr {
    display: flex;
    padding: 5px;
    column-gap: 5px;
+   transform: translateY(-50%);
 
    .css-logo-loading-bar {
       &__bar-1,
       &__bar-2,
       &__bar-3 {
          height: 5px;
-         width: 5px;
+         width: 3px;
          transform: scaleY(1);
          transform-origin: 0 0;
          background-color: var(--ht-logo-loading-bar-bgcl);

@@ -10,6 +10,7 @@ import type {
    TTaskMemberData,
    TUserInProjectData,
    TProjectMemberData,
+   TUserData,
 } from "./types"
 import { EProjectRoles, EUserRoles } from "../utils/enums"
 
@@ -306,8 +307,6 @@ class ProjectService {
             ],
          },
       ]
-      // sort data
-      data.sort((a, b) => a.position - b.position)
       return data
    }
 
@@ -362,6 +361,10 @@ class ProjectService {
    }
 
    async leaveProject(): Promise<void> {
+      await perfomDelay(1000)
+   }
+
+   async sendProjectInvitations(...userIds: TUserData["id"][]): Promise<void> {
       await perfomDelay(1000)
    }
 }

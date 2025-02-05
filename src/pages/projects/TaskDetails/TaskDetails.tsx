@@ -14,10 +14,10 @@ import { Description } from "./Description"
 import { TaskMembers } from "./TaskMembers"
 import DeleteIcon from "@mui/icons-material/Delete"
 import { useUserInProject } from "../../../hooks/user"
-import { EProjectRoles } from "../../../utils/enums"
 import { UserActions } from "./UserActions"
 import type { TTaskData } from "../../../services/types"
 import { TaskDueDate } from "./Dates"
+import { checkUserPermission } from "../../../configs/user-permissions"
 
 type TTitleProps = {
    taskTitle: string
@@ -26,6 +26,7 @@ type TTitleProps = {
 
 const Title = ({ taskTitle, onClose }: TTitleProps) => {
    const dispatch = useAppDispatch()
+   const userInProject = useUserInProject()!
 
    const quitEditing = (newTitle: string) => {
       if (newTitle && newTitle.length > 0) {
@@ -59,6 +60,11 @@ const Title = ({ taskTitle, onClose }: TTitleProps) => {
             onKeyDown={catchEditingEnter}
             variant="outlined"
             onBlur={blurListTitleInput}
+            sx={{
+               pointerEvents: checkUserPermission(userInProject.projectRole, "CRUD-phase")
+                  ? "auto"
+                  : "none",
+            }}
          />
          <button onClick={onClose} className="p-1 hover:bg-modal-btn-hover-bgcl rounded ml-3">
             <CloseIcon className="text-regular-text-cl" />
@@ -75,14 +81,11 @@ type TTaskActionsProps = {
 const TaskActions = ({ phaseId, taskId }: TTaskActionsProps) => {
    const [anchorEle, setAnchorEle] = useState<HTMLButtonElement | null>(null)
    const dispatch = useAppDispatch()
-   const user = useUserInProject()!
+   const userInProject = useUserInProject()!
 
    const handleOpenDeleteTaskBoard = (e?: React.MouseEvent<HTMLButtonElement>) => {
       if (e) {
-         if (
-            user.projectRole === EProjectRoles.ADMIN ||
-            user.projectRole === EProjectRoles.LEADER
-         ) {
+         if (checkUserPermission(userInProject.projectRole, "CRUD-task")) {
             setAnchorEle(e.currentTarget)
          } else {
             toast.error("You must be admin or leader to delete a task")
