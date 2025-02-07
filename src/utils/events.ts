@@ -1,6 +1,6 @@
 import EventEmitter from "eventemitter3"
 import type { TPhaseData } from "../services/types"
-import type { TAddMembersBoardData, TTaskDatesBoardData } from "./types"
+import type { TAddMembersBoardData, TTaskDatesBoardData, TUserPreviewBoardData } from "./types"
 import type { SnackbarOrigin } from "@mui/material/Snackbar"
 
 export enum EInternalEvents {
@@ -14,6 +14,7 @@ export enum EInternalEvents {
    OPEN_TASK_DATES_BOARD = "OPEN_TASK_DATES_BOARD",
    OPEN_APP_SNACKBAR = "OPEN_APP_SNACKBAR",
    OPEN_PROJECT_MENU = "OPEN_PROJECT_MENU",
+   OPEN_USER_PREVIEW = "OPEN_USER_PREVIEW",
 }
 
 interface IEventEmitter {
@@ -37,6 +38,7 @@ interface IEventEmitter {
       anchorOrigin?: SnackbarOrigin,
    ) => void
    [EInternalEvents.OPEN_PROJECT_MENU]: (isOpen: boolean) => void
+   [EInternalEvents.OPEN_USER_PREVIEW]: (boardData: TUserPreviewBoardData) => void
 }
 
 export const eventEmitter = new EventEmitter<IEventEmitter>()

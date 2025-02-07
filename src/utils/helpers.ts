@@ -2,6 +2,7 @@ import dayjs from "dayjs"
 import { EInternalEvents, eventEmitter } from "./events"
 import type { SnackbarOrigin } from "@mui/material"
 import { EProjectRoles } from "./enums"
+import type { TProjectMemberData } from "../services/types"
 
 export const pureNavigator = (href: string, isReloadPage?: boolean): void => {
    if (isReloadPage) {
@@ -80,4 +81,11 @@ export const displayProjectRole = (projectRole: EProjectRoles): string => {
          return "Leader"
    }
    return "Member"
+}
+
+export const checkIfUserIsProjectMember = (
+   projectMembers: TProjectMemberData[],
+   memberId: number,
+) => {
+   return projectMembers.some(({ id }) => id === memberId)
 }

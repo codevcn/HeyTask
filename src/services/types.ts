@@ -30,7 +30,7 @@ export type TProjectData = {
    id: number
    title: string
    members: TProjectMemberData[]
-   invitationLink: string
+   shareLink: string | null
 }
 
 export type TCustomizationData = {
@@ -38,7 +38,7 @@ export type TCustomizationData = {
    background: string | null
 }
 
-export type TTaskMemberData = TProjectMemberData
+export type TTaskMemberData = TUserData & TUserInProjectData
 
 export type TCommentData = {
    id: number
@@ -54,6 +54,7 @@ export type TTaskData = {
    members: TTaskMemberData[] | null
    comments: TCommentData[] | null
    dueDate: string | null
+   isComplete: boolean
 }
 
 export type TTaskPreviewData = {
@@ -62,6 +63,7 @@ export type TTaskPreviewData = {
    hasDescription: boolean
    taskMembers: TTaskMemberData[] | null
    position: number
+   isComplete: boolean
 }
 
 export type TPhaseData = {
@@ -83,4 +85,8 @@ export type TTaskFileData = {
 export type TUploadedFileData = {
    id: number
    url: string
+}
+
+export type TCreateNewShareLinkData = {
+   newshareLink: string
 }

@@ -30,6 +30,7 @@ article {
 
 input {
    outline: none;
+   padding: 0;
 }
 
 hr {
@@ -125,30 +126,31 @@ hr {
 
 .css-logo-loading-container {
    display: flex;
-   padding: 5px;
    column-gap: 5px;
    transform: translateY(-50%);
 
    .css-logo-loading-bar {
-      &__bar-1,
-      &__bar-2,
-      &__bar-3 {
-         height: 5px;
-         width: 3px;
-         transform: scaleY(1);
-         transform-origin: 0 0;
-         background-color: var(--ht-logo-loading-bar-bgcl);
-         animation-duration: 1s;
-         animation-timing-function: ease-in-out;
-         animation-iteration-count: infinite;
-         animation-name: logo-loading;
-      }
+      height: 5px;
+      width: 3px;
+      transform: scaleY(1);
+      transform-origin: 0 0;
+      background-color: var(--ht-logo-loading-bar-bgcl);
+      animation-duration: 1s;
+      animation-timing-function: ease-in-out;
+      animation-iteration-count: infinite;
+      animation-name: logo-loading-medium;
 
-      &__bar-2 {
+      &.loading-bar-2 {
          animation-delay: 0.1s;
       }
-      &__bar-3 {
+      &.loading-bar-3 {
          animation-delay: 0.2s;
+      }
+   }
+
+   &.size-small {
+      .css-logo-loading-bar {
+         animation-name: logo-loading-small;
       }
    }
 }

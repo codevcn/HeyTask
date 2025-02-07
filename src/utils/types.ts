@@ -1,5 +1,5 @@
 import type { HttpStatusCode } from "axios"
-import type { TTaskData, TTaskMemberData, TTaskPreviewData } from "../services/types"
+import type { TTaskData, TTaskMemberData, TTaskPreviewData, TUserData } from "../services/types"
 import type { PopoverOrigin } from "@mui/material"
 
 export type TSuccess = {
@@ -24,10 +24,6 @@ export type THttpErrorResBody =
 
 export type TPhaseTaskPreview = TTaskPreviewData & {
    phaseId: number
-}
-
-export type TProjectPageParams = {
-   projectId: string
 }
 
 export type TRegularSizes = "small" | "medium" | "large"
@@ -69,4 +65,9 @@ export type TAddMembersBoardData = {
 
 export type TTaskDatesBoardData = {
    anchorEle: HTMLButtonElement | null
+}
+
+export type TUserPreviewBoardData = {
+   anchorEle: HTMLElement | null
+   userData: TUserData | null
 }

@@ -1,32 +1,27 @@
 import InfoIcon from "@mui/icons-material/Info"
 import AccountCircleIcon from "@mui/icons-material/AccountCircle"
-import type { TProjectData, TProjectMemberData } from "../../../services/types"
-import { Avatar, AvatarGroup, Fade, Popover, styled, Tooltip } from "@mui/material"
+import type { TProjectData, TProjectMemberData, TUserData } from "../../../services/types"
+import { Avatar, AvatarGroup, styled, Tooltip } from "@mui/material"
 import { useProjectMenuContext } from "./sharing"
 import ReorderIcon from "@mui/icons-material/Reorder"
 import { EProjectRoles } from "../../../utils/enums"
-import { useMemo, useState } from "react"
+import { useMemo } from "react"
+import { EInternalEvents, eventEmitter } from "../../../utils/events"
 
 type TProjectAdminsProps = {
    projectMembers: TProjectMemberData[]
 }
 
 const ProjectAdmins = ({ projectMembers }: TProjectAdminsProps) => {
-   const [anchorEle, setAnchorEle] = useState<HTMLElement>()
-
-   const handleOpenUserPreview = (e?: React.MouseEvent<HTMLElement>) => {
-      if (e) {
-         setAnchorEle(e.currentTarget)
-      } else {
-         setAnchorEle(undefined)
-      }
-   }
-
    const filteredAdmins = useMemo<TProjectMemberData[]>(() => {
       return projectMembers.filter((member) => member.projectRole === EProjectRoles.ADMIN)
    }, [projectMembers])
 
    const firstAdmin = filteredAdmins[0]
+
+   const handleOpenUserPreview = (e: React.MouseEvent<HTMLElement>, userData: TUserData) => {
+      eventEmitter.emit(EInternalEvents.OPEN_USER_PREVIEW, { anchorEle: e.currentTarget, userData })
+   }
 
    return (
       <div>
@@ -37,12 +32,18 @@ const ProjectAdmins = ({ projectMembers }: TProjectAdminsProps) => {
          <div className="mt-2 pl-1">
             {filteredAdmins.length > 1 ? (
                <StyledAvatarGroup spacing={5} max={100}>
-                  {filteredAdmins.map(({ id, avatar, fullName }) => (
-                     <Tooltip key={id} title={fullName} arrow>
-                        {avatar ? (
-                           <Avatar alt="User Avatar" src={avatar} onClick={handleOpenUserPreview} />
+                  {filteredAdmins.map((member) => (
+                     <Tooltip key={member.id} title={member.fullName} arrow>
+                        {member.avatar ? (
+                           <Avatar
+                              alt="User Avatar"
+                              src={member.avatar}
+                              onClick={(e) => handleOpenUserPreview(e, member)}
+                           />
                         ) : (
-                           <Avatar onClick={handleOpenUserPreview}>{fullName[0]}</Avatar>
+                           <Avatar onClick={(e) => handleOpenUserPreview(e, member)}>
+                              {member.fullName[0]}
+                           </Avatar>
                         )}
                      </Tooltip>
                   ))}
@@ -55,10 +56,13 @@ const ProjectAdmins = ({ projectMembers }: TProjectAdminsProps) => {
                            alt="User Avatar"
                            src={firstAdmin.avatar}
                            sx={{ height: 50, width: 50 }}
-                           onClick={handleOpenUserPreview}
+                           onClick={(e) => handleOpenUserPreview(e, firstAdmin)}
                         />
                      ) : (
-                        <Avatar sx={{ height: 50, width: 50 }} onClick={handleOpenUserPreview}>
+                        <Avatar
+                           sx={{ height: 50, width: 50 }}
+                           onClick={(e) => handleOpenUserPreview(e, firstAdmin)}
+                        >
                            {firstAdmin.fullName[0]}
                         </Avatar>
                      )}
@@ -70,23 +74,6 @@ const ProjectAdmins = ({ projectMembers }: TProjectAdminsProps) => {
                </div>
             )}
          </div>
-
-         <StyledPopover
-            anchorEl={anchorEle}
-            open={!!anchorEle}
-            onClose={() => handleOpenUserPreview()}
-            TransitionComponent={Fade}
-            anchorOrigin={{
-               vertical: "bottom",
-               horizontal: "left",
-            }}
-            transformOrigin={{
-               vertical: "top",
-               horizontal: "left",
-            }}
-         >
-            <div className="bg-transparent min-w-52 py-1 pb-3 border border-solid border-regular-border-cl rounded-lg"></div>
-         </StyledPopover>
       </div>
    )
 }
@@ -149,18 +136,6 @@ const StyledAvatarGroup = styled(AvatarGroup)({
          "&:hover": {
             outline: "2px solid white",
          },
-      },
-   },
-})
-
-const StyledPopover = styled(Popover)({
-   "& .MuiPaper-root": {
-      borderRadius: 8,
-      backgroundColor: "var(--ht-modal-popover-bgcl)",
-      height: "fit-content",
-      "& .MuiList-root": {
-         backgroundColor: "var(--ht-modal-popover-bgcl)",
-         borderRadius: 8,
       },
    },
 })

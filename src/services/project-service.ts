@@ -11,6 +11,7 @@ import type {
    TUserInProjectData,
    TProjectMemberData,
    TUserData,
+   TCreateNewShareLinkData,
 } from "./types"
 import { EProjectRoles, EUserRoles } from "../utils/enums"
 
@@ -150,7 +151,7 @@ class ProjectService {
          title: "VCN Project",
          id: projectId,
          members: projectMembers,
-         invitationLink: "http://localhost:5173/projects/1",
+         shareLink: "http://localhost:5173/projects/1",
       }
       return data
    }
@@ -180,6 +181,7 @@ class ProjectService {
                   hasDescription: true,
                   position: 1,
                   taskMembers: taskMembers.slice(0, 5),
+                  isComplete: false,
                },
                {
                   id: 3,
@@ -187,6 +189,7 @@ class ProjectService {
                   hasDescription: true,
                   position: 2,
                   taskMembers: null,
+                  isComplete: false,
                },
             ],
          },
@@ -202,6 +205,7 @@ class ProjectService {
                   hasDescription: true,
                   position: 3,
                   taskMembers: null,
+                  isComplete: false,
                },
                {
                   id: 5,
@@ -209,6 +213,7 @@ class ProjectService {
                   hasDescription: true,
                   position: 4,
                   taskMembers: null,
+                  isComplete: false,
                },
                {
                   id: 6,
@@ -216,6 +221,7 @@ class ProjectService {
                   hasDescription: true,
                   position: 5,
                   taskMembers: null,
+                  isComplete: false,
                },
                {
                   id: 99,
@@ -223,6 +229,7 @@ class ProjectService {
                   hasDescription: true,
                   position: 6,
                   taskMembers: null,
+                  isComplete: false,
                },
                {
                   id: 101,
@@ -230,6 +237,7 @@ class ProjectService {
                   hasDescription: true,
                   position: 7,
                   taskMembers: null,
+                  isComplete: false,
                },
                {
                   id: 105,
@@ -237,6 +245,7 @@ class ProjectService {
                   hasDescription: true,
                   position: 8,
                   taskMembers: null,
+                  isComplete: false,
                },
                {
                   id: 102,
@@ -244,6 +253,7 @@ class ProjectService {
                   hasDescription: true,
                   position: 9,
                   taskMembers: null,
+                  isComplete: false,
                },
                {
                   id: 103,
@@ -251,6 +261,7 @@ class ProjectService {
                   hasDescription: true,
                   position: 10,
                   taskMembers: null,
+                  isComplete: false,
                },
             ],
          },
@@ -266,6 +277,7 @@ class ProjectService {
                   hasDescription: true,
                   position: 11,
                   taskMembers: null,
+                  isComplete: false,
                },
             ],
          },
@@ -281,6 +293,7 @@ class ProjectService {
                   hasDescription: true,
                   position: 12,
                   taskMembers: null,
+                  isComplete: false,
                },
             ],
          },
@@ -296,6 +309,7 @@ class ProjectService {
                   hasDescription: true,
                   position: 13,
                   taskMembers: null,
+                  isComplete: false,
                },
                {
                   id: 20,
@@ -303,6 +317,7 @@ class ProjectService {
                   hasDescription: true,
                   position: 14,
                   taskMembers: null,
+                  isComplete: false,
                },
             ],
          },
@@ -319,6 +334,7 @@ class ProjectService {
          title: "Web do homework okay?",
          comments: null,
          dueDate: "2025-01-30T08:39:41.890Z",
+         isComplete: false,
       }
       return data
    }
@@ -365,6 +381,26 @@ class ProjectService {
    }
 
    async sendProjectInvitations(...userIds: TUserData["id"][]): Promise<void> {
+      await perfomDelay(1000)
+   }
+
+   async joinProject(projectId: number): Promise<void> {
+      await perfomDelay(1000)
+   }
+
+   async markAsCompleteTask(taskId: number, isComplete: boolean): Promise<void> {
+      await perfomDelay(1000)
+   }
+
+   async createNewShareLink(projectId: number): Promise<TCreateNewShareLinkData> {
+      await perfomDelay(1000)
+      const data: TCreateNewShareLinkData = {
+         newshareLink: "https://codevcn.net",
+      }
+      return data
+   }
+
+   async deleteShareLink(projectId: number): Promise<void> {
       await perfomDelay(1000)
    }
 }

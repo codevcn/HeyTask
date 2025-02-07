@@ -6,7 +6,7 @@ import AddIcon from "@mui/icons-material/Add"
 import { useAppDispatch, useAppSelector } from "../../../hooks/redux"
 import { removeTaskMember } from "../../../redux/project/project-slice"
 import HighlightOffIcon from "@mui/icons-material/HighlightOff"
-import { getMembersSelector } from "../../../redux/project/selectors"
+import { getAllMembersSelector } from "../../../redux/project/selectors"
 import { useUserInProject } from "../../../hooks/user"
 import { toast } from "react-toastify"
 import { addNewTaskMemberAction } from "../../../redux/project/actions"
@@ -15,7 +15,7 @@ import type { TAddMembersBoardData } from "../../../utils/types"
 import { checkUserPermission } from "../../../configs/user-permissions"
 
 const AddMemberBoard = () => {
-   const { projectMembers, taskMembers } = useAppSelector(getMembersSelector())
+   const { projectMembers, taskMembers } = useAppSelector(getAllMembersSelector())
    const [searchResult, setSearchResult] = useState<TProjectMemberData[]>()
    const dispatch = useAppDispatch()
    const userInProject = useUserInProject()!

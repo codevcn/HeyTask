@@ -1,6 +1,6 @@
 import { Avatar, styled, Tabs, Tab, Popover } from "@mui/material"
 import type { TProjectMemberData } from "../../../services/types"
-import { useMemo, useState } from "react"
+import { useState } from "react"
 import CloseIcon from "@mui/icons-material/Close"
 import { useUserInProject } from "../../../hooks/user"
 import PersonOutlineIcon from "@mui/icons-material/PersonOutline"
@@ -20,7 +20,6 @@ import { checkUserPermission } from "../../../configs/user-permissions"
 
 type TRolesProps = {
    selectedMember: TProjectMemberData
-   adminsCount: number
    userInProject: TProjectMemberData
 }
 
@@ -28,7 +27,6 @@ type TEditAuthorizationProps = {
    anchorEle: HTMLElement | null
    selectedMember: TProjectMemberData | undefined
    userInProject: TProjectMemberData
-   projectMembers: TProjectMemberData[]
    onClose: () => void
 }
 
@@ -36,7 +34,6 @@ const EditAuthorization = ({
    anchorEle,
    selectedMember,
    userInProject,
-   projectMembers,
    onClose,
 }: TEditAuthorizationProps) => {
    const leaveProject = () => {
@@ -51,20 +48,11 @@ const EditAuthorization = ({
          })
    }
 
-   const currentAdmins = useMemo(() => {
-      if (projectMembers && projectMembers.length > 0) {
-         return projectMembers.filter((member) => member.projectRole === EProjectRoles.ADMIN)
-      }
-      return []
-   }, [projectMembers])
-
-   const Roles = ({ selectedMember, adminsCount, userInProject }: TRolesProps) => {
+   const Roles = ({ selectedMember, userInProject }: TRolesProps) => {
       const userProjectRole = userInProject.projectRole
       const selectedMemberId = selectedMember.id
       const inactiveClass: string = "opacity-60 pointer-events-none"
       const hasPermission = checkUserPermission(userProjectRole, "assign-project-role")
-      const leastAdmin = adminsCount < 2
-      const selectedMemberIsAdmin = userProjectRole === EProjectRoles.ADMIN
 
       const dispatch = useAppDispatch()
 
@@ -80,48 +68,29 @@ const EditAuthorization = ({
          onClose()
       }
 
-      const pickingClassForAdmin = (): string => {
-         if (hasPermission) {
-            if (selectedMemberIsAdmin && leastAdmin) {
-               return inactiveClass
-            }
-            return ""
-         }
-         return inactiveClass
-      }
-
       return (
          <ul className="mt-1 text-modal-text-cl">
             <li
-               onClick={() => assignUserProjectRole(EProjectRoles.ADMIN, selectedMemberId)}
+               onClick={() => assignUserProjectRole(EProjectRoles.LEADER, selectedMemberId)}
                className={`${hasPermission ? "" : inactiveClass} cursor-pointer hover:bg-hover-silver-bgcl py-2 px-3 text-sm font-medium`}
             >
-               Admin
-            </li>
-            <li
-               onClick={() => assignUserProjectRole(EProjectRoles.LEADER, selectedMemberId)}
-               className={`${pickingClassForAdmin()} cursor-pointer hover:bg-hover-silver-bgcl py-2 px-3 text-sm font-medium`}
-            >
                <p>Leader</p>
-               {leastAdmin && <p className="text-xs">Projects must have at least one admin.</p>}
             </li>
             <li
                onClick={() => assignUserProjectRole(EProjectRoles.MEMBER, selectedMemberId)}
-               className={`${pickingClassForAdmin()} cursor-pointer hover:bg-hover-silver-bgcl py-2 px-3 text-sm font-medium`}
+               className={`${hasPermission ? "" : inactiveClass} cursor-pointer hover:bg-hover-silver-bgcl py-2 px-3 text-sm font-medium`}
             >
                <p>Member</p>
-               {leastAdmin && <p className="text-xs">Projects must have at least one admin.</p>}
             </li>
             {selectedMemberId === userInProject.id ? (
                <li
                   onClick={leaveProject}
-                  className={`${leastAdmin ? inactiveClass : ""} cursor-pointer hover:bg-hover-silver-bgcl py-2 px-3 text-sm font-medium`}
+                  className={`cursor-pointer hover:bg-hover-silver-bgcl py-2 px-3 text-sm font-medium`}
                >
                   <div className="flex items-center justify-between gap-x-3">
                      <span>Leave project</span>
                      <LogoutIcon fontSize="small" />
                   </div>
-                  {leastAdmin && <p className="text-xs">Projects must have at least one admin.</p>}
                </li>
             ) : (
                <li
@@ -165,11 +134,7 @@ const EditAuthorization = ({
                </button>
             </header>
             {selectedMember && (
-               <Roles
-                  selectedMember={selectedMember}
-                  adminsCount={currentAdmins.length}
-                  userInProject={userInProject}
-               />
+               <Roles selectedMember={selectedMember} userInProject={userInProject} />
             )}
          </div>
       </StyledPopover>
@@ -274,7 +239,6 @@ export const ProjectMembers = ({ projectMembers }: TProjectMembersProps) => {
          <EditAuthorization
             anchorEle={anchorEle}
             onClose={() => handleOpenAuthorization()}
-            projectMembers={projectMembers}
             selectedMember={selectedMember}
             userInProject={userInProject}
          />

@@ -10,9 +10,8 @@ import MoreHorizIcon from "@mui/icons-material/MoreHoriz"
 import { Tooltip } from "@mui/material"
 import { Phases } from "./Phases"
 import type { TProjectData, TProjectMemberData, TUserInProjectData } from "../../services/types"
-import { measureTextWidth } from "../../utils/helpers"
+import { checkIfUserIsProjectMember, measureTextWidth } from "../../utils/helpers"
 import { useParams } from "react-router-dom"
-import type { TProjectPageParams } from "../../utils/types"
 import { TaskDetails } from "./TaskDetails/TaskDetails"
 import { TaskFileDetails } from "./TaskDetails/TaskFileDetails"
 import { useUserInProject } from "../../hooks/user"
@@ -21,6 +20,7 @@ import { ShareProject } from "./ShareProject/ShareProject"
 import { checkUserPermission } from "../../configs/user-permissions"
 import { ProjectMenu } from "./ProjectMenu/ProjectMenu"
 import { EInternalEvents, eventEmitter } from "../../utils/events"
+import { UserPreview } from "./UserPreview"
 
 type TEditableSectionProps = {
    projectData: TProjectData
@@ -119,31 +119,9 @@ type THeaderProps = {
 }
 
 const Header = ({ userInProject }: THeaderProps) => {
-   const { project } = useAppSelector(({ project }) => project)
-   const dispatch = useAppDispatch()
-   const { projectId } = useParams<TProjectPageParams>()
-
-   const getProjectHandler = async (projectId: number) => {
-      projectService
-         .getProjectData(projectId)
-         .then((res) => {
-            dispatch(setProject(res))
-         })
-         .catch((error) => {
-            toast.error(axiosErrorHandler.handleHttpError(error).message)
-         })
-         .finally(() => {})
-   }
-
    const openProjectMenu = () => {
       eventEmitter.emit(EInternalEvents.OPEN_PROJECT_MENU, true)
    }
-
-   useEffect(() => {
-      if (!project && projectId) {
-         getProjectHandler(parseInt(projectId))
-      }
-   }, [])
 
    return (
       <header className="flex justify-between items-center flex-wrap h-top-nav overflow-x-hidden gap-y-3 gap-x-5 py-3 px-5 bg-[#0000003d] backdrop-blur-sm w-full">
@@ -163,18 +141,55 @@ const Header = ({ userInProject }: THeaderProps) => {
    )
 }
 
+const NoProject = () => {
+   return (
+      <div className="flex flex-col text-regular-text-cl w-main-board">
+         <p></p>
+      </div>
+   )
+}
+
+type TProjectPageParams = {
+   projectId: string
+}
+
 export const MainBoard = () => {
    const userInProject = useUserInProject()
+   const { projectId } = useParams<TProjectPageParams>()
+   const { project } = useAppSelector(({ project }) => project)
+   const dispatch = useAppDispatch()
+
+   const getProjectHandler = async (projectId: number) => {
+      projectService
+         .getProjectData(projectId)
+         .then((res) => {
+            dispatch(setProject(res))
+         })
+         .catch((error) => {
+            toast.error(axiosErrorHandler.handleHttpError(error).message)
+         })
+         .finally(() => {})
+   }
+
+   useEffect(() => {
+      if (!project && projectId) {
+         getProjectHandler(parseInt(projectId))
+      }
+   }, [])
 
    return (
-      userInProject && (
-         <div className="flex flex-col flex-1 text-white w-main-board">
+      userInProject &&
+      (project && checkIfUserIsProjectMember(project.members, userInProject.id) ? (
+         <div className="flex flex-col flex-1 text-regular-text-cl w-main-board">
             <Header userInProject={userInProject} />
             <Phases userInProject={userInProject} />
             <TaskDetails />
             <TaskFileDetails />
             <AboutPhase />
+            <UserPreview />
          </div>
-      )
+      ) : (
+         <NoProject />
+      ))
    )
 }

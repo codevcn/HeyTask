@@ -3,10 +3,10 @@ import type { TRootState } from "../store"
 
 export const checkIfUserInTaskSelector = (userId: number) =>
    createSelector([({ project }: TRootState) => project.taskData], (taskData) => {
-      return !!taskData?.members?.some((member) => member.id === userId)
+      return !!taskData?.members?.some(({ id }) => id === userId)
    })
 
-export const getMembersSelector = () =>
+export const getAllMembersSelector = () =>
    createSelector([({ project }: TRootState) => project], (projectState) => {
       return {
          taskMembers: projectState.taskData!.members,

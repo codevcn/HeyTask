@@ -43,33 +43,32 @@ export const checkUserPermissions = (
    userProjectRole: EProjectRoles,
    ...permissions: TAllPermissions[]
 ): boolean => {
-   let hasPermission: boolean = true
    switch (userProjectRole) {
       case EProjectRoles.ADMIN:
          for (const permission of permissions) {
             if (!adminPermissions.includes(permission as any)) {
-               hasPermission = false
+               return false
             }
          }
-         return hasPermission
+         return true
       case EProjectRoles.LEADER:
          for (const permission of permissions) {
             if (!leaderPermissions.includes(permission as any)) {
-               hasPermission = false
+               return false
             }
          }
-         return hasPermission
+         return true
    }
    for (const permission of permissions) {
       if (!memberPermissions.includes(permission as any)) {
-         hasPermission = false
+         return false
       }
    }
-   return hasPermission
+   return true
 }
 
 /** Check if user has at least one of given permissions */
-export const checkSomeUserPermissions = (
+export const checkAtLeastUserPermissions = (
    userProjectRole: EProjectRoles,
    ...permissions: TAllPermissions[]
 ): boolean => {

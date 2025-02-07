@@ -22,6 +22,9 @@ import axiosErrorHandler from "../../../utils/axios-error-handler"
 import { userService } from "../../../services/user-service"
 import { useDebounce } from "../../../hooks/debounce"
 import { LogoLoading } from "../../../components/Loadings"
+import { EInternalEvents, eventEmitter } from "../../../utils/events"
+import { useAppDispatch } from "../../../hooks/redux"
+import { updateProject } from "../../../redux/project/project-slice"
 
 type TSearchStatus = "searching" | "search-done"
 
@@ -96,7 +99,7 @@ const SearchSection = () => {
             )}
             <input
                ref={inputRef}
-               placeholder="Enter user's email address..."
+               placeholder="Enter user's email address or name..."
                className="px-1 w-full bg-inherit"
                onChange={searchUser}
             />
@@ -155,16 +158,51 @@ const SearchSection = () => {
 }
 
 type TSharingSectionProps = {
-   invitationLink: string
+   shareLink: string | null
+   projectId: number
 }
 
-const SharingSection = ({ invitationLink }: TSharingSectionProps) => {
-   const copyShareLink = () => {
-      navigator.clipboard.writeText(invitationLink)
+const SharingSection = ({ shareLink, projectId }: TSharingSectionProps) => {
+   const [currentLink, setCurrentLink] = useState<string | null>(shareLink)
+   const [loading, setLoading] = useState<boolean>()
+   const dispatch = useAppDispatch()
+
+   const copyShareLink = (link: string) => {
+      navigator.clipboard.writeText(link)
       openAppSnackbarHandler(<SimpleSnackbarTemplate textContent="Copied link to clipboard" />)
    }
 
-   const deleteShareLink = () => {}
+   const deleteShareLink = () => {
+      setLoading(true)
+      projectService
+         .deleteShareLink(projectId)
+         .then(() => {
+            setCurrentLink(null)
+         })
+         .catch((error) => {
+            toast.error(axiosErrorHandler.handleHttpError(error).message)
+         })
+         .finally(() => {
+            // setLoading(false)
+         })
+   }
+
+   const createNewLink = () => {
+      setLoading(true)
+      projectService
+         .createNewShareLink(projectId)
+         .then((res) => {
+            const { newshareLink } = res
+            setCurrentLink(newshareLink)
+            dispatch(updateProject({ shareLink: newshareLink }))
+         })
+         .catch((error) => {
+            toast.error(axiosErrorHandler.handleHttpError(error).message)
+         })
+         .finally(() => {
+            // setLoading(false)
+         })
+   }
 
    return (
       <div className="text-modal-text-cl w-full">
@@ -173,18 +211,36 @@ const SharingSection = ({ invitationLink }: TSharingSectionProps) => {
             <div className="flex gap-x-2">
                <LinkIcon className="text-inherit" />
                <Tooltip title="Anyone with the link can join as a member" arrow>
-                  <span className="truncate max-w-[300px]">{invitationLink}</span>
+                  <span className="truncate max-w-[300px]">{shareLink}</span>
                </Tooltip>
             </div>
-            <div className="flex gap-x-2 text-sm">
-               <button onClick={copyShareLink} className="text-confirm-btn-bgcl hover:underline">
-                  Copy link
-               </button>
-               <span>•</span>
-               <button onClick={deleteShareLink} className="text-confirm-btn-bgcl hover:underline">
-                  Delete link
-               </button>
-            </div>
+            {loading ? (
+               <div className="flex">
+                  <LogoLoading size="small" />
+               </div>
+            ) : currentLink ? (
+               <div className="flex gap-x-2 text-sm">
+                  <button
+                     onClick={() => copyShareLink(currentLink)}
+                     className="text-confirm-btn-bgcl hover:underline"
+                  >
+                     Copy link
+                  </button>
+                  <span>•</span>
+                  <button
+                     onClick={deleteShareLink}
+                     className="text-confirm-btn-bgcl hover:underline"
+                  >
+                     Delete link
+                  </button>
+               </div>
+            ) : (
+               <div className="flex gap-x-2 text-sm">
+                  <button onClick={createNewLink} className="text-confirm-btn-bgcl hover:underline">
+                     Create new link
+                  </button>
+               </div>
+            )}
          </div>
       </div>
    )
@@ -198,18 +254,28 @@ export const ShareProject = ({ projectData }: TShareProjectProps) => {
    const { members } = projectData
    const [openDialog, setOpenDialog] = useState<boolean>(false)
 
+   const openUserPreview = (e: React.MouseEvent<HTMLElement>, userData: TUserData) => {
+      eventEmitter.emit(EInternalEvents.OPEN_USER_PREVIEW, { anchorEle: e.currentTarget, userData })
+   }
+
    return (
       <div className="flex items-center gap-x-3">
          <StyledAvatarGroup
-            max={3}
+            max={5}
             renderSurplus={(surplus) => <span>+{surplus.toString()[0]}</span>}
          >
             {members.map((member) => (
                <Tooltip key={member.id} title={member.fullName} arrow>
                   {member.avatar ? (
-                     <Avatar alt="User Avatar" src={member.avatar} />
+                     <Avatar
+                        alt="User Avatar"
+                        src={member.avatar}
+                        onClick={(e) => openUserPreview(e, member)}
+                     />
                   ) : (
-                     <Avatar>{member.fullName[0]}</Avatar>
+                     <Avatar onClick={(e) => openUserPreview(e, member)}>
+                        {member.fullName[0]}
+                     </Avatar>
                   )}
                </Tooltip>
             ))}
@@ -247,7 +313,7 @@ export const ShareProject = ({ projectData }: TShareProjectProps) => {
                      </button>
                   </header>
                   <div className="w-full mt-5">
-                     <SharingSection invitationLink={projectData.invitationLink} />
+                     <SharingSection shareLink={projectData.shareLink} projectId={projectData.id} />
                      <ProjectMembers projectMembers={members} />
                   </div>
                </div>

@@ -24,6 +24,7 @@ export default {
             "divider-cl": "var(--ht-divider-cl)",
             "modal-text-cl": "var(--ht-modal-text-cl)",
             "success-text-cl": "var(--ht-success-text-cl)",
+            "radio-outline-cl": "var(--ht-radio-outline-cl)",
          },
          height: {
             background: "calc(100% - var(--ht-top-nav-height))",

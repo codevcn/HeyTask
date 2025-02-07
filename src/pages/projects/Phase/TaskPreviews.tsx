@@ -4,7 +4,11 @@ import ReorderIcon from "@mui/icons-material/Reorder"
 import AddIcon from "@mui/icons-material/Add"
 import { KeyboardEvent, useMemo, useState } from "react"
 import CloseIcon from "@mui/icons-material/Close"
-import { addNewTaskPreview, updateSinglePhase } from "../../../redux/project/project-slice"
+import {
+   addNewTaskPreview,
+   updateSinglePhase,
+   updateTaskPreview,
+} from "../../../redux/project/project-slice"
 import { useAppDispatch } from "../../../hooks/redux"
 import { randomInteger } from "../../../utils/helpers"
 import {
@@ -26,6 +30,11 @@ import {
    useSensors,
 } from "@dnd-kit/core"
 import { EInternalEvents, eventEmitter } from "../../../utils/events"
+import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUnchecked"
+import CheckCircleIcon from "@mui/icons-material/CheckCircle"
+import { projectService } from "../../../services/project-service"
+import { toast } from "react-toastify"
+import axiosErrorHandler from "../../../utils/axios-error-handler"
 
 type TTaskPreviewProps = {
    taskPreviewData: TTaskPreviewData
@@ -34,11 +43,25 @@ type TTaskPreviewProps = {
 }
 
 const Task = ({ taskPreviewData, className, phaseId }: TTaskPreviewProps) => {
-   const { id, taskMembers, hasDescription, title } = taskPreviewData
+   const { id, taskMembers, hasDescription, title, isComplete } = taskPreviewData
    const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id })
+   const dispatch = useAppDispatch()
 
    const openTaskDetails = () => {
       eventEmitter.emit(EInternalEvents.OPEN_TASK_DETAILS_MODAL, true, id, phaseId)
+   }
+
+   const handleMarkAsComplete = (e: React.MouseEvent<HTMLButtonElement>) => {
+      e.stopPropagation()
+      const newStatus = !isComplete
+      projectService
+         .markAsCompleteTask(id, newStatus)
+         .catch((error) => {
+            toast.error(axiosErrorHandler.handleHttpError(error).message)
+         })
+         .finally(() => {
+            dispatch(updateTaskPreview({ ...taskPreviewData, phaseId, isComplete: newStatus }))
+         })
    }
 
    return (
@@ -52,10 +75,34 @@ const Task = ({ taskPreviewData, className, phaseId }: TTaskPreviewProps) => {
          {...listeners}
       >
          <div
-            className={`bg-focused-textfield-bgcl cursor-pointer mb-2 rounded-lg py-2 px-3 pr-2 hover:outline outline-2 outline-white ${className || ""}`}
+            className={`${className || ""} group bg-focused-textfield-bgcl cursor-pointer mb-2 rounded-lg py-2 px-3 pr-2 hover:outline outline-2 outline-white`}
             onClick={openTaskDetails}
          >
-            <h3 className="text-sm">{title}</h3>
+            <div className="flex gap-x-1.5">
+               <Tooltip title="Mark as complete" placement="left" arrow>
+                  <button
+                     onClick={(e) => handleMarkAsComplete(e)}
+                     className={`${isComplete ? "min-w-5" : "group-hover:min-w-5"} group/icon-btn flex min-w-0 w-0 overflow-x-hidden transition-[min-width]`}
+                  >
+                     {isComplete ? (
+                        <CheckCircleIcon
+                           fontSize="small"
+                           sx={{ height: 20, width: 20 }}
+                           className="text-success-text-cl"
+                        />
+                     ) : (
+                        <RadioButtonUncheckedIcon
+                           fontSize="small"
+                           sx={{ height: 20, width: 20 }}
+                           className="group-hover/icon-btn:fill-success-text-cl"
+                        />
+                     )}
+                  </button>
+               </Tooltip>
+               <h3 className={`${isComplete ? "line-through" : ""} flex text-sm grow break-words`}>
+                  {title}
+               </h3>
+            </div>
             <div className="flex items-center justify-between mt-2">
                {hasDescription && (
                   <Tooltip title="This card has a description." arrow>
@@ -110,6 +157,7 @@ const AddNewTask = ({ phaseId, finalTaskPosition }: TAddNewTaskProps) => {
                hasDescription: false,
                phaseId,
                position: finalTaskPosition ? finalTaskPosition + 1 : 1,
+               isComplete: false,
             }),
          )
       }

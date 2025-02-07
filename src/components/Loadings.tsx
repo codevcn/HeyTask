@@ -12,14 +12,29 @@ export const RouteLoading = () => {
 
 type TLogoLoadingProps = Partial<{
    className: string
+   style: React.CSSProperties
+   color: string
+   size: "small"
 }>
 
-export const LogoLoading = ({ className }: TLogoLoadingProps) => {
+export const LogoLoading = ({ className, color, style, size }: TLogoLoadingProps) => {
    return (
-      <div className={`${className || ""} css-logo-loading-container`}>
-         <div className="css-logo-loading-bar__bar-1"></div>
-         <div className="css-logo-loading-bar__bar-2"></div>
-         <div className="css-logo-loading-bar__bar-3"></div>
+      <div
+         style={style}
+         className={`${className || ""} ${size ? `size-${size}` : ""} css-logo-loading-container`}
+      >
+         <div
+            style={{ backgroundColor: color }}
+            className="css-logo-loading-bar loading-bar-1"
+         ></div>
+         <div
+            style={{ backgroundColor: color }}
+            className="css-logo-loading-bar loading-bar-2"
+         ></div>
+         <div
+            style={{ backgroundColor: color }}
+            className="css-logo-loading-bar loading-bar-3"
+         ></div>
       </div>
    )
 }

@@ -16,6 +16,7 @@ import type {
 } from "../../utils/types"
 
 type TInitialState = {
+   fetchedDone: boolean
    project: TProjectData | null
    customization: TCustomizationData | null
    phases: TPhaseData[] | null
@@ -23,6 +24,7 @@ type TInitialState = {
 }
 
 const initialState: TInitialState = {
+   fetchedDone: false,
    project: null,
    customization: null,
    phases: null,
@@ -35,6 +37,12 @@ export const projectSlice = createSlice({
    reducers: {
       setProject: (state, action: PayloadAction<TProjectData>) => {
          state.project = action.payload
+      },
+      updateProject: (state, action: PayloadAction<Partial<TProjectData>>) => {
+         const currentProject = state.project
+         if (currentProject) {
+            Object.assign(currentProject, action.payload)
+         }
       },
       setCustomization: (state, action: PayloadAction<TCustomizationData>) => {
          state.customization = action.payload
@@ -56,14 +64,17 @@ export const projectSlice = createSlice({
             }
          }
       },
-      updateTaskPreview: (state, action: PayloadAction<TPhaseTaskPreview>) => {
+      updateTaskPreview: (state, action: PayloadAction<Partial<TPhaseTaskPreview>>) => {
          const updates = action.payload
-         const currentTaskPreviews = state.phases?.find(
-            (phase) => phase.id === updates.phaseId,
-         )?.taskPreviews
-         const taskPreview = currentTaskPreviews?.find((task) => task.id === updates.id)
-         if (taskPreview) {
-            Object.assign(taskPreview, updates)
+         const { phaseId, id } = updates
+         if (phaseId && id) {
+            const currentTaskPreviews = state.phases?.find(
+               (phase) => phase.id === phaseId,
+            )?.taskPreviews
+            const taskPreview = currentTaskPreviews?.find((task) => task.id === id)
+            if (taskPreview) {
+               Object.assign(taskPreview, updates)
+            }
          }
       },
       addNewTaskPreview: (state, action: PayloadAction<TPhaseTaskPreview>) => {
@@ -198,6 +209,7 @@ export const projectSlice = createSlice({
 
 export const {
    setProject,
+   updateProject,
    setCustomization,
    setPhases,
    updateSinglePhase,

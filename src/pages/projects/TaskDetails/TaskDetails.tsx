@@ -18,20 +18,28 @@ import { UserActions } from "./UserActions"
 import type { TTaskData } from "../../../services/types"
 import { TaskDueDate } from "./Dates"
 import { checkUserPermission } from "../../../configs/user-permissions"
+import CheckCircleIcon from "@mui/icons-material/CheckCircle"
 
 type TTitleProps = {
    taskTitle: string
+   taskIsComplete: boolean
    onClose: () => void
 }
 
-const Title = ({ taskTitle, onClose }: TTitleProps) => {
+const Title = ({ taskTitle, onClose, taskIsComplete }: TTitleProps) => {
    const dispatch = useAppDispatch()
    const userInProject = useUserInProject()!
+   const [editedTitle, setEditedTitle] = useState<string | null>(taskTitle)
 
    const quitEditing = (newTitle: string) => {
       if (newTitle && newTitle.length > 0) {
          dispatch(updateTaskData({ title: newTitle }))
       }
+      setEditedTitle(newTitle)
+   }
+
+   const startEditing = () => {
+      setEditedTitle(null)
    }
 
    const catchEditingEnter = (e: KeyboardEvent<HTMLInputElement>) => {
@@ -49,23 +57,38 @@ const Title = ({ taskTitle, onClose }: TTitleProps) => {
 
    return (
       <header className="flex">
-         <div className="w-8">
-            <SubtitlesIcon className="text-regular-text-cl mt-1" />
+         <div className="w-8" onClick={() => setEditedTitle("aaa")}>
+            {taskIsComplete ? (
+               <CheckCircleIcon className="text-success-text-cl mt-0.5" />
+            ) : (
+               <SubtitlesIcon className="text-regular-text-cl mt-0.5" />
+            )}
          </div>
-         <EditableTitle
-            multiline
-            fullWidth
-            maxRows={5}
-            defaultValue={taskTitle}
-            onKeyDown={catchEditingEnter}
-            variant="outlined"
-            onBlur={blurListTitleInput}
-            sx={{
-               pointerEvents: checkUserPermission(userInProject.projectRole, "CRUD-phase")
-                  ? "auto"
-                  : "none",
-            }}
-         />
+         {editedTitle ? (
+            <div onClick={startEditing} className="w-full">
+               <div
+                  className={`${taskIsComplete ? "line-through" : ""} w-full leading-5 text-regular-text-cl font-bold text-[1.1rem] bg-transparent cursor-text px-2 py-[5px]`}
+               >
+                  {taskTitle}
+               </div>
+            </div>
+         ) : (
+            <EditableTitle
+               multiline
+               fullWidth
+               autoFocus
+               maxRows={5}
+               defaultValue={taskTitle}
+               onKeyDown={catchEditingEnter}
+               variant="outlined"
+               onBlur={blurListTitleInput}
+               sx={{
+                  pointerEvents: checkUserPermission(userInProject.projectRole, "CRUD-phase")
+                     ? "auto"
+                     : "none",
+               }}
+            />
+         )}
          <button onClick={onClose} className="p-1 hover:bg-modal-btn-hover-bgcl rounded ml-3">
             <CloseIcon className="text-regular-text-cl" />
          </button>
@@ -213,28 +236,33 @@ export const TaskDetails = () => {
          maxWidth="md"
          fullWidth
          aria-hidden="true"
+         customProp={{ taskIsComplete: taskData?.isComplete || false }}
       >
          <DialogContent>
-            <div className="flex flex-col rounded-xl min-h-[300px]">
-               {taskData ? (
-                  <>
-                     <Title onClose={closeModal} taskTitle={taskData.title} />
-                     <div className="flex justify-between gap-x-3 mt-6">
-                        <section className="w-full">
-                           <div className="flex gap-5">
-                              <TaskMembers phaseId={taskData.phaseId} taskId={taskData.id} />
-                              <TaskDueDate dueDate={taskData.dueDate} />
-                           </div>
-                           <Description description={taskData.description} />
-                           <Comments comments={taskData.comments} />
-                        </section>
-                        <Actions phaseId={taskData.phaseId} taskData={taskData} />
-                     </div>
-                  </>
-               ) : (
+            {taskData ? (
+               <div className="rounded-xl min-h-[300px]">
+                  <Title
+                     onClose={closeModal}
+                     taskTitle={taskData.title}
+                     taskIsComplete={taskData.isComplete}
+                  />
+                  <div className="flex justify-between gap-x-3 mt-6">
+                     <section className="w-full">
+                        <div className="flex gap-5">
+                           <TaskMembers phaseId={taskData.phaseId} taskId={taskData.id} />
+                           <TaskDueDate dueDate={taskData.dueDate} />
+                        </div>
+                        <Description description={taskData.description} />
+                        <Comments comments={taskData.comments} />
+                     </section>
+                     <Actions phaseId={taskData.phaseId} taskData={taskData} />
+                  </div>
+               </div>
+            ) : (
+               <div className="flex rounded-xl min-h-[300px]">
                   <LogoLoading className="m-auto" />
-               )}
-            </div>
+               </div>
+            )}
          </DialogContent>
       </StyledDialog>
    )
@@ -249,6 +277,7 @@ const EditableTitle = styled(TextField)({
          color: "var(--ht-regular-text-cl)",
          fontWeight: 700,
          fontSize: "1.1rem",
+         lineHeight: "1.25rem",
       },
       "& .MuiOutlinedInput-notchedOutline": {
          borderColor: "transparent",
@@ -267,15 +296,27 @@ const EditableTitle = styled(TextField)({
    },
 })
 
-const StyledDialog = styled(Dialog)({
+type TStyledDialogCustomProps = {
+   customProp: {
+      taskIsComplete: boolean
+   }
+}
+
+const StyledDialog = styled(Dialog)<TStyledDialogCustomProps>(({ customProp }) => ({
    "& .MuiPaper-root": {
       borderRadius: 9,
       backgroundColor: "var(--ht-modal-board-bgcl)",
       "& .MuiDialogContent-root": {
+         borderRadius: 9,
          backgroundColor: "var(--ht-modal-board-bgcl)",
+         borderWidth: 2,
+         borderStyle: "solid",
+         borderColor: customProp.taskIsComplete
+            ? "var(--ht-success-text-cl)"
+            : "var(--ht-modal-board-bgcl)",
       },
    },
-})
+}))
 
 const StyledPopover = styled(Popover)({
    "& .MuiPaper-root": {
