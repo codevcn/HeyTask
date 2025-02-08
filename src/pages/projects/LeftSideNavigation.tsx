@@ -5,57 +5,18 @@ import ArrowLeftIcon from "@mui/icons-material/ArrowLeft"
 import SettingsIcon from "@mui/icons-material/Settings"
 import { LogoLoading } from "../../components/Loadings"
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos"
-import type { TProjectData, TProjectMemberData, TUserData } from "../../services/types"
+import type { TProjectData, TProjectMemberData } from "../../services/types"
 import { EProjectRoles } from "../../utils/enums"
-import { projectService } from "../../services/project-service"
-import { toast } from "react-toastify"
-import axiosErrorHandler from "../../utils/axios-error-handler"
 import { NavLink } from "react-router-dom"
-import { checkIfUserIsProjectMember } from "../../utils/helpers"
+import { checkFetchedState } from "../../utils/helpers"
 
-type TGuestViewportProps = {
-   userData: TUserData
-   projectId: number
-}
-
-const GuestViewport = ({ userData, projectId }: TGuestViewportProps) => {
-   const [loading, setLoading] = useState<boolean>(false)
-
-   const joinProject = () => {
-      setLoading(true)
-      projectService
-         .joinProject(projectId)
-         .then(() => {
-            toast.success("Request to join this project successfully")
-         })
-         .catch((error) => {
-            toast.error(axiosErrorHandler.handleHttpError(error).message)
-         })
-         .finally(() => {
-            setLoading(false)
-         })
-   }
-
+const StrangerViewport = () => {
    return (
       <div className="flex flex-col items-center m-auto text-sm text-modal-text-cl p-3">
          <p className="w-fit text-center">
-            <span>This is </span>
-            <b>{userData.fullName}</b>
-            <span>'s project.</span>
-            <span>You are not in this project.</span>
+            Because you're not member of this project, you cannot view any information about this
+            project.
          </p>
-         <button
-            onClick={joinProject}
-            className="p-2 text-top-nav-bgcl bg-confirm-btn-bgcl hover:bg-confirm-btn-hover-bgcl rounded mt-3"
-         >
-            {loading ? (
-               <div className="h-[20px]">
-                  <LogoLoading color="var(--ht-top-nav-bgcl)" />
-               </div>
-            ) : (
-               <b>Request to join this project</b>
-            )}
-         </button>
       </div>
    )
 }
@@ -63,10 +24,9 @@ const GuestViewport = ({ userData, projectId }: TGuestViewportProps) => {
 type TCreatorViewportProps = {
    projectData: TProjectData
    onCloseNav: () => void
-   userData: TUserData
 }
 
-const Nav = ({ projectData, onCloseNav, userData }: TCreatorViewportProps) => {
+const Nav = ({ projectData, onCloseNav }: TCreatorViewportProps) => {
    const { members } = projectData
 
    const projectCreator = useMemo<TProjectMemberData>(() => {
@@ -105,64 +65,54 @@ const Nav = ({ projectData, onCloseNav, userData }: TCreatorViewportProps) => {
                <ArrowLeftIcon fontSize="large" />
             </button>
          </div>
-         {checkIfUserIsProjectMember(projectData.members, userData.id) ? (
-            <>
-               <div className="py-3 border-b border-divider-cl">
-                  <div className="flex items-center gap-x-2 text-regular-text-cl py-2 px-3 hover:bg-hover-silver-bgcl cursor-pointer">
-                     <SettingsIcon sx={{ fontSize: 16 }} />
-                     <span>Menu Item</span>
-                  </div>
-                  <div className="flex items-center gap-x-2 text-regular-text-cl py-2 px-3 hover:bg-hover-silver-bgcl cursor-pointer">
-                     <SettingsIcon sx={{ fontSize: 16 }} />
-                     <span>Menu Item</span>
-                  </div>
-                  <div className="flex items-center gap-x-2 text-regular-text-cl py-2 px-3 hover:bg-hover-silver-bgcl cursor-pointer">
-                     <SettingsIcon sx={{ fontSize: 16 }} />
-                     <span>Menu Item</span>
-                  </div>
-               </div>
-               <div className="py-3 border-b border-divider-cl">
-                  <div className="flex items-center gap-x-2 text-regular-text-cl py-2 px-3 hover:bg-hover-silver-bgcl cursor-pointer">
-                     <SettingsIcon sx={{ fontSize: 16 }} />
-                     <span>Menu Item</span>
-                  </div>
-                  <div className="flex items-center gap-x-2 text-regular-text-cl py-2 px-3 hover:bg-hover-silver-bgcl cursor-pointer">
-                     <SettingsIcon sx={{ fontSize: 16 }} />
-                     <span>Menu Item</span>
-                  </div>
-                  <div className="flex items-center gap-x-2 text-regular-text-cl py-2 px-3 hover:bg-hover-silver-bgcl cursor-pointer">
-                     <SettingsIcon sx={{ fontSize: 16 }} />
-                     <span>Menu Item</span>
-                  </div>
-               </div>
-               <div className="py-3">
-                  <div className="flex items-center gap-x-2 text-regular-text-cl py-2 px-3 hover:bg-hover-silver-bgcl cursor-pointer">
-                     <SettingsIcon sx={{ fontSize: 16 }} />
-                     <span>Menu Item</span>
-                  </div>
-                  <div className="flex items-center gap-x-2 text-regular-text-cl py-2 px-3 hover:bg-hover-silver-bgcl cursor-pointer">
-                     <SettingsIcon sx={{ fontSize: 16 }} />
-                     <span>Menu Item</span>
-                  </div>
-                  <div className="flex items-center gap-x-2 text-regular-text-cl py-2 px-3 hover:bg-hover-silver-bgcl cursor-pointer">
-                     <SettingsIcon sx={{ fontSize: 16 }} />
-                     <span>Menu Item</span>
-                  </div>
-               </div>
-            </>
-         ) : (
-            <GuestViewport userData={userData} projectId={projectData.id} />
-         )}
+         <div className="py-3 border-b border-divider-cl">
+            <div className="flex items-center gap-x-2 text-regular-text-cl py-2 px-3 hover:bg-hover-silver-bgcl cursor-pointer">
+               <SettingsIcon sx={{ fontSize: 16 }} />
+               <span>Menu Item</span>
+            </div>
+            <div className="flex items-center gap-x-2 text-regular-text-cl py-2 px-3 hover:bg-hover-silver-bgcl cursor-pointer">
+               <SettingsIcon sx={{ fontSize: 16 }} />
+               <span>Menu Item</span>
+            </div>
+            <div className="flex items-center gap-x-2 text-regular-text-cl py-2 px-3 hover:bg-hover-silver-bgcl cursor-pointer">
+               <SettingsIcon sx={{ fontSize: 16 }} />
+               <span>Menu Item</span>
+            </div>
+         </div>
+         <div className="py-3 border-b border-divider-cl">
+            <div className="flex items-center gap-x-2 text-regular-text-cl py-2 px-3 hover:bg-hover-silver-bgcl cursor-pointer">
+               <SettingsIcon sx={{ fontSize: 16 }} />
+               <span>Menu Item</span>
+            </div>
+            <div className="flex items-center gap-x-2 text-regular-text-cl py-2 px-3 hover:bg-hover-silver-bgcl cursor-pointer">
+               <SettingsIcon sx={{ fontSize: 16 }} />
+               <span>Menu Item</span>
+            </div>
+            <div className="flex items-center gap-x-2 text-regular-text-cl py-2 px-3 hover:bg-hover-silver-bgcl cursor-pointer">
+               <SettingsIcon sx={{ fontSize: 16 }} />
+               <span>Menu Item</span>
+            </div>
+         </div>
+         <div className="py-3">
+            <div className="flex items-center gap-x-2 text-regular-text-cl py-2 px-3 hover:bg-hover-silver-bgcl cursor-pointer">
+               <SettingsIcon sx={{ fontSize: 16 }} />
+               <span>Menu Item</span>
+            </div>
+            <div className="flex items-center gap-x-2 text-regular-text-cl py-2 px-3 hover:bg-hover-silver-bgcl cursor-pointer">
+               <SettingsIcon sx={{ fontSize: 16 }} />
+               <span>Menu Item</span>
+            </div>
+            <div className="flex items-center gap-x-2 text-regular-text-cl py-2 px-3 hover:bg-hover-silver-bgcl cursor-pointer">
+               <SettingsIcon sx={{ fontSize: 16 }} />
+               <span>Menu Item</span>
+            </div>
+         </div>
       </>
    )
 }
 
-type TLeftSideNavigationProps = {
-   userData: TUserData
-}
-
-export const LeftSideNavigation = ({ userData }: TLeftSideNavigationProps) => {
-   const { project } = useAppSelector(({ project }) => project)
+export const LeftSideNavigation = () => {
+   const { project, fetchedList } = useAppSelector(({ project }) => project)
    const [open, setOpen] = useState<boolean>(true)
 
    return (
@@ -173,7 +123,9 @@ export const LeftSideNavigation = ({ userData }: TLeftSideNavigationProps) => {
             className={`${open ? "translate-x-0" : "-translate-x-[260px]"} flex flex-col h-full w-full overflow-y-hidden overflow-x-hidden transition-transform`}
          >
             {project ? (
-               <Nav projectData={project} onCloseNav={() => setOpen(false)} userData={userData} />
+               <Nav projectData={project} onCloseNav={() => setOpen(false)} />
+            ) : checkFetchedState(fetchedList, "project") ? (
+               <StrangerViewport />
             ) : (
                <LogoLoading className="m-auto" />
             )}

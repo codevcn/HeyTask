@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit"
+import { createSlice, current, PayloadAction } from "@reduxjs/toolkit"
 import type {
    TCommentData,
    TCustomizationData,
@@ -10,13 +10,16 @@ import type {
 import type {
    TAddNewTaskMemberAction,
    TDeleteTaskAction,
+   TMoveTaskState,
    TPhaseTaskPreview,
    TRemoveTaskMemberAction,
    TTaskDataState,
 } from "../../utils/types"
 
+type TProjectFetchedState = ("project" | "phases" | "task-data" | "customization")[]
+
 type TInitialState = {
-   fetchedDone: boolean
+   fetchedList: TProjectFetchedState
    project: TProjectData | null
    customization: TCustomizationData | null
    phases: TPhaseData[] | null
@@ -24,7 +27,7 @@ type TInitialState = {
 }
 
 const initialState: TInitialState = {
-   fetchedDone: false,
+   fetchedList: [],
    project: null,
    customization: null,
    phases: null,
@@ -35,6 +38,9 @@ export const projectSlice = createSlice({
    name: "project",
    initialState,
    reducers: {
+      updateFetchedList: (state, action: PayloadAction<TProjectFetchedState>) => {
+         state.fetchedList.push(...action.payload)
+      },
       setProject: (state, action: PayloadAction<TProjectData>) => {
          state.project = action.payload
       },
@@ -105,21 +111,20 @@ export const projectSlice = createSlice({
          const newComment = action.payload
          const currentComments = state.taskData?.comments
          if (currentComments && currentComments.length > 0) {
-            currentComments.push(newComment)
+            currentComments.unshift(newComment)
          } else {
             if (state.taskData) {
                state.taskData.comments = [newComment]
             }
          }
       },
-      editComment: (state, action: PayloadAction<Omit<TCommentData, "user">>) => {
+      updateComment: (state, action: PayloadAction<Partial<Omit<TCommentData, "user">>>) => {
          const updates = action.payload
          const currentComments = state.taskData?.comments
          if (currentComments) {
             for (const comment of currentComments) {
                if (comment.id === updates.id) {
-                  comment.content = updates.content
-                  comment.createdAt = updates.createdAt
+                  Object.assign(comment, updates)
                   break
                }
             }
@@ -204,10 +209,30 @@ export const projectSlice = createSlice({
          const project = state.project!
          project.members = project.members.filter((member) => member.id !== memberId)
       },
+      moveTask: (state, action: PayloadAction<TMoveTaskState>) => {
+         const { taskId, prePhaseId, toPhaseId, toPosition } = action.payload
+         const prePhase = state.phases!.find(({ id }) => id === prePhaseId)!
+         const preTaskIndex = prePhase.taskPreviews!.findIndex(({ id }) => id === taskId)
+         const [movedTask] = prePhase.taskPreviews!.splice(preTaskIndex, 1)
+         const toPhase = state.phases!.find(({ id }) => id === toPhaseId)!
+         const toTaskPreviews = toPhase.taskPreviews!
+         if (toTaskPreviews && toTaskPreviews.length > 0) {
+            const toIndex = toTaskPreviews.findIndex(({ position }) => position === toPosition)
+            toTaskPreviews.splice(toIndex, 0, movedTask)
+            toPhase.taskPreviews = toTaskPreviews.map((task, idx) => ({
+               ...task,
+               // >>> go on here
+               position: idx + 1,
+            }))
+         } else {
+            toPhase.taskPreviews = [movedTask]
+         }
+      },
    },
 })
 
 export const {
+   updateFetchedList,
    setProject,
    updateProject,
    setCustomization,
@@ -221,10 +246,11 @@ export const {
    addNewComment,
    addNewTaskMember,
    removeTaskMember,
-   editComment,
+   updateComment,
    deleteComment,
    deleteTask,
    deletePhase,
    updateMemberInProject,
    removeMemberFromProject,
+   moveTask,
 } = projectSlice.actions

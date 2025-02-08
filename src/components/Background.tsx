@@ -14,17 +14,19 @@ export const Background = ({ children }: TBackgroundProps) => {
    const { customization } = useAppSelector(({ project }) => project)
    const dispatch = useDispatch()
 
+   const fetchCustomization = () => {
+      projectService
+         .getCustomization(1)
+         .then((res) => {
+            dispatch(setCustomization(res))
+         })
+         .catch((error) => {
+            toast.error(axiosErrorHandler.handleHttpError(error).message)
+         })
+   }
+
    useEffect(() => {
-      if (!customization) {
-         projectService
-            .getCustomization(1)
-            .then((res) => {
-               dispatch(setCustomization(res))
-            })
-            .catch((error) => {
-               toast.error(axiosErrorHandler.handleHttpError(error).message)
-            })
-      }
+      fetchCustomization()
    }, [])
 
    return (

@@ -1,5 +1,5 @@
 import { Avatar, styled, TextField, Tooltip, AvatarGroup } from "@mui/material"
-import type { TTaskPreviewData } from "../../../services/types"
+import type { TPhaseData, TTaskPreviewData } from "../../../services/types"
 import ReorderIcon from "@mui/icons-material/Reorder"
 import AddIcon from "@mui/icons-material/Add"
 import { KeyboardEvent, useMemo, useState } from "react"
@@ -39,16 +39,17 @@ import axiosErrorHandler from "../../../utils/axios-error-handler"
 type TTaskPreviewProps = {
    taskPreviewData: TTaskPreviewData
    className?: string
-   phaseId: number
+   phaseData: TPhaseData
 }
 
-const Task = ({ taskPreviewData, className, phaseId }: TTaskPreviewProps) => {
+const Task = ({ taskPreviewData, className, phaseData }: TTaskPreviewProps) => {
+   const phaseId = phaseData.id
    const { id, taskMembers, hasDescription, title, isComplete } = taskPreviewData
    const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id })
    const dispatch = useAppDispatch()
 
    const openTaskDetails = () => {
-      eventEmitter.emit(EInternalEvents.OPEN_TASK_DETAILS_MODAL, true, id, phaseId)
+      eventEmitter.emit(EInternalEvents.OPEN_TASK_DETAILS_MODAL, true, id, phaseData)
    }
 
    const handleMarkAsComplete = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -75,14 +76,14 @@ const Task = ({ taskPreviewData, className, phaseId }: TTaskPreviewProps) => {
          {...listeners}
       >
          <div
-            className={`${className || ""} group bg-focused-textfield-bgcl cursor-pointer mb-2 rounded-lg py-2 px-3 pr-2 hover:outline outline-2 outline-white`}
+            className={`${className || ""} group/root bg-focused-textfield-bgcl cursor-pointer mb-2 rounded-lg py-2 px-3 pr-2 hover:outline outline-2 outline-white`}
             onClick={openTaskDetails}
          >
-            <div className="flex gap-x-1.5">
+            <div className="flex">
                <Tooltip title="Mark as complete" placement="left" arrow>
                   <button
                      onClick={(e) => handleMarkAsComplete(e)}
-                     className={`${isComplete ? "min-w-5" : "group-hover:min-w-5"} group/icon-btn flex min-w-0 w-0 overflow-x-hidden transition-[min-width]`}
+                     className={`${isComplete ? "min-w-5 mr-1.5" : "group-hover/root:min-w-5 group-hover/root:mr-1.5"} group/icon-btn flex min-w-0 w-0 overflow-x-hidden transition-[min-width]`}
                   >
                      {isComplete ? (
                         <CheckCircleIcon
@@ -139,11 +140,12 @@ const Task = ({ taskPreviewData, className, phaseId }: TTaskPreviewProps) => {
 }
 
 type TAddNewTaskProps = {
-   phaseId: number
+   phaseData: TPhaseData
    finalTaskPosition: number | null
 }
 
-const AddNewTask = ({ phaseId, finalTaskPosition }: TAddNewTaskProps) => {
+const AddNewTask = ({ phaseData, finalTaskPosition }: TAddNewTaskProps) => {
+   const phaseId = phaseData.id
    const [isAdding, setIsAdding] = useState<boolean>(false)
    const dispatch = useAppDispatch()
 
@@ -261,11 +263,12 @@ const OverlayItem = ({ taskPreviewData }: TOverlayItemProps) => {
 }
 
 type TTaskPreviewsProps = {
-   phaseId: number
+   phaseData: TPhaseData
    taskPreviews: TTaskPreviewData[]
 }
 
-export const TaskPreviews = ({ taskPreviews, phaseId }: TTaskPreviewsProps) => {
+export const TaskPreviews = ({ taskPreviews, phaseData }: TTaskPreviewsProps) => {
+   const phaseId = phaseData.id
    const [draggingId, setDraggingId] = useState<number | null>(null)
    const sensors = useSensors(
       useSensor(MouseSensor, {
@@ -342,7 +345,7 @@ export const TaskPreviews = ({ taskPreviews, phaseId }: TTaskPreviewsProps) => {
                            key={task.id}
                            taskPreviewData={task}
                            className={draggingId === task.id ? "opacity-0" : "opacity-100"}
-                           phaseId={phaseId}
+                           phaseData={phaseData}
                         />
                      ))
                   ) : (
@@ -359,7 +362,7 @@ export const TaskPreviews = ({ taskPreviews, phaseId }: TTaskPreviewsProps) => {
             </DragOverlay>
          </DndContext>
          <AddNewTask
-            phaseId={phaseId}
+            phaseData={phaseData}
             finalTaskPosition={sortedDndItems[sortedDndItems.length - 1]?.position || null}
          />
       </>

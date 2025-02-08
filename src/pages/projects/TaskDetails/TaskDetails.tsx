@@ -15,10 +15,12 @@ import { TaskMembers } from "./TaskMembers"
 import DeleteIcon from "@mui/icons-material/Delete"
 import { useUserInProject } from "../../../hooks/user"
 import { UserActions } from "./UserActions"
-import type { TTaskData } from "../../../services/types"
 import { TaskDueDate } from "./Dates"
 import { checkUserPermission } from "../../../configs/user-permissions"
 import CheckCircleIcon from "@mui/icons-material/CheckCircle"
+import type { TTaskDataState } from "../../../utils/types"
+import type { TPhaseData } from "../../../services/types"
+import { MoveTask } from "./MoveTask"
 
 type TTitleProps = {
    taskTitle: string
@@ -97,11 +99,12 @@ const Title = ({ taskTitle, onClose, taskIsComplete }: TTitleProps) => {
 }
 
 type TTaskActionsProps = {
-   phaseId: number
+   phaseData: TPhaseData
    taskId: number
 }
 
-const TaskActions = ({ phaseId, taskId }: TTaskActionsProps) => {
+const TaskActions = ({ phaseData, taskId }: TTaskActionsProps) => {
+   const phaseId = phaseData.id
    const [anchorEle, setAnchorEle] = useState<HTMLButtonElement | null>(null)
    const dispatch = useAppDispatch()
    const userInProject = useUserInProject()!
@@ -120,7 +123,7 @@ const TaskActions = ({ phaseId, taskId }: TTaskActionsProps) => {
 
    const deleteTaskHandler = () => {
       dispatch(deleteTask({ phaseId, taskId }))
-      eventEmitter.emit(EInternalEvents.OPEN_TASK_DETAILS_MODAL, false, taskId, phaseId)
+      eventEmitter.emit(EInternalEvents.OPEN_TASK_DETAILS_MODAL, false, taskId, phaseData)
    }
 
    return (
@@ -175,15 +178,16 @@ const TaskActions = ({ phaseId, taskId }: TTaskActionsProps) => {
 }
 
 type TActionsProps = {
-   phaseId: number
-   taskData: TTaskData
+   taskData: TTaskDataState
+   phaseData: TPhaseData
 }
 
-const Actions = ({ phaseId, taskData }: TActionsProps) => {
+const Actions = ({ taskData, phaseData }: TActionsProps) => {
+   const { phaseId } = taskData
    return (
       <section className="w-[168px] text-regular-text-cl">
          <UserActions taskData={taskData} phaseId={phaseId} />
-         <TaskActions taskId={taskData.id} phaseId={phaseId} />
+         <TaskActions taskId={taskData.id} phaseData={phaseData} />
       </section>
    )
 }
@@ -192,6 +196,7 @@ export const TaskDetails = () => {
    const { taskData } = useAppSelector(({ project }) => project)
    const dispatch = useAppDispatch()
    const [open, setOpen] = useState<boolean>(false)
+   const [phaseData, setPhaseData] = useState<TPhaseData>()
 
    const getTaskDetailsHandler = (taskId: number, phaseId: number) => {
       projectService
@@ -205,9 +210,11 @@ export const TaskDetails = () => {
    }
 
    useEffect(() => {
-      eventEmitter.on(EInternalEvents.OPEN_TASK_DETAILS_MODAL, (isOpen, taskId, phaseId) => {
+      eventEmitter.on(EInternalEvents.OPEN_TASK_DETAILS_MODAL, (isOpen, taskId, phaseData) => {
          setOpen(isOpen)
+         setPhaseData(phaseData)
          if (isOpen) {
+            const phaseId = phaseData.id
             if (taskData) {
                if (taskId !== taskData.id) {
                   dispatch(setTaskData(null))
@@ -239,13 +246,14 @@ export const TaskDetails = () => {
          customProp={{ taskIsComplete: taskData?.isComplete || false }}
       >
          <DialogContent>
-            {taskData ? (
+            {taskData && phaseData ? (
                <div className="rounded-xl min-h-[300px]">
                   <Title
                      onClose={closeModal}
                      taskTitle={taskData.title}
                      taskIsComplete={taskData.isComplete}
                   />
+                  <MoveTask taskId={taskData.id} phaseId={phaseData.id} />
                   <div className="flex justify-between gap-x-3 mt-6">
                      <section className="w-full">
                         <div className="flex gap-5">
@@ -255,7 +263,7 @@ export const TaskDetails = () => {
                         <Description description={taskData.description} />
                         <Comments comments={taskData.comments} />
                      </section>
-                     <Actions phaseId={taskData.phaseId} taskData={taskData} />
+                     <Actions taskData={taskData} phaseData={phaseData} />
                   </div>
                </div>
             ) : (
@@ -302,7 +310,9 @@ type TStyledDialogCustomProps = {
    }
 }
 
-const StyledDialog = styled(Dialog)<TStyledDialogCustomProps>(({ customProp }) => ({
+const StyledDialog = styled(Dialog, {
+   shouldForwardProp: (prop) => prop !== "customProp",
+})<TStyledDialogCustomProps>(({ customProp }) => ({
    "& .MuiPaper-root": {
       borderRadius: 9,
       backgroundColor: "var(--ht-modal-board-bgcl)",

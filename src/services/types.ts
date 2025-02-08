@@ -31,6 +31,7 @@ export type TProjectData = {
    title: string
    members: TProjectMemberData[]
    shareLink: string | null
+   description: string | null
 }
 
 export type TCustomizationData = {
@@ -45,6 +46,7 @@ export type TCommentData = {
    content: string
    user: TTaskMemberData
    createdAt: string
+   isTaskResult: boolean
 }
 
 export type TTaskData = {

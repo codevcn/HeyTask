@@ -91,7 +91,7 @@ export const ProjectMenu = () => {
    }
 
    return (
-      <StyledDrawer anchor="right" open={open} onClose={() => setOpen(false)}>
+      <StyledDrawer anchor="right" open={open} onClose={() => setOpen(false)} keepMounted>
          <ContextProvider>
             <section className="flex flex-col py-3 h-full">
                <TitleSection onCloseMenu={() => setOpen(false)} />

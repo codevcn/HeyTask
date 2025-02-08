@@ -129,7 +129,7 @@ type TDragOverlayItemProps = {
 }
 
 const DragOverlayItem = ({ phaseData }: TDragOverlayItemProps) => {
-   const { taskPreviews, title, id } = phaseData
+   const { taskPreviews, title } = phaseData
 
    return (
       <div className="flex relative m-0 h-fit max-h-full z-20 text-regular-text-cl opacity-60 rotate-6">
@@ -144,7 +144,7 @@ const DragOverlayItem = ({ phaseData }: TDragOverlayItemProps) => {
                   </button>
                </Tooltip>
             </div>
-            <TaskPreviews phaseId={id} taskPreviews={taskPreviews || []} />
+            <TaskPreviews phaseData={phaseData} taskPreviews={taskPreviews || []} />
          </div>
       </div>
    )

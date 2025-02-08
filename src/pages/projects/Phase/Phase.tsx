@@ -193,7 +193,7 @@ export const Phase = ({ phaseData, className }: TPhaseProps) => {
                </div>
                <PhaseActions phaseData={phaseData} />
             </div>
-            <TaskPreviews phaseId={id} taskPreviews={taskPreviews || []} />
+            <TaskPreviews phaseData={phaseData} taskPreviews={taskPreviews || []} />
          </div>
       </div>
    )

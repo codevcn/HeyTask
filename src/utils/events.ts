@@ -25,7 +25,7 @@ interface IEventEmitter {
    [EInternalEvents.OPEN_TASK_DETAILS_MODAL]: (
       isOpen: boolean,
       taskId: number,
-      phaseId: number,
+      phaseData: TPhaseData,
    ) => void
    [EInternalEvents.SHOW_UPLOADED_FILE_DETAILS]: (isShown: boolean, fileId: string) => void
    [EInternalEvents.OPEN_FIXED_LOADING]: (isOpen: boolean) => void

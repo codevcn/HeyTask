@@ -2,7 +2,6 @@ import dayjs from "dayjs"
 import { EInternalEvents, eventEmitter } from "./events"
 import type { SnackbarOrigin } from "@mui/material"
 import { EProjectRoles } from "./enums"
-import type { TProjectMemberData } from "../services/types"
 
 export const pureNavigator = (href: string, isReloadPage?: boolean): void => {
    if (isReloadPage) {
@@ -40,7 +39,7 @@ export const randomInteger = (min: number, max: number): number => {
    return Math.floor(Math.random() * (max - min + 1)) + min
 }
 
-export const displayPreTimePeriod = (originalTime: Date | string): string => {
+export const displayTimeAgo = (originalTime: Date | string): string => {
    const now = dayjs()
    const convertedTime = dayjs(originalTime)
    const diffInMinutes = now.diff(convertedTime, "minute")
@@ -83,9 +82,14 @@ export const displayProjectRole = (projectRole: EProjectRoles): string => {
    return "Member"
 }
 
-export const checkIfUserIsProjectMember = (
-   projectMembers: TProjectMemberData[],
-   memberId: number,
+export const checkFetchedState = <T extends string[]>(
+   fetchedList: T,
+   ...statesToCheck: T[number][]
 ) => {
-   return projectMembers.some(({ id }) => id === memberId)
+   for (const state of statesToCheck) {
+      if (!fetchedList.includes(state)) {
+         return false
+      }
+   }
+   return true
 }

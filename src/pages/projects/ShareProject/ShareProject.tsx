@@ -15,7 +15,7 @@ import LinkIcon from "@mui/icons-material/Link"
 import { openAppSnackbarHandler, openFixedLoadingHandler } from "../../../utils/helpers"
 import { SimpleSnackbarTemplate } from "../../../components/NonInteractiveTemplates"
 import { ProjectMembers } from "./ProjectMembers"
-import { useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { projectService } from "../../../services/project-service"
 import { toast } from "react-toastify"
 import axiosErrorHandler from "../../../utils/axios-error-handler"
@@ -183,7 +183,7 @@ const SharingSection = ({ shareLink, projectId }: TSharingSectionProps) => {
             toast.error(axiosErrorHandler.handleHttpError(error).message)
          })
          .finally(() => {
-            // setLoading(false)
+            setLoading(false)
          })
    }
 
@@ -200,9 +200,13 @@ const SharingSection = ({ shareLink, projectId }: TSharingSectionProps) => {
             toast.error(axiosErrorHandler.handleHttpError(error).message)
          })
          .finally(() => {
-            // setLoading(false)
+            setLoading(false)
          })
    }
+
+   useEffect(() => {
+      setCurrentLink(shareLink)
+   }, [shareLink])
 
    return (
       <div className="text-modal-text-cl w-full">
@@ -211,11 +215,13 @@ const SharingSection = ({ shareLink, projectId }: TSharingSectionProps) => {
             <div className="flex gap-x-2">
                <LinkIcon className="text-inherit" />
                <Tooltip title="Anyone with the link can join as a member" arrow>
-                  <span className="truncate max-w-[300px]">{shareLink}</span>
+                  <span className="truncate max-w-[300px]">
+                     {currentLink || "You have no share link now..."}
+                  </span>
                </Tooltip>
             </div>
             {loading ? (
-               <div className="flex">
+               <div className="flex mr-2">
                   <LogoLoading size="small" />
                </div>
             ) : currentLink ? (

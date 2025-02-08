@@ -71,3 +71,14 @@ export type TUserPreviewBoardData = {
    anchorEle: HTMLElement | null
    userData: TUserData | null
 }
+
+export type TProjectPageParams = {
+   projectId: string
+}
+
+export type TMoveTaskState = {
+   taskId: number
+   prePhaseId: number
+   toPhaseId: number
+   toPosition: number
+}

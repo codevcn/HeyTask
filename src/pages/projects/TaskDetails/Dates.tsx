@@ -81,6 +81,7 @@ const DatesBoard = () => {
             open={!!anchorEle}
             anchorEl={anchorEle}
             onClose={handleCloseBoard}
+            keepMounted
             anchorOrigin={{
                vertical: "bottom",
                horizontal: "right",

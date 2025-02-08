@@ -9,12 +9,31 @@ import { useUser } from "../../hooks/user"
 import { setUserInProject } from "../../redux/user/user-slice"
 import { toast } from "react-toastify"
 import axiosErrorHandler from "../../utils/axios-error-handler"
+import { useParams } from "react-router-dom"
+import { setProject, updateFetchedList } from "../../redux/project/project-slice"
+import validator from "validator"
+import type { TProjectPageParams } from "../../utils/types"
 
 const ProjectPage = () => {
    const user = useUser()!
+   const { projectId } = useParams<TProjectPageParams>()
    const dispatch = useAppDispatch()
 
-   useEffect(() => {
+   const fetchProjectData = async (projectId: number) => {
+      projectService
+         .getProjectData(projectId)
+         .then((res) => {
+            dispatch(setProject(res))
+         })
+         .catch((error) => {
+            toast.error(axiosErrorHandler.handleHttpError(error).message)
+         })
+         .finally(() => {
+            dispatch(updateFetchedList(["project"]))
+         })
+   }
+
+   const fetchUserInfoInProject = () => {
       projectService
          .getUserInfoInProject(user.id)
          .then((res) => {
@@ -23,14 +42,25 @@ const ProjectPage = () => {
          .catch((error) => {
             toast.error(axiosErrorHandler.handleHttpError(error).message)
          })
-   }, [user])
+   }
+
+   useEffect(() => {
+      fetchUserInfoInProject()
+      if (projectId) {
+         if (validator.isInt(projectId)) {
+            fetchProjectData(parseInt(projectId))
+         } else {
+            toast.error("Project id must be an integer")
+         }
+      }
+   }, [])
 
    return (
       <div className="h-screen bg-gradient-to-b from-[#7B61FF] to-[#FF61A6]">
          <TopNavigation />
          <Background>
             <section className="flex h-full">
-               <LeftSideNavigation userData={user} />
+               <LeftSideNavigation />
                <MainBoard />
             </section>
          </Background>

@@ -1,17 +1,12 @@
-import { projectService } from "../../services/project-service"
-import { toast } from "react-toastify"
-import axiosErrorHandler from "../../utils/axios-error-handler"
 import { useAppDispatch, useAppSelector } from "../../hooks/redux"
 import { setProject } from "../../redux/project/project-slice"
 import { FocusEvent, KeyboardEvent, useEffect, useRef, useState } from "react"
 import StarOutlineIcon from "@mui/icons-material/StarOutline"
-import GroupIcon from "@mui/icons-material/Group"
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz"
 import { Tooltip } from "@mui/material"
 import { Phases } from "./Phases"
-import type { TProjectData, TProjectMemberData, TUserInProjectData } from "../../services/types"
-import { checkIfUserIsProjectMember, measureTextWidth } from "../../utils/helpers"
-import { useParams } from "react-router-dom"
+import type { TProjectData, TProjectMemberData } from "../../services/types"
+import { checkFetchedState, measureTextWidth } from "../../utils/helpers"
 import { TaskDetails } from "./TaskDetails/TaskDetails"
 import { TaskFileDetails } from "./TaskDetails/TaskFileDetails"
 import { useUserInProject } from "../../hooks/user"
@@ -21,10 +16,16 @@ import { checkUserPermission } from "../../configs/user-permissions"
 import { ProjectMenu } from "./ProjectMenu/ProjectMenu"
 import { EInternalEvents, eventEmitter } from "../../utils/events"
 import { UserPreview } from "./UserPreview"
+import { toast } from "react-toastify"
+import axiosErrorHandler from "../../utils/axios-error-handler"
+import { projectService } from "../../services/project-service"
+import { LogoLoading } from "../../components/Loadings"
+import { TProjectPageParams } from "../../utils/types"
+import { useParams } from "react-router-dom"
 
 type TEditableSectionProps = {
    projectData: TProjectData
-   userInProject: TUserInProjectData
+   userInProject: TProjectMemberData
 }
 
 const EditableSection = ({ projectData, userInProject }: TEditableSectionProps) => {
@@ -86,7 +87,7 @@ const EditableSection = ({ projectData, userInProject }: TEditableSectionProps) 
                   onChange={editingTitleInput}
                   ref={titleInputRef}
                   onKeyDown={catchEditingEnter}
-                  className="h-full max-w-full px-2 bg-transparent text-white font-bold border-none outline-none text-base rounded"
+                  className="h-full max-w-full px-2 bg-transparent font-bold border-none outline-none text-base rounded"
                />
             </div>
             <div
@@ -104,32 +105,92 @@ const EditableSection = ({ projectData, userInProject }: TEditableSectionProps) 
                   <StarOutlineIcon fontSize="small" />
                </button>
             </Tooltip>
-            <Tooltip title="Change visibility.">
-               <button className="p-1 rounded-sm hover:bg-[#ffffff33]">
-                  <GroupIcon fontSize="small" />
-               </button>
-            </Tooltip>
          </div>
       </>
    )
 }
 
-type THeaderProps = {
+type TStrangerViewportProps = {
    userInProject: TProjectMemberData
 }
 
-const Header = ({ userInProject }: THeaderProps) => {
+const StrangerViewport = ({ userInProject }: TStrangerViewportProps) => {
+   const [loading, setLoading] = useState<boolean>(false)
+   const projectId = useParams<TProjectPageParams>().projectId!
+
+   const joinProject = () => {
+      setLoading(true)
+      projectService
+         .joinProject(parseInt(projectId))
+         .then(() => {
+            toast.success("Request to join this project successfully")
+         })
+         .catch((error) => {
+            toast.error(axiosErrorHandler.handleHttpError(error).message)
+         })
+         .finally(() => {
+            setLoading(false)
+         })
+   }
+
+   return (
+      <div className="flex items-center justify-center grow bg-top-nav-bgcl">
+         <div className="bg-top-nav-bgcl text-regular-text-cl p-6 rounded-lg shadow-lg w-96">
+            <h2 className="text-xl font-semibold">This board is private.</h2>
+            <p className="mt-2 text-modal-text-cl">
+               Send a request to the project administrator to gain access.
+            </p>
+
+            <p className="mt-4">You are logged in as</p>
+            <div className="mt-1 flex items-center space-x-3 border border-gray-600 p-3 rounded-lg">
+               <div className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-700 text-xl font-semibold">
+                  HH
+               </div>
+               <div>
+                  <p className="font-medium">{userInProject.fullName}</p>
+                  <p className="text-modal-text-cl text-sm">{userInProject.email}</p>
+               </div>
+            </div>
+
+            <p className="mt-4 text-modal-text-cl text-sm">
+               By requesting access, you agree to share your account information, including your
+               email address, with the project administrators.
+            </p>
+
+            <button
+               onClick={joinProject}
+               className="flex justify-center mt-4 w-full bg-confirm-btn-bgcl hover:bg-confirm-btn-hover-bgcl text-black py-2 rounded-lg transition"
+            >
+               {loading ? (
+                  <div className="m-auto h-[20px]">
+                     <LogoLoading color="var(--ht-top-nav-bgcl)" size="small" />
+                  </div>
+               ) : (
+                  <b>Request to join this project</b>
+               )}
+            </button>
+         </div>
+      </div>
+   )
+}
+
+type THeaderProps = {
+   userInProject: TProjectMemberData
+   projectData: TProjectData
+}
+
+const Header = ({ userInProject, projectData }: THeaderProps) => {
    const openProjectMenu = () => {
       eventEmitter.emit(EInternalEvents.OPEN_PROJECT_MENU, true)
    }
 
    return (
-      <header className="flex justify-between items-center flex-wrap h-top-nav overflow-x-hidden gap-y-3 gap-x-5 py-3 px-5 bg-[#0000003d] backdrop-blur-sm w-full">
-         {project && (
+      <header className="flex justify-between items-center text-white flex-wrap h-top-nav overflow-x-hidden gap-y-3 gap-x-5 py-3 px-5 bg-[#0000003d] backdrop-blur-sm w-full">
+         {projectData && (
             <>
-               <EditableSection projectData={project} userInProject={userInProject} />
+               <EditableSection projectData={projectData} userInProject={userInProject} />
                <div className="flex gap-x-3 items-center">
-                  <ShareProject projectData={project} />
+                  <ShareProject projectData={projectData} />
                   <button onClick={openProjectMenu} className="p-1 rounded-sm hover:bg-[#ffffff33]">
                      <MoreHorizIcon fontSize="small" />
                   </button>
@@ -141,47 +202,16 @@ const Header = ({ userInProject }: THeaderProps) => {
    )
 }
 
-const NoProject = () => {
-   return (
-      <div className="flex flex-col text-regular-text-cl w-main-board">
-         <p></p>
-      </div>
-   )
-}
-
-type TProjectPageParams = {
-   projectId: string
-}
-
 export const MainBoard = () => {
-   const userInProject = useUserInProject()
-   const { projectId } = useParams<TProjectPageParams>()
    const { project } = useAppSelector(({ project }) => project)
-   const dispatch = useAppDispatch()
-
-   const getProjectHandler = async (projectId: number) => {
-      projectService
-         .getProjectData(projectId)
-         .then((res) => {
-            dispatch(setProject(res))
-         })
-         .catch((error) => {
-            toast.error(axiosErrorHandler.handleHttpError(error).message)
-         })
-         .finally(() => {})
-   }
-
-   useEffect(() => {
-      if (!project && projectId) {
-         getProjectHandler(parseInt(projectId))
-      }
-   }, [])
+   const userInProject = useUserInProject()
+   const { fetchedList } = useAppSelector(({ project }) => project)
 
    return (
       userInProject &&
-      (project && checkIfUserIsProjectMember(project.members, userInProject.id) ? (
+      (project ? (
          <div className="flex flex-col flex-1 text-regular-text-cl w-main-board">
-            <Header userInProject={userInProject} />
+            <Header userInProject={userInProject} projectData={project} />
             <Phases userInProject={userInProject} />
             <TaskDetails />
             <TaskFileDetails />
@@ -189,7 +219,9 @@ export const MainBoard = () => {
             <UserPreview />
          </div>
       ) : (
-         <NoProject />
+         checkFetchedState(fetchedList, "project") && (
+            <StrangerViewport userInProject={userInProject} />
+         )
       ))
    )
 }

@@ -135,8 +135,11 @@ export const CustomRichTextEditor = ({
                onBlur={onBlur ? () => onBlur() : () => {}}
             />
          </div>
-         <div hidden={isReady} className="flex py-5 w-full bg-focused-textfield-bgcl">
-            <LogoLoading className="m-auto -translate-y-2" />
+         <div
+            hidden={isReady}
+            className="flex py-5 h-5 box-content px-3 w-full bg-focused-textfield-bgcl"
+         >
+            <LogoLoading className="m-auto" />
          </div>
       </>
    )

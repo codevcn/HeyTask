@@ -1,8 +1,8 @@
-import { Avatar, Popover, styled } from "@mui/material"
+import { Avatar, Popover, styled, Tooltip } from "@mui/material"
 import ChatIcon from "@mui/icons-material/Chat"
 import { useUser, useUserInProject } from "../../../hooks/user"
-import { displayPreTimePeriod, randomInteger } from "../../../utils/helpers"
-import { addNewComment, deleteComment, editComment } from "../../../redux/project/project-slice"
+import { displayTimeAgo, randomInteger } from "../../../utils/helpers"
+import { addNewComment, deleteComment, updateComment } from "../../../redux/project/project-slice"
 import type { TCommentData, TUserData } from "../../../services/types"
 import { Editor as TinyMCEEditor } from "tinymce"
 import { useEffect, useRef, useState } from "react"
@@ -14,6 +14,8 @@ import CloseIcon from "@mui/icons-material/Close"
 import dayjs from "dayjs"
 import { toast } from "react-toastify"
 import { TIME_TO_DELETE_COMMENT, TIME_TO_EDIT_COMMENT } from "../../../utils/constants"
+import CheckIcon from "@mui/icons-material/Check"
+import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline"
 
 type TDeleteCommentProps = {
    commentId: number
@@ -84,7 +86,7 @@ type TUserCommentProps = {
 }
 
 const UserComment = ({ commentData, onFocusEditor, onBlurEditor, userData }: TUserCommentProps) => {
-   const { user, content, createdAt, id } = commentData
+   const { user, content, createdAt, id, isTaskResult } = commentData
    const [openEditor, setOpenEditor] = useState<boolean>(false)
    const editorRef = useRef<TinyMCEEditor | null>(null)
    const dispatch = useAppDispatch()
@@ -94,13 +96,7 @@ const UserComment = ({ commentData, onFocusEditor, onBlurEditor, userData }: TUs
       if (editor) {
          const content = editor.getContent()
          if (content && content.length > 0) {
-            dispatch(
-               editComment({
-                  content,
-                  createdAt: new Date().toISOString(),
-                  id,
-               }),
-            )
+            dispatch(updateComment({ content, id }))
             setOpenEditor(false)
          }
       }
@@ -126,8 +122,12 @@ const UserComment = ({ commentData, onFocusEditor, onBlurEditor, userData }: TUs
       }
    }, [])
 
+   const markAsTaskResult = () => {
+      dispatch(updateComment({ id: commentData.id, isTaskResult: true }))
+   }
+
    return (
-      <div className="flex py-2 gap-x-1">
+      <div className="flex py-2">
          <div className="w-10 pt-1">
             {user.avatar ? (
                <Avatar src={user.avatar} sx={{ height: 32, width: 32 }} />
@@ -136,7 +136,7 @@ const UserComment = ({ commentData, onFocusEditor, onBlurEditor, userData }: TUs
             )}
          </div>
          {openEditor ? (
-            <div className="w-full">
+            <div className="w-full max-w-[500px]">
                <CustomRichTextEditor
                   editorRef={editorRef}
                   defaultContent={content || undefined}
@@ -161,21 +161,44 @@ const UserComment = ({ commentData, onFocusEditor, onBlurEditor, userData }: TUs
                </div>
             </div>
          ) : (
-            <div className="w-full">
-               <div className="flex items-center gap-x-3 text-regular-text-cl pl-1">
-                  <h3 className="font-bold text-sm">{user.fullName}</h3>
-                  <span className="text-xs">{displayPreTimePeriod(createdAt)}</span>
+            <div className="w-full max-w-[500px]">
+               <div className="flex gap-2 justify-between items-center text-regular-text-cl">
+                  <div className="flex items-center gap-x-3 pl-1">
+                     <p className="font-bold text-sm">{user.fullName}</p>
+                     <p className="text-xs">{displayTimeAgo(createdAt)}</p>
+                  </div>
+                  {isTaskResult && (
+                     <div className="flex gap-x-1 items-center text-xs text-success-text-cl font-bold pr-2 leading-none">
+                        <CheckCircleOutlineIcon sx={{ height: 14, width: 14 }} />
+                        <span>Task result</span>
+                     </div>
+                  )}
                </div>
-               <div className="css-task-details-user-comment bg-focused-textfield-bgcl p-3 mt-[2px] rounded-md leading-tight">
-                  <CustomRichTextContent content={content} />
+               <div
+                  className={`${isTaskResult ? "border-success-text-cl" : "border-transparent"} css-task-details-user-comment border-2 border-solid relative bg-focused-textfield-bgcl p-2.5 mt-[2px] rounded-md leading-tight`}
+               >
+                  <CustomRichTextContent content={content} wrapperClassName="break-words" />
                </div>
                {user.id === userData.id && (
-                  <div className="flex items-center gap-x-1 pl-2 mt-1 text-regular-text-cl">
-                     <button onClick={editing} className="hover:underline text-xs">
-                        Edit
-                     </button>
-                     <span>•</span>
-                     <DeleteComment commentId={id} createdAt={createdAt} />
+                  <div className="flex justify-between gap-2 text-regular-text-cl mt-1 leading-none px-2">
+                     <div className="flex items-center gap-x-1">
+                        <button onClick={editing} className="hover:underline text-xs">
+                           Edit
+                        </button>
+                        <span>•</span>
+                        <DeleteComment commentId={id} createdAt={createdAt} />
+                     </div>
+                     {!isTaskResult && (
+                        <Tooltip title="Mark as task result" placement="top" arrow>
+                           <button
+                              onClick={markAsTaskResult}
+                              className="flex items-center gap-x-1 text-xs hover:text-success-text-cl hover:underline"
+                           >
+                              <CheckIcon sx={{ height: 16, width: 16 }} />
+                              <span>Mark as task result</span>
+                           </button>
+                        </Tooltip>
+                     )}
                   </div>
                )}
             </div>
@@ -206,6 +229,7 @@ const MakeNewComment = ({ onBlurEditor, onFocusEditor }: TUserEditorProps) => {
                   createdAt: new Date().toISOString(),
                   id: randomInteger(1, 1000),
                   user,
+                  isTaskResult: false,
                }),
             )
             setOpenEditor(false)
@@ -230,7 +254,7 @@ const MakeNewComment = ({ onBlurEditor, onFocusEditor }: TUserEditorProps) => {
    }, [])
 
    return (
-      <>
+      <div className="flex items-center mb-2">
          <div className="w-10">
             {user.avatar ? (
                <Avatar src={user.avatar} alt="User Avatar" sx={{ height: 32, width: 32 }} />
@@ -240,12 +264,12 @@ const MakeNewComment = ({ onBlurEditor, onFocusEditor }: TUserEditorProps) => {
          </div>
          <button
             onClick={openCommentEditor}
-            className="px-3 py-2 rounded-md bg-focused-textfield-bgcl text-regular-text-cl w-full text-start hover:bg-[#292f35]"
+            className="px-3 py-2 rounded-md bg-focused-textfield-bgcl max-w-[500px] text-regular-text-cl w-full text-start hover:bg-[#292f35]"
             hidden={openEditor}
          >
             Write a comment...
          </button>
-         <div className="w-full" hidden={!openEditor}>
+         <div className="w-full max-w-[500px]" hidden={!openEditor}>
             <CustomRichTextEditor
                editorRef={editorRef}
                placeholder="Write your comment here..."
@@ -269,7 +293,7 @@ const MakeNewComment = ({ onBlurEditor, onFocusEditor }: TUserEditorProps) => {
                </button>
             </div>
          </div>
-      </>
+      </div>
    )
 }
 
@@ -299,12 +323,10 @@ export const Comments = ({ comments }: TCommentsProps) => {
             <h3 className="text-base font-bold">Comments</h3>
          </div>
          <div className="mt-2 w-full" ref={editorsContainerRef}>
-            <div className="flex items-center gap-x-1 mb-2">
-               <MakeNewComment
-                  onBlurEditor={(editorWrapperId) => focusBlurEditor(editorWrapperId, "blur")}
-                  onFocusEditor={(editorWrapperId) => focusBlurEditor(editorWrapperId, "focus")}
-               />
-            </div>
+            <MakeNewComment
+               onBlurEditor={(editorWrapperId) => focusBlurEditor(editorWrapperId, "blur")}
+               onFocusEditor={(editorWrapperId) => focusBlurEditor(editorWrapperId, "focus")}
+            />
             {comments &&
                comments.length > 0 &&
                comments.map((comment) => (

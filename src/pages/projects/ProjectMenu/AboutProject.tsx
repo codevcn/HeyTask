@@ -5,8 +5,13 @@ import { Avatar, AvatarGroup, styled, Tooltip } from "@mui/material"
 import { useProjectMenuContext } from "./sharing"
 import ReorderIcon from "@mui/icons-material/Reorder"
 import { EProjectRoles } from "../../../utils/enums"
-import { useMemo } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import { EInternalEvents, eventEmitter } from "../../../utils/events"
+import { CustomRichTextEditor } from "../../../components/RichTextEditor"
+import { Editor as TinyMCEEditor } from "tinymce"
+import { useAppDispatch } from "../../../hooks/redux"
+import { updateProject } from "../../../redux/project/project-slice"
+import { CustomRichTextContent } from "../../../components/RichTextContent"
 
 type TProjectAdminsProps = {
    projectMembers: TProjectMemberData[]
@@ -78,6 +83,80 @@ const ProjectAdmins = ({ projectMembers }: TProjectAdminsProps) => {
    )
 }
 
+type TProjectDescriptionProps = {
+   projectDescription: string | null
+   menuIsActive: boolean
+}
+
+const ProjectDescription = ({ projectDescription, menuIsActive }: TProjectDescriptionProps) => {
+   const editorRef = useRef<TinyMCEEditor | null>(null)
+   const [openEditor, setOpenEditor] = useState<boolean>(menuIsActive)
+   const dispatch = useAppDispatch()
+
+   const saveProjectDescription = () => {
+      const editor = editorRef.current
+      if (editor) {
+         const content = editor.getContent()
+         if (content && content.length > 0) {
+            dispatch(updateProject({ description: content }))
+            setOpenEditor(false)
+         }
+      }
+   }
+
+   useEffect(() => {
+      if (!menuIsActive) {
+         setOpenEditor(menuIsActive)
+      }
+   }, [menuIsActive])
+
+   return (
+      <div className="mt-8">
+         <div className="flex items-center gap-3">
+            <ReorderIcon />
+            <h2 className="font-bold text-base">Project Description</h2>
+         </div>
+
+         <div hidden={!openEditor} className="mt-2">
+            <CustomRichTextEditor
+               editorRef={editorRef}
+               placeholder="Type your description here..."
+               wrapperClassName="css-rich-text-editor-wrapper"
+               defaultContent={projectDescription || ""}
+            />
+            <div className="flex gap-x-3 mt-2">
+               <button
+                  onClick={saveProjectDescription}
+                  className="bg-confirm-btn-bgcl font-bold rounded hover:bg-outline-cl text-black text-sm py-2 px-3"
+               >
+                  Save
+               </button>
+               <button
+                  onClick={() => setOpenEditor(false)}
+                  className="hover:bg-modal-btn-hover-bgcl text-regular-text-cl text-sm font-semibold py-2 px-3 rounded"
+               >
+                  Cancel
+               </button>
+            </div>
+         </div>
+         <div
+            className="mt-2 py-2 px-3 rounded bg-modal-btn-bgcl hover:bg-modal-btn-hover-bgcl cursor-pointer"
+            hidden={openEditor}
+            onClick={() => setOpenEditor(true)}
+         >
+            {projectDescription && projectDescription.length > 0 ? (
+               <CustomRichTextContent content={projectDescription} />
+            ) : (
+               <span>
+                  Add a description to let your teammates know what this board is used for. You'll
+                  get bonus points if you add instructions for how to collaborate!
+               </span>
+            )}
+         </div>
+      </div>
+   )
+}
+
 type TAboutProjectProps = {
    projectData: TProjectData
 }
@@ -85,7 +164,7 @@ type TAboutProjectProps = {
 export const AboutProject = ({ projectData }: TAboutProjectProps) => {
    const { members } = projectData
    const { setMenuItemActive, menuItemActive } = useProjectMenuContext()
-   const open = menuItemActive === "about-project"
+   const isActive = menuItemActive === "about-project"
 
    const handleOpen = (isOpen: boolean) => {
       if (isOpen) {
@@ -109,15 +188,13 @@ export const AboutProject = ({ projectData }: TAboutProjectProps) => {
          </button>
 
          <section
-            className={`${open ? "left-0" : "left-[105%]"} transition-[left] absolute z-20 top-0 px-4 py-2 h-full w-full bg-modal-board-bgcl`}
+            className={`${isActive ? "left-0" : "left-[105%]"} transition-[left] absolute z-20 top-0 px-4 py-2 h-full w-full bg-modal-board-bgcl`}
          >
             <ProjectAdmins projectMembers={members} />
-            <div className="mt-8">
-               <div className="flex items-center gap-3">
-                  <ReorderIcon />
-                  <h2 className="font-bold text-base">Project Description</h2>
-               </div>
-            </div>
+            <ProjectDescription
+               projectDescription={projectData.description}
+               menuIsActive={isActive}
+            />
          </section>
       </>
    )
