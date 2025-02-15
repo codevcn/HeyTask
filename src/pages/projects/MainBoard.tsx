@@ -3,7 +3,7 @@ import { setProject } from "../../redux/project/project-slice"
 import { FocusEvent, KeyboardEvent, useEffect, useRef, useState } from "react"
 import StarOutlineIcon from "@mui/icons-material/StarOutline"
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz"
-import { Tooltip } from "@mui/material"
+import { Avatar, Tooltip } from "@mui/material"
 import { Phases } from "./Phases"
 import type { TProjectData, TProjectMemberData } from "../../services/types"
 import { checkFetchedState, measureTextWidth } from "../../utils/helpers"
@@ -22,6 +22,7 @@ import { projectService } from "../../services/project-service"
 import { LogoLoading } from "../../components/Loadings"
 import { TProjectPageParams } from "../../utils/types"
 import { useParams } from "react-router-dom"
+import { FilterTasks } from "./Filter/FilterTasks"
 
 type TEditableSectionProps = {
    projectData: TProjectData
@@ -117,6 +118,7 @@ type TStrangerViewportProps = {
 const StrangerViewport = ({ userInProject }: TStrangerViewportProps) => {
    const [loading, setLoading] = useState<boolean>(false)
    const projectId = useParams<TProjectPageParams>().projectId!
+   const { avatar, fullName, email } = userInProject
 
    const joinProject = () => {
       setLoading(true)
@@ -136,19 +138,21 @@ const StrangerViewport = ({ userInProject }: TStrangerViewportProps) => {
    return (
       <div className="flex items-center justify-center grow bg-top-nav-bgcl">
          <div className="bg-top-nav-bgcl text-regular-text-cl p-6 rounded-lg shadow-lg w-96">
-            <h2 className="text-xl font-semibold">This board is private.</h2>
+            <h2 className="text-xl font-semibold">This project is private.</h2>
             <p className="mt-2 text-modal-text-cl">
                Send a request to the project administrator to gain access.
             </p>
 
             <p className="mt-4">You are logged in as</p>
             <div className="mt-1 flex items-center space-x-3 border border-gray-600 p-3 rounded-lg">
-               <div className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-700 text-xl font-semibold">
-                  HH
-               </div>
+               {avatar ? (
+                  <Avatar src={avatar} sx={{ height: 40, width: 40 }} />
+               ) : (
+                  <Avatar sx={{ height: 40, width: 40 }}>{fullName[0]}</Avatar>
+               )}
                <div>
-                  <p className="font-medium">{userInProject.fullName}</p>
-                  <p className="text-modal-text-cl text-sm">{userInProject.email}</p>
+                  <p className="font-medium">{fullName}</p>
+                  <p className="text-modal-text-cl text-sm">{email}</p>
                </div>
             </div>
 
@@ -159,10 +163,10 @@ const StrangerViewport = ({ userInProject }: TStrangerViewportProps) => {
 
             <button
                onClick={joinProject}
-               className="flex justify-center mt-4 w-full bg-confirm-btn-bgcl hover:bg-confirm-btn-hover-bgcl text-black py-2 rounded-lg transition"
+               className="flex justify-center mt-4 w-full h-9 bg-confirm-btn-bgcl hover:bg-confirm-btn-hover-bgcl text-black py-2 rounded-lg transition"
             >
                {loading ? (
-                  <div className="m-auto h-[20px]">
+                  <div className="m-auto">
                      <LogoLoading color="var(--ht-top-nav-bgcl)" size="small" />
                   </div>
                ) : (
@@ -179,25 +183,22 @@ type THeaderProps = {
    projectData: TProjectData
 }
 
-const Header = ({ userInProject, projectData }: THeaderProps) => {
+const ProjectHeader = ({ userInProject, projectData }: THeaderProps) => {
    const openProjectMenu = () => {
       eventEmitter.emit(EInternalEvents.OPEN_PROJECT_MENU, true)
    }
 
    return (
       <header className="flex justify-between items-center text-white flex-wrap h-top-nav overflow-x-hidden gap-y-3 gap-x-5 py-3 px-5 bg-[#0000003d] backdrop-blur-sm w-full">
-         {projectData && (
-            <>
-               <EditableSection projectData={projectData} userInProject={userInProject} />
-               <div className="flex gap-x-3 items-center">
-                  <ShareProject projectData={projectData} />
-                  <button onClick={openProjectMenu} className="p-1 rounded-sm hover:bg-[#ffffff33]">
-                     <MoreHorizIcon fontSize="small" />
-                  </button>
-               </div>
-               <ProjectMenu />
-            </>
-         )}
+         <EditableSection projectData={projectData} userInProject={userInProject} />
+         <div className="flex gap-x-3 items-center">
+            <FilterTasks />
+            <ShareProject projectData={projectData} />
+            <button onClick={openProjectMenu} className="p-1 rounded-sm hover:bg-[#ffffff33]">
+               <MoreHorizIcon fontSize="small" />
+            </button>
+         </div>
+         <ProjectMenu />
       </header>
    )
 }
@@ -211,7 +212,7 @@ export const MainBoard = () => {
       userInProject &&
       (project ? (
          <div className="flex flex-col flex-1 text-regular-text-cl w-main-board">
-            <Header userInProject={userInProject} projectData={project} />
+            <ProjectHeader userInProject={userInProject} projectData={project} />
             <Phases userInProject={userInProject} />
             <TaskDetails />
             <TaskFileDetails />

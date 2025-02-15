@@ -93,3 +93,7 @@ export const checkFetchedState = <T extends string[]>(
    }
    return true
 }
+
+export const createWebWorker = (pathToWorkerFile: string): Worker => {
+   return new Worker(new URL(pathToWorkerFile, import.meta.url), { type: "module" })
+}

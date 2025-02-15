@@ -6,6 +6,13 @@ import { FixedLoading } from "./Loadings"
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs"
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider"
 import { AppSnackbar } from "./Snackbar"
+import dayjs from "dayjs"
+import isoWeek from "dayjs/plugin/isoWeek"
+
+dayjs.extend(isoWeek)
+dayjs().isoWeek()
+dayjs().isoWeekday()
+dayjs().isoWeekYear()
 
 const nonGuardRoutes: string[] = ["/", "/login", "/register"]
 

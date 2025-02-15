@@ -1,4 +1,5 @@
 import type { EProjectRoles, EUserRoles } from "../utils/enums"
+import type { TTaskStatus } from "../utils/types"
 
 export type TUserData = {
    id: number
@@ -56,7 +57,7 @@ export type TTaskData = {
    members: TTaskMemberData[] | null
    comments: TCommentData[] | null
    dueDate: string | null
-   isComplete: boolean
+   status: TTaskStatus
 }
 
 export type TTaskPreviewData = {
@@ -65,7 +66,8 @@ export type TTaskPreviewData = {
    hasDescription: boolean
    taskMembers: TTaskMemberData[] | null
    position: number
-   isComplete: boolean
+   status: TTaskStatus
+   dueDate: string | null
 }
 
 export type TPhaseData = {

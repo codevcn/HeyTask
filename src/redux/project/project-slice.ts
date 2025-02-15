@@ -1,4 +1,4 @@
-import { createSlice, current, PayloadAction } from "@reduxjs/toolkit"
+import { createSlice, PayloadAction } from "@reduxjs/toolkit"
 import type {
    TCommentData,
    TCustomizationData,
@@ -23,6 +23,7 @@ type TInitialState = {
    project: TProjectData | null
    customization: TCustomizationData | null
    phases: TPhaseData[] | null
+   backupPhases: TPhaseData[] | null
    taskData: TTaskDataState | null
 }
 
@@ -32,6 +33,7 @@ const initialState: TInitialState = {
    customization: null,
    phases: null,
    taskData: null,
+   backupPhases: null,
 }
 
 export const projectSlice = createSlice({
@@ -210,23 +212,34 @@ export const projectSlice = createSlice({
          project.members = project.members.filter((member) => member.id !== memberId)
       },
       moveTask: (state, action: PayloadAction<TMoveTaskState>) => {
-         const { taskId, prePhaseId, toPhaseId, toPosition } = action.payload
-         const prePhase = state.phases!.find(({ id }) => id === prePhaseId)!
-         const preTaskIndex = prePhase.taskPreviews!.findIndex(({ id }) => id === taskId)
-         const [movedTask] = prePhase.taskPreviews!.splice(preTaskIndex, 1)
-         const toPhase = state.phases!.find(({ id }) => id === toPhaseId)!
-         const toTaskPreviews = toPhase.taskPreviews!
-         if (toTaskPreviews && toTaskPreviews.length > 0) {
-            const toIndex = toTaskPreviews.findIndex(({ position }) => position === toPosition)
-            toTaskPreviews.splice(toIndex, 0, movedTask)
-            toPhase.taskPreviews = toTaskPreviews.map((task, idx) => ({
-               ...task,
-               // >>> go on here
-               position: idx + 1,
-            }))
+         const { taskId, fromPhaseId, toPhaseId, toPosition } = action.payload
+         const fromPhase = state.phases!.find(({ id }) => id === fromPhaseId)!
+         const fromTaskPreviews = [...fromPhase.taskPreviews!]
+         const fromIndex = fromTaskPreviews.findIndex(({ id }) => id === taskId)
+         const [movedTask] = fromTaskPreviews.splice(fromIndex, 1)
+         if (fromPhaseId === toPhaseId) {
+            fromTaskPreviews.splice(toPosition, 0, movedTask)
          } else {
-            toPhase.taskPreviews = [movedTask]
+            const toPhase = state.phases!.find(({ id }) => id === toPhaseId)!
+            const toTaskPreviews = [...toPhase.taskPreviews!]
+            if (toTaskPreviews && toTaskPreviews.length > 0) {
+               toTaskPreviews.splice(toPosition, 0, movedTask)
+               toPhase.taskPreviews = toTaskPreviews.map((task, index) => ({
+                  ...task,
+                  position: index,
+               }))
+            } else {
+               toPhase.taskPreviews = [movedTask]
+            }
          }
+         fromPhase.taskPreviews = fromTaskPreviews.map((task, index) => ({
+            ...task,
+            position: index,
+         }))
+         state.taskData!.phaseId = toPhaseId
+      },
+      setBackupPhases: (state, action: PayloadAction<TPhaseData[] | null>) => {
+         state.backupPhases = action.payload
       },
    },
 })
@@ -253,4 +266,5 @@ export const {
    updateMemberInProject,
    removeMemberFromProject,
    moveTask,
+   setBackupPhases,
 } = projectSlice.actions

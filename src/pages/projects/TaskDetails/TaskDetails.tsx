@@ -123,7 +123,7 @@ const TaskActions = ({ phaseData, taskId }: TTaskActionsProps) => {
 
    const deleteTaskHandler = () => {
       dispatch(deleteTask({ phaseId, taskId }))
-      eventEmitter.emit(EInternalEvents.OPEN_TASK_DETAILS_MODAL, false, taskId, phaseData)
+      eventEmitter.emit(EInternalEvents.OPEN_TASK_DETAILS_MODAL, false, taskId)
    }
 
    return (
@@ -193,7 +193,7 @@ const Actions = ({ taskData, phaseData }: TActionsProps) => {
 }
 
 export const TaskDetails = () => {
-   const { taskData } = useAppSelector(({ project }) => project)
+   const { taskData, phases } = useAppSelector(({ project }) => project)
    const dispatch = useAppDispatch()
    const [open, setOpen] = useState<boolean>(false)
    const [phaseData, setPhaseData] = useState<TPhaseData>()
@@ -209,26 +209,42 @@ export const TaskDetails = () => {
          })
    }
 
-   useEffect(() => {
-      eventEmitter.on(EInternalEvents.OPEN_TASK_DETAILS_MODAL, (isOpen, taskId, phaseData) => {
+   const findPhaseByTaskId = (phases: TPhaseData[], taskId: number): TPhaseData | undefined => {
+      return phases?.find((phase) => phase.taskPreviews?.some((task) => task.id === taskId))
+   }
+
+   const listenOpenTaskDetails = () => {
+      eventEmitter.on(EInternalEvents.OPEN_TASK_DETAILS_MODAL, (isOpen, taskId) => {
          setOpen(isOpen)
-         setPhaseData(phaseData)
-         if (isOpen) {
-            const phaseId = phaseData.id
-            if (taskData) {
-               if (taskId !== taskData.id) {
-                  dispatch(setTaskData(null))
-                  getTaskDetailsHandler(taskId, phaseId)
+         if (isOpen && phases) {
+            const phaseData = findPhaseByTaskId(phases, taskId)
+            if (phaseData) {
+               if (taskData) {
+                  if (taskId !== taskData.id) {
+                     dispatch(setTaskData(null))
+                     getTaskDetailsHandler(taskId, phaseData.id)
+                  }
+               } else {
+                  getTaskDetailsHandler(taskId, phaseData.id)
                }
-            } else {
-               getTaskDetailsHandler(taskId, phaseId)
             }
          }
       })
+   }
+
+   const initPhaseData = () => {
+      if (taskData && phases) {
+         setPhaseData(findPhaseByTaskId(phases, taskData.id))
+      }
+   }
+
+   useEffect(() => {
+      listenOpenTaskDetails()
+      initPhaseData()
       return () => {
          eventEmitter.off(EInternalEvents.OPEN_TASK_DETAILS_MODAL)
       }
-   }, [taskData])
+   }, [taskData, phases])
 
    const closeModal = () => {
       setOpen(false)
@@ -243,7 +259,7 @@ export const TaskDetails = () => {
          maxWidth="md"
          fullWidth
          aria-hidden="true"
-         customProp={{ taskIsComplete: taskData?.isComplete || false }}
+         customProp={{ taskIsComplete: taskData?.status === "complete" || false }}
       >
          <DialogContent>
             {taskData && phaseData ? (
@@ -251,7 +267,7 @@ export const TaskDetails = () => {
                   <Title
                      onClose={closeModal}
                      taskTitle={taskData.title}
-                     taskIsComplete={taskData.isComplete}
+                     taskIsComplete={taskData.status === "complete"}
                   />
                   <MoveTask taskId={taskData.id} phaseId={phaseData.id} />
                   <div className="flex justify-between gap-x-3 mt-6">

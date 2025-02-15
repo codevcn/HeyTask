@@ -3,11 +3,21 @@ import { useCallback, useEffect, useState } from "react"
 import CloseIcon from "@mui/icons-material/Close"
 import { useAppDispatch, useAppSelector } from "../../../hooks/redux"
 import { moveTask } from "../../../redux/project/project-slice"
-import type { TPhaseData } from "../../../services/types"
+import type { TPhaseData, TTaskPreviewData } from "../../../services/types"
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore"
+
+type TPositionsToMove = {
+   taskPreviews: TTaskPreviewData[]
+}
+
+type TPhasesToMoveProps = {
+   phases: TPhaseData[]
+   toPhase: TPhaseData
+}
 
 type TMoveTaskFormData = {
-   toPhase: TPhaseData | null
-   toPosition: number | null
+   toPhase: TPhaseData | undefined
+   toPosition: number | undefined
 }
 
 type TMoveTaskProps = {
@@ -18,31 +28,33 @@ type TMoveTaskProps = {
 export const MoveTask = ({ taskId, phaseId }: TMoveTaskProps) => {
    const phases = useAppSelector(({ project }) => project.phases)
    const [anchorEle, setAnchorEle] = useState<HTMLElement | null>(null)
-   const [moveTo, setMoveTo] = useState<TMoveTaskFormData>({ toPhase: null, toPosition: null })
+   const [moveTo, setMoveTo] = useState<TMoveTaskFormData>({
+      toPhase: undefined,
+      toPosition: undefined,
+   })
    const [phaseData, setPhaseData] = useState<TPhaseData>()
    const dispatch = useAppDispatch()
 
    const { toPhase, toPosition } = moveTo
 
-   useEffect(() => {
+   const initMoveToData = () => {
       const phase = phases?.find(({ id }) => id === phaseId)
       if (phase) {
-         setPhaseData(phases?.find(({ id }) => id === phaseId))
-         const toPosition = phase.taskPreviews?.find(({ id }) => id === taskId)?.position || null
+         setPhaseData(phase)
+         const toPosition = phase.taskPreviews?.find(({ id }) => id === taskId)?.position
          setMoveTo({ toPosition, toPhase: phase })
       }
+   }
+
+   useEffect(() => {
+      initMoveToData()
    }, [phases, phaseId])
 
    const moveTaskHandler = useCallback(() => {
       const { toPhase, toPosition } = moveTo
-      if (toPhase && toPosition) {
-         console.log(">>> move to:", {
-            prePhaseId: phaseId,
-            taskId,
-            toPhaseId: toPhase.id,
-            toPosition,
-         })
-         dispatch(moveTask({ prePhaseId: phaseId, taskId, toPhaseId: toPhase.id, toPosition }))
+      if (toPhase && (toPosition || toPosition === 0)) {
+         setAnchorEle(null)
+         dispatch(moveTask({ fromPhaseId: phaseId, taskId, toPhaseId: toPhase.id, toPosition }))
       }
    }, [moveTo])
 
@@ -54,23 +66,88 @@ export const MoveTask = ({ taskId, phaseId }: TMoveTaskProps) => {
       }
    }
 
-   const onChangeMoveToPhase = (e: SelectChangeEvent<unknown>) => {
-      setMoveTo((pre) => ({ ...pre, toPhaseId: parseInt(e.target.value as string) }))
+   const onChangePhaseToMove = (e: SelectChangeEvent<unknown>, phases: TPhaseData[]) => {
+      const phaseId = parseInt(e.target.value as string)
+      const toPhase = phases.find(({ id }) => id === phaseId)!
+      setMoveTo({ toPosition: toPhase.taskPreviews?.[0]?.position || 0, toPhase })
    }
 
-   const onChangeMoveToPosition = (e: SelectChangeEvent<unknown>) => {
+   const onChangePositionToMove = (e: SelectChangeEvent<unknown>) => {
       setMoveTo((pre) => ({ ...pre, toPosition: parseInt(e.target.value as string) }))
    }
-   console.log(">>> stuff:", { phases, phaseData, toPhase, toPosition })
-   return phases && phases.length > 0 && phaseData && toPhase && toPosition ? (
+
+   const PhasesToMove = ({ toPhase, phases }: TPhasesToMoveProps) => {
+      return (
+         <div className="grow">
+            <h3 className="mb-0.5 pl-1 font-semibold">Phase</h3>
+            <FormControl fullWidth>
+               <StyledSelect
+                  size="small"
+                  value={toPhase.id}
+                  onChange={(e) => onChangePhaseToMove(e, phases)}
+                  MenuProps={{
+                     MenuListProps: {
+                        className: "bg-modal-popover-bgcl bor border border-regular-border-cl",
+                     },
+                  }}
+               >
+                  {phases.map(({ id, title }) => (
+                     <StyledMenuItem key={id} value={id}>
+                        {title}
+                     </StyledMenuItem>
+                  ))}
+               </StyledSelect>
+            </FormControl>
+         </div>
+      )
+   }
+
+   const PositionsToMove = ({ taskPreviews }: TPositionsToMove) => {
+      const taskPreviewsCount = taskPreviews.length
+      return (
+         <div className="w-[78px]">
+            <h3 className="mb-0.5 pl-1 font-semibold">Position</h3>
+            <FormControl fullWidth>
+               <StyledSelect
+                  size="small"
+                  value={toPosition}
+                  onChange={onChangePositionToMove}
+                  MenuProps={{
+                     MenuListProps: {
+                        className: "bg-modal-popover-bgcl bor border border-regular-border-cl",
+                     },
+                  }}
+               >
+                  {taskPreviewsCount > 0 &&
+                     taskPreviews.map(({ id, position }) => (
+                        <StyledMenuItem key={id} value={position}>
+                           <span>{position + 1}</span>
+                           {toPosition === position && <span>(current)</span>}
+                        </StyledMenuItem>
+                     ))}
+                  <StyledMenuItem value={taskPreviewsCount || 0}>
+                     <span>{(taskPreviewsCount || 0) + 1}</span>
+                  </StyledMenuItem>
+               </StyledSelect>
+            </FormControl>
+         </div>
+      )
+   }
+
+   return phases &&
+      phases.length > 0 &&
+      phaseData &&
+      toPhase &&
+      (toPosition || toPosition === 0) ? (
       <>
          <div className="flex items-center gap-1 text-regular-text-cl text-xs mt-1">
             <span className="ml-10">In Phase</span>
             <button
                onClick={handleOpen}
-               className="p-1 font-semibold rounded bg-modal-btn-bgcl hover:bg-modal-btn-hover-bgcl cursor-pointer"
+               className="flex gap-x-1 p-1 font-semibold rounded bg-modal-btn-bgcl hover:bg-modal-btn-hover-bgcl cursor-pointer"
             >
-               {phaseData.title}
+               <span>{phaseData.title}</span>
+               <ExpandMoreIcon sx={{ height: 14, width: 14, transform: "scale(1.3)" }} />
             </button>
          </div>
 
@@ -100,51 +177,8 @@ export const MoveTask = ({ taskId, phaseId }: TMoveTaskProps) => {
                <h2 className="mt-3 w-fit">Select destination</h2>
                <div className="w-full mt-2">
                   <div className="flex items-center gap-3">
-                     <div className="grow">
-                        <h3 className="mb-0.5 pl-1 font-semibold">Phase</h3>
-                        <FormControl fullWidth>
-                           <StyledSelect
-                              size="small"
-                              value={toPhase.id}
-                              onChange={onChangeMoveToPhase}
-                              MenuProps={{
-                                 MenuListProps: {
-                                    className:
-                                       "bg-modal-popover-bgcl bor border border-regular-border-cl",
-                                 },
-                              }}
-                           >
-                              {phases.map(({ id, title }) => (
-                                 <StyledMenuItem key={id} value={id}>
-                                    {title}
-                                 </StyledMenuItem>
-                              ))}
-                           </StyledSelect>
-                        </FormControl>
-                     </div>
-                     <div className="w-[78px]">
-                        <h3 className="mb-0.5 pl-1 font-semibold">Position</h3>
-                        <FormControl fullWidth>
-                           <StyledSelect
-                              size="small"
-                              value={toPosition}
-                              onChange={onChangeMoveToPosition}
-                              MenuProps={{
-                                 MenuListProps: {
-                                    className:
-                                       "bg-modal-popover-bgcl bor border border-regular-border-cl",
-                                 },
-                              }}
-                           >
-                              {toPhase.taskPreviews?.map(({ id, position }) => (
-                                 <StyledMenuItem key={id} value={position}>
-                                    <span>{position}</span>
-                                    {toPosition === position && <span>(current)</span>}
-                                 </StyledMenuItem>
-                              ))}
-                           </StyledSelect>
-                        </FormControl>
-                     </div>
+                     <PhasesToMove phases={phases} toPhase={toPhase} />
+                     <PositionsToMove taskPreviews={toPhase.taskPreviews || []} />
                   </div>
                   <button
                      onClick={moveTaskHandler}

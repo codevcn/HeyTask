@@ -5,7 +5,7 @@ import { displayTimeAgo, randomInteger } from "../../../utils/helpers"
 import { addNewComment, deleteComment, updateComment } from "../../../redux/project/project-slice"
 import type { TCommentData, TUserData } from "../../../services/types"
 import { Editor as TinyMCEEditor } from "tinymce"
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import { useAppDispatch } from "../../../hooks/redux"
 import { CustomRichTextContent } from "../../../components/RichTextContent"
 import { CustomRichTextEditor } from "../../../components/RichTextEditor"
@@ -82,10 +82,17 @@ type TUserCommentProps = {
    commentData: TCommentData
    onFocusEditor: (editorWrapperId: string) => void
    onBlurEditor: (editorWrapperId: string) => void
-   userData: TUserData
+   loginedUser: TUserData
+   hasCommentAsTaskResult: boolean
 }
 
-const UserComment = ({ commentData, onFocusEditor, onBlurEditor, userData }: TUserCommentProps) => {
+const UserComment = ({
+   commentData,
+   onFocusEditor,
+   onBlurEditor,
+   loginedUser,
+   hasCommentAsTaskResult,
+}: TUserCommentProps) => {
    const { user, content, createdAt, id, isTaskResult } = commentData
    const [openEditor, setOpenEditor] = useState<boolean>(false)
    const editorRef = useRef<TinyMCEEditor | null>(null)
@@ -122,8 +129,8 @@ const UserComment = ({ commentData, onFocusEditor, onBlurEditor, userData }: TUs
       }
    }, [])
 
-   const markAsTaskResult = () => {
-      dispatch(updateComment({ id: commentData.id, isTaskResult: true }))
+   const handleMarkAsTaskResult = (isTaskResult: boolean) => {
+      dispatch(updateComment({ id: commentData.id, isTaskResult }))
    }
 
    return (
@@ -179,7 +186,7 @@ const UserComment = ({ commentData, onFocusEditor, onBlurEditor, userData }: TUs
                >
                   <CustomRichTextContent content={content} wrapperClassName="break-words" />
                </div>
-               {user.id === userData.id && (
+               {user.id === loginedUser.id && (
                   <div className="flex justify-between gap-2 text-regular-text-cl mt-1 leading-none px-2">
                      <div className="flex items-center gap-x-1">
                         <button onClick={editing} className="hover:underline text-xs">
@@ -188,17 +195,28 @@ const UserComment = ({ commentData, onFocusEditor, onBlurEditor, userData }: TUs
                         <span>•</span>
                         <DeleteComment commentId={id} createdAt={createdAt} />
                      </div>
-                     {!isTaskResult && (
-                        <Tooltip title="Mark as task result" placement="top" arrow>
-                           <button
-                              onClick={markAsTaskResult}
-                              className="flex items-center gap-x-1 text-xs hover:text-success-text-cl hover:underline"
-                           >
-                              <CheckIcon sx={{ height: 16, width: 16 }} />
-                              <span>Mark as task result</span>
-                           </button>
-                        </Tooltip>
-                     )}
+                     {!hasCommentAsTaskResult &&
+                        (isTaskResult ? (
+                           <Tooltip title="Unmark as task result" placement="top" arrow>
+                              <button
+                                 onClick={() => handleMarkAsTaskResult(false)}
+                                 className="flex items-center gap-x-1 text-xs hover:text-delete-btn-bgcl hover:underline"
+                              >
+                                 <CloseIcon sx={{ height: 16, width: 16 }} />
+                                 <span>Unmark as task result</span>
+                              </button>
+                           </Tooltip>
+                        ) : (
+                           <Tooltip title="Mark as task result" placement="top" arrow>
+                              <button
+                                 onClick={() => handleMarkAsTaskResult(true)}
+                                 className="flex items-center gap-x-1 text-xs hover:text-success-text-cl hover:underline"
+                              >
+                                 <CheckIcon sx={{ height: 16, width: 16 }} />
+                                 <span>Mark as task result</span>
+                              </button>
+                           </Tooltip>
+                        ))}
                   </div>
                )}
             </div>
@@ -305,6 +323,10 @@ export const Comments = ({ comments }: TCommentsProps) => {
    const editorsContainerRef = useRef<HTMLDivElement>(null)
    const user = useUser()!
 
+   const hasCommentAsTaskResult = useMemo<boolean>(() => {
+      return comments?.some(({ isTaskResult }) => isTaskResult) || false
+   }, [comments])
+
    const focusBlurEditor = (editorWrapperId: string, type: "focus" | "blur") => {
       const editorWrapper = editorsContainerRef.current?.querySelector<HTMLDivElement>(
          `#${editorWrapperId}`,
@@ -335,7 +357,8 @@ export const Comments = ({ comments }: TCommentsProps) => {
                      commentData={comment}
                      onBlurEditor={(editorWrapperId) => focusBlurEditor(editorWrapperId, "blur")}
                      onFocusEditor={(editorWrapperId) => focusBlurEditor(editorWrapperId, "focus")}
-                     userData={user}
+                     loginedUser={user}
+                     hasCommentAsTaskResult={hasCommentAsTaskResult}
                   />
                ))}
          </div>

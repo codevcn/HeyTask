@@ -1,6 +1,13 @@
 import type { HttpStatusCode } from "axios"
-import type { TTaskData, TTaskMemberData, TTaskPreviewData, TUserData } from "../services/types"
+import type {
+   TPhaseData,
+   TTaskData,
+   TTaskMemberData,
+   TTaskPreviewData,
+   TUserData,
+} from "../services/types"
 import type { PopoverOrigin } from "@mui/material"
+import type { TFilterTasksData } from "../pages/projects/Filter/sharing"
 
 export type TSuccess = {
    success: boolean
@@ -78,7 +85,16 @@ export type TProjectPageParams = {
 
 export type TMoveTaskState = {
    taskId: number
-   prePhaseId: number
+   fromPhaseId: number
    toPhaseId: number
    toPosition: number
 }
+
+export type TTaskStatus = "complete" | "uncomplete"
+
+export type TFilterTasksWorkerMsg = {
+   phases: TPhaseData[]
+   filterData: TFilterTasksData
+}
+
+export type TFilterTasksWorkerRes = TTaskData["id"][]

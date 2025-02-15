@@ -35,6 +35,7 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle"
 import { projectService } from "../../../services/project-service"
 import { toast } from "react-toastify"
 import axiosErrorHandler from "../../../utils/axios-error-handler"
+import type { TTaskStatus } from "../../../utils/types"
 
 type TTaskPreviewProps = {
    taskPreviewData: TTaskPreviewData
@@ -44,24 +45,25 @@ type TTaskPreviewProps = {
 
 const Task = ({ taskPreviewData, className, phaseData }: TTaskPreviewProps) => {
    const phaseId = phaseData.id
-   const { id, taskMembers, hasDescription, title, isComplete } = taskPreviewData
+   const { id, taskMembers, hasDescription, title, status } = taskPreviewData
+   const isComplete = status === "complete"
    const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id })
    const dispatch = useAppDispatch()
 
    const openTaskDetails = () => {
-      eventEmitter.emit(EInternalEvents.OPEN_TASK_DETAILS_MODAL, true, id, phaseData)
+      eventEmitter.emit(EInternalEvents.OPEN_TASK_DETAILS_MODAL, true, id)
    }
 
    const handleMarkAsComplete = (e: React.MouseEvent<HTMLButtonElement>) => {
       e.stopPropagation()
-      const newStatus = !isComplete
+      const newStatus: TTaskStatus = status === "complete" ? "uncomplete" : "complete"
       projectService
          .markAsCompleteTask(id, newStatus)
          .catch((error) => {
             toast.error(axiosErrorHandler.handleHttpError(error).message)
          })
          .finally(() => {
-            dispatch(updateTaskPreview({ ...taskPreviewData, phaseId, isComplete: newStatus }))
+            dispatch(updateTaskPreview({ ...taskPreviewData, phaseId, status: newStatus }))
          })
    }
 
@@ -159,7 +161,7 @@ const AddNewTask = ({ phaseData, finalTaskPosition }: TAddNewTaskProps) => {
                hasDescription: false,
                phaseId,
                position: finalTaskPosition ? finalTaskPosition + 1 : 1,
-               isComplete: false,
+               status: "uncomplete",
             }),
          )
       }

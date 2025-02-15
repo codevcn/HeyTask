@@ -14,15 +14,16 @@ import type {
    TCreateNewShareLinkData,
 } from "./types"
 import { EProjectRoles, EUserRoles } from "../utils/enums"
+import type { TTaskStatus } from "../utils/types"
 
-export const taskMembers: TTaskMemberData[] = [
+export const projectMembers: TProjectMemberData[] = [
    {
       id: 1,
       avatar: "https://trello-logos.s3.amazonaws.com/7c17ee5f87fa99637dce66430e395d97/170.png",
       fullName: "full codevcn",
       email: "demo-email@mail.ru",
       role: EUserRoles.USER,
-      projectRole: EProjectRoles.MEMBER,
+      projectRole: EProjectRoles.ADMIN,
    },
    {
       id: 2,
@@ -92,49 +93,7 @@ export const taskMembers: TTaskMemberData[] = [
    },
 ]
 
-export const projectMembers: TProjectMemberData[] = [
-   {
-      id: 1,
-      avatar: "https://trello-logos.s3.amazonaws.com/7c17ee5f87fa99637dce66430e395d97/170.png",
-      fullName: "full codevcn",
-      email: "demo-email@mail.ru",
-      role: EUserRoles.USER,
-      projectRole: EProjectRoles.ADMIN,
-   },
-   {
-      id: 7,
-      avatar: null,
-      fullName: "Baba",
-      email: "demo-email@mair.sa",
-      role: EUserRoles.USER,
-      projectRole: EProjectRoles.MEMBER,
-   },
-   {
-      id: 8,
-      avatar: null,
-      fullName: "Baba 2",
-      email: "demo-email@mais.sb",
-      role: EUserRoles.USER,
-      projectRole: EProjectRoles.MEMBER,
-   },
-   {
-      id: 9,
-      avatar: null,
-      fullName: "Bimmmmmmmmmmmmm 123",
-      email: "demo-email@mait.sc",
-      role: EUserRoles.USER,
-      projectRole: EProjectRoles.MEMBER,
-   },
-   {
-      id: 4,
-      avatar:
-         "https://trello-members.s3.amazonaws.com/65b078657d14de9327fcae56/a0cea1a61f9f6f57630a7aeb1f97f679/170.png",
-      fullName: "lele vcn",
-      email: "demo-email@maio.rx",
-      role: EUserRoles.USER,
-      projectRole: EProjectRoles.MEMBER,
-   },
-]
+export const taskMembers: TTaskMemberData[] = projectMembers
 
 class ProjectService {
    async getUserInfoInProject(userId: number): Promise<TUserInProjectData> {
@@ -178,19 +137,21 @@ class ProjectService {
             taskPreviews: [
                {
                   id: 1,
-                  title: "Lời mở đầu",
+                  title: "Lời mở đầu 1",
                   hasDescription: true,
-                  position: 1,
+                  position: 0,
                   taskMembers: taskMembers.slice(0, 5),
-                  isComplete: false,
+                  status: "uncomplete",
+                  dueDate: "2025-02-14T09:45:11.925653Z",
                },
                {
                   id: 3,
-                  title: "Mẫu giao diện",
+                  title: "Mẫu giao diện 1",
                   hasDescription: true,
-                  position: 2,
+                  position: 1,
                   taskMembers: null,
-                  isComplete: false,
+                  status: "uncomplete",
+                  dueDate: "2025-02-16T09:45:11.925653Z",
                },
             ],
          },
@@ -202,67 +163,75 @@ class ProjectService {
             taskPreviews: [
                {
                   id: 4,
-                  title: "Lời mở đầu",
+                  title: "Lời mở đầu 2",
                   hasDescription: true,
-                  position: 3,
+                  position: 0,
                   taskMembers: null,
-                  isComplete: false,
+                  status: "uncomplete",
+                  dueDate: null,
                },
                {
                   id: 5,
                   title: "Web to do okay? vcn",
                   hasDescription: true,
-                  position: 4,
-                  taskMembers: null,
-                  isComplete: false,
+                  position: 1,
+                  taskMembers: taskMembers.slice(0, 4),
+                  status: "uncomplete",
+                  dueDate: "2025-02-14T09:45:11.925653Z",
                },
                {
                   id: 6,
-                  title: "Mẫu giao diện",
+                  title: "Mẫu giao diện 2",
                   hasDescription: true,
-                  position: 5,
+                  position: 2,
                   taskMembers: null,
-                  isComplete: false,
+                  status: "uncomplete",
+                  dueDate: "2025-01-05T08:39:41.890Z",
                },
                {
                   id: 99,
-                  title: "Mẫu giao diện",
+                  title: "Mẫu giao diện 3",
                   hasDescription: true,
-                  position: 6,
+                  position: 3,
                   taskMembers: null,
-                  isComplete: false,
+                  status: "uncomplete",
+                  dueDate: "2025-03-15T09:45:11.925653Z",
                },
                {
                   id: 101,
-                  title: "Mẫu giao diện",
+                  title: "Mẫu giao diện 4",
                   hasDescription: true,
-                  position: 7,
-                  taskMembers: null,
-                  isComplete: false,
+                  position: 4,
+                  taskMembers: taskMembers.slice(5, 8),
+                  status: "uncomplete",
+                  dueDate: "2025-01-07T08:39:41.890Z",
                },
                {
                   id: 105,
-                  title: "Mẫu giao diện",
+                  title: "Mẫu giao diện 5",
                   hasDescription: true,
-                  position: 8,
-                  taskMembers: null,
-                  isComplete: false,
+                  position: 5,
+                  taskMembers: taskMembers.slice(3, 6),
+                  status: "uncomplete",
+                  dueDate: "2025-02-16T09:45:11.925653Z",
                },
                {
                   id: 102,
-                  title: "Mẫu giao diện",
+                  title: "Mẫu giao diện 6",
                   hasDescription: true,
-                  position: 9,
+                  position: 6,
                   taskMembers: null,
-                  isComplete: false,
+                  status: "uncomplete",
+                  dueDate: "2025-03-15T09:45:11.925653Z",
                },
                {
                   id: 103,
-                  title: "Mẫu giao diện",
+                  title: "Mẫu giao diện 7",
                   hasDescription: true,
-                  position: 10,
+                  position: 7,
                   taskMembers: null,
-                  isComplete: false,
+                  status: "uncomplete",
+                  dueDate: "2025-02-16T09:45:11.925653Z",
                },
             ],
          },
@@ -276,9 +245,10 @@ class ProjectService {
                   id: 11,
                   title: "Lời mở đầuLời mở đầuLời mở đầuLời mở đầuLời mở đầuLời mở đầuLời mở đầu",
                   hasDescription: true,
-                  position: 11,
+                  position: 0,
                   taskMembers: null,
-                  isComplete: false,
+                  status: "uncomplete",
+                  dueDate: null,
                },
             ],
          },
@@ -290,11 +260,12 @@ class ProjectService {
             taskPreviews: [
                {
                   id: 9,
-                  title: "Lời mở đầu",
+                  title: "Lời mở đầu 3",
                   hasDescription: true,
-                  position: 12,
+                  position: 0,
                   taskMembers: null,
-                  isComplete: false,
+                  status: "uncomplete",
+                  dueDate: "2025-01-12T08:39:41.890Z",
                },
             ],
          },
@@ -306,19 +277,21 @@ class ProjectService {
             taskPreviews: [
                {
                   id: 10,
-                  title: "Lời mở đầu",
+                  title: "Lời mở đầu 4",
                   hasDescription: true,
-                  position: 13,
+                  position: 0,
                   taskMembers: null,
-                  isComplete: false,
+                  status: "uncomplete",
+                  dueDate: null,
                },
                {
                   id: 20,
                   title: "Phân tích & Thiết kế",
                   hasDescription: true,
-                  position: 14,
+                  position: 1,
                   taskMembers: null,
-                  isComplete: false,
+                  status: "uncomplete",
+                  dueDate: "2025-02-20T09:45:11.925653Z",
                },
             ],
          },
@@ -335,7 +308,7 @@ class ProjectService {
          title: "Web to do okay? vcn",
          comments: null,
          dueDate: "2025-01-30T08:39:41.890Z",
-         isComplete: false,
+         status: "uncomplete",
       }
       return data
    }
@@ -389,7 +362,7 @@ class ProjectService {
       await perfomDelay(1000)
    }
 
-   async markAsCompleteTask(taskId: number, isComplete: boolean): Promise<void> {
+   async markAsCompleteTask(taskId: number, taskStatus: TTaskStatus): Promise<void> {
       await perfomDelay(1000)
    }
 

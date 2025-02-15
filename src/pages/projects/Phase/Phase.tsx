@@ -19,7 +19,7 @@ type TPhaseActionsProps = {
    phaseData: TPhaseData
 }
 
-const PhaseActions = ({ phaseData }: TPhaseActionsProps) => {
+const PhaseMenu = ({ phaseData }: TPhaseActionsProps) => {
    const [anchorEle, setAnchorEle] = useState<HTMLButtonElement>()
    const dispatch = useAppDispatch()
 
@@ -86,25 +86,25 @@ const PhaseActions = ({ phaseData }: TPhaseActionsProps) => {
                      onClick={() => hanleActions("delete-phase")}
                      className="cursor-pointer hover:bg-hover-silver-bgcl py-[6px] px-3 text-regular-text-cl text-sm font-medium"
                   >
-                     Delete Phase
+                     Delete phase
                   </li>
                   <li
                      onClick={() => hanleActions("copy-phase")}
                      className="cursor-pointer hover:bg-hover-silver-bgcl py-[6px] px-3 text-regular-text-cl text-sm font-medium"
                   >
-                     Copy Phase
+                     Copy phase
                   </li>
                   <li
                      onClick={() => hanleActions("copy-phase")}
                      className="cursor-pointer hover:bg-hover-silver-bgcl py-[6px] px-3 text-regular-text-cl text-sm font-medium"
                   >
-                     Move Phase
+                     Move phase
                   </li>
                   <li
                      onClick={() => hanleActions("description")}
                      className="cursor-pointer hover:bg-hover-silver-bgcl py-[6px] px-3 text-regular-text-cl text-sm font-medium"
                   >
-                     Description
+                     About phase
                   </li>
                </ul>
             </div>
@@ -191,7 +191,7 @@ export const Phase = ({ phaseData, className }: TPhaseProps) => {
                      }}
                   />
                </div>
-               <PhaseActions phaseData={phaseData} />
+               <PhaseMenu phaseData={phaseData} />
             </div>
             <TaskPreviews phaseData={phaseData} taskPreviews={taskPreviews || []} />
          </div>

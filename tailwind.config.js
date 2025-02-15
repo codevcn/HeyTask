@@ -25,6 +25,7 @@ export default {
             "modal-text-cl": "var(--ht-modal-text-cl)",
             "success-text-cl": "var(--ht-success-text-cl)",
             "radio-outline-cl": "var(--ht-radio-outline-cl)",
+            "warning-text-cl": "var(--ht-warning-text-cl)",
          },
          height: {
             background: "calc(100% - var(--ht-top-nav-height))",

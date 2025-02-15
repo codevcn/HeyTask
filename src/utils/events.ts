@@ -22,11 +22,7 @@ interface IEventEmitter {
       phaseId: number,
       type: "start-dragging" | "end-dragging",
    ) => void
-   [EInternalEvents.OPEN_TASK_DETAILS_MODAL]: (
-      isOpen: boolean,
-      taskId: number,
-      phaseData: TPhaseData,
-   ) => void
+   [EInternalEvents.OPEN_TASK_DETAILS_MODAL]: (isOpen: boolean, taskId: number) => void
    [EInternalEvents.SHOW_UPLOADED_FILE_DETAILS]: (isShown: boolean, fileId: string) => void
    [EInternalEvents.OPEN_FIXED_LOADING]: (isOpen: boolean) => void
    [EInternalEvents.OPENING_COMMENT_EDITOR]: (commentId: number) => void

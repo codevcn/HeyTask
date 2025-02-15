@@ -12,6 +12,7 @@ import { Editor as TinyMCEEditor } from "tinymce"
 import { useAppDispatch } from "../../../hooks/redux"
 import { updateProject } from "../../../redux/project/project-slice"
 import { CustomRichTextContent } from "../../../components/RichTextContent"
+import SubtitlesIcon from "@mui/icons-material/Subtitles"
 
 type TProjectAdminsProps = {
    projectMembers: TProjectMemberData[]
@@ -29,8 +30,8 @@ const ProjectAdmins = ({ projectMembers }: TProjectAdminsProps) => {
    }
 
    return (
-      <div>
-         <div className="flex items-center gap-3">
+      <>
+         <div className="flex items-center gap-3 mt-5">
             <AccountCircleIcon />
             <h2 className="font-bold text-base">Project Admins</h2>
          </div>
@@ -79,7 +80,7 @@ const ProjectAdmins = ({ projectMembers }: TProjectAdminsProps) => {
                </div>
             )}
          </div>
-      </div>
+      </>
    )
 }
 
@@ -162,7 +163,7 @@ type TAboutProjectProps = {
 }
 
 export const AboutProject = ({ projectData }: TAboutProjectProps) => {
-   const { members } = projectData
+   const { members, title } = projectData
    const { setMenuItemActive, menuItemActive } = useProjectMenuContext()
    const isActive = menuItemActive === "about-project"
 
@@ -188,8 +189,15 @@ export const AboutProject = ({ projectData }: TAboutProjectProps) => {
          </button>
 
          <section
-            className={`${isActive ? "left-0" : "left-[105%]"} transition-[left] absolute z-20 top-0 px-4 py-2 h-full w-full bg-modal-board-bgcl`}
+            className={`${isActive ? "left-0" : "left-[105%]"} transition-[left] absolute z-20 top-0 px-4 py-2 pb-4 h-[inherit] w-full bg-modal-board-bgcl`}
          >
+            <div className="text-regular-text-cl">
+               <div className="flex items-center gap-x-3">
+                  <SubtitlesIcon />
+                  <h3 className="font-bold text-base">Title</h3>
+               </div>
+               <div className="mt-2 text-base py-2 px-3 rounded bg-modal-btn-bgcl">{title}</div>
+            </div>
             <ProjectAdmins projectMembers={members} />
             <ProjectDescription
                projectDescription={projectData.description}
