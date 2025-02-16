@@ -23,7 +23,7 @@ type TInitialState = {
    project: TProjectData | null
    customization: TCustomizationData | null
    phases: TPhaseData[] | null
-   backupPhases: TPhaseData[] | null
+   filterResult: TPhaseData[] | null
    taskData: TTaskDataState | null
 }
 
@@ -33,7 +33,7 @@ const initialState: TInitialState = {
    customization: null,
    phases: null,
    taskData: null,
-   backupPhases: null,
+   filterResult: null,
 }
 
 export const projectSlice = createSlice({
@@ -238,8 +238,8 @@ export const projectSlice = createSlice({
          }))
          state.taskData!.phaseId = toPhaseId
       },
-      setBackupPhases: (state, action: PayloadAction<TPhaseData[] | null>) => {
-         state.backupPhases = action.payload
+      setFilterResult: (state, action: PayloadAction<TPhaseData[] | null>) => {
+         state.filterResult = action.payload
       },
    },
 })
@@ -266,5 +266,5 @@ export const {
    updateMemberInProject,
    removeMemberFromProject,
    moveTask,
-   setBackupPhases,
+   setFilterResult,
 } = projectSlice.actions

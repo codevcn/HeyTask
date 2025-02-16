@@ -10,22 +10,22 @@ import {
 } from "@dnd-kit/core"
 import type { DragEndEvent, DragStartEvent } from "@dnd-kit/core"
 import { arrayMove, SortableContext, horizontalListSortingStrategy } from "@dnd-kit/sortable"
-import { useAppDispatch, useAppSelector } from "../../hooks/redux"
-import { addNewPhase, setPhases } from "../../redux/project/project-slice"
-import { projectService } from "../../services/project-service"
+import { useAppDispatch, useAppSelector } from "../../../hooks/redux"
+import { addNewPhase, setPhases } from "../../../redux/project/project-slice"
+import { projectService } from "../../../services/project-service"
 import { toast } from "react-toastify"
-import axiosErrorHandler from "../../utils/axios-error-handler"
-import type { TPhaseData, TProjectMemberData } from "../../services/types"
+import axiosErrorHandler from "../../../utils/axios-error-handler"
+import type { TPhaseData, TProjectMemberData } from "../../../services/types"
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz"
 import { styled, TextField, Tooltip } from "@mui/material"
-import { useDragScroll } from "../../hooks/drag-scroll"
-import { TaskPreviews } from "./Phase/TaskPreviews"
+import { useDragScroll } from "../../../hooks/drag-scroll"
+import { TaskPreviews } from "./TaskPreviews"
 import AddIcon from "@mui/icons-material/Add"
 import CloseIcon from "@mui/icons-material/Close"
-import { randomInteger } from "../../utils/helpers"
-import { Phase } from "./Phase/Phase"
-import { checkUserPermission } from "../../configs/user-permissions"
-import { ProjectRoleGuard } from "../../components/ResourceGuard"
+import { randomInteger } from "../../../utils/helpers"
+import { Phase } from "./Phase"
+import { checkUserPermission } from "../../../configs/user-permissions"
+import { ProjectRoleGuard } from "../../../components/ResourceGuard"
 
 type TAddNewPhaseProps = {
    currentFinalPos: number | null
@@ -278,7 +278,7 @@ type TCanDragAndDropProps = {
 }
 
 export const Phases = ({ userInProject }: TCanDragAndDropProps) => {
-   const { phases } = useAppSelector(({ project }) => project)
+   const { phases, filterResult } = useAppSelector(({ project }) => project)
    const dispatch = useAppDispatch()
 
    const getPhases = () => {
@@ -298,10 +298,12 @@ export const Phases = ({ userInProject }: TCanDragAndDropProps) => {
       }
    }, [])
 
+   const finalPhases = filterResult || phases || []
+
    return checkUserPermission(userInProject.projectRole, "arrange-phase-task") ? (
-      <PhasesCanDragAndDrop userInProject={userInProject} phases={phases || []} />
+      <PhasesCanDragAndDrop userInProject={userInProject} phases={finalPhases} />
    ) : (
-      <FixedPhases phases={phases || []} />
+      <FixedPhases phases={finalPhases} />
    )
 }
 

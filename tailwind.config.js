@@ -26,6 +26,7 @@ export default {
             "success-text-cl": "var(--ht-success-text-cl)",
             "radio-outline-cl": "var(--ht-radio-outline-cl)",
             "warning-text-cl": "var(--ht-warning-text-cl)",
+            "silver-white-bgcl": "var(--ht-silver-white-bgcl)",
          },
          height: {
             background: "calc(100% - var(--ht-top-nav-height))",

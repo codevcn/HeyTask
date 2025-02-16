@@ -112,6 +112,7 @@ class ProjectService {
          members: projectMembers,
          shareLink: "http://localhost:5173/projects/1",
          description: "",
+         starred: false,
       }
       return data
    }

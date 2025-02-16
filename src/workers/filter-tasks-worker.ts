@@ -104,7 +104,7 @@ const mainFilter = (
    phases: TFilterTasksWorkerMsg["phases"],
    filterData: TFilterTasksWorkerMsg["filterData"],
 ): TTaskIds => {
-   const filteredTaskIds: any = []
+   const filteredTaskIds: TTaskIds = []
    for (const { taskPreviews } of phases) {
       if (taskPreviews && taskPreviews.length > 0) {
          for (const task of taskPreviews) {
@@ -114,7 +114,7 @@ const mainFilter = (
                filterByDueDate(task, filterData.dueDate) &&
                filterByTaskStatus(task, filterData.taskStatus)
             ) {
-               filteredTaskIds.push(task)
+               filteredTaskIds.push(task.id)
             }
          }
       }

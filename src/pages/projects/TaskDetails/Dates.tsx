@@ -1,3 +1,4 @@
+//>>> removed useCallback at function "saveDates"
 import {
    Popover,
    styled,
@@ -9,7 +10,7 @@ import {
 } from "@mui/material"
 import { useAppDispatch, useAppSelector } from "../../../hooks/redux"
 import { updateTaskData } from "../../../redux/project/project-slice"
-import { useCallback, useEffect, useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import CloseIcon from "@mui/icons-material/Close"
 import { DateCalendar } from "@mui/x-date-pickers/DateCalendar"
 import dayjs, { Dayjs } from "dayjs"
@@ -44,7 +45,7 @@ const DatesBoard = () => {
       setNewDueDate(date)
    }
 
-   const saveDates = useCallback(() => {
+   const saveDates = () => {
       if (newDueDate) {
          if (checkUserPermission(userInProject.projectRole, "assign-due-date")) {
             //>>> add reminder if need
@@ -53,7 +54,7 @@ const DatesBoard = () => {
             toast.error("You must be Admin or Leader to assign due dates")
          }
       }
-   }, [newDueDate])
+   }
 
    useEffect(() => {
       if (taskData) {

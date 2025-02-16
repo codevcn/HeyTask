@@ -8,7 +8,7 @@ import {
    Avatar,
    Checkbox,
 } from "@mui/material"
-import { useRef, useState } from "react"
+import { Fragment, useRef, useState } from "react"
 import PermIdentityIcon from "@mui/icons-material/PermIdentity"
 import { useUserInProject } from "../../../hooks/user"
 import type { TProjectMemberData } from "../../../services/types"
@@ -39,6 +39,7 @@ export const FilterByMembers = ({ onFilter }: TFilterByMembersProps) => {
    const pickedMemberIdsRef = useRef<Set<TProjectMemberData["id"]>>(new Set([]))
    const pickedMembersCount = pickedMemberIdsRef.current.size
    const forceUpdate = useForceUpdate()
+   const [clearFlag, setClearFlag] = useState<boolean>(false)
 
    const doFilter = () => {
       onFilter({ memberIds: Array.from(pickedMemberIdsRef.current) })
@@ -89,7 +90,7 @@ export const FilterByMembers = ({ onFilter }: TFilterByMembersProps) => {
       )
    }
 
-   const pickMember = (e: React.ChangeEvent<HTMLInputElement>) => {
+   const pickMemberType = (e: React.ChangeEvent<HTMLInputElement>) => {
       const value = e.currentTarget.value as EPickMemberValues
       switch (value) {
          case EPickMemberValues.NONE_OF_MEMBERS:
@@ -106,11 +107,24 @@ export const FilterByMembers = ({ onFilter }: TFilterByMembersProps) => {
       forceUpdate()
    }
 
+   const clear = () => {
+      onFilter({ memberIds: undefined })
+      setClearFlag((pre) => !pre)
+   }
+
    return (
-      <>
+      <Fragment key={clearFlag ? 1 : 0}>
          <div className="mt-6">
-            <h3 className="text-sm font-semibold mb-1">Members</h3>
-            <RadioGroup onChange={pickMember}>
+            <div className="flex justify-between items-center w-full">
+               <h3 className="text-sm font-semibold mb-1">Members</h3>
+               <button
+                  onClick={clear}
+                  className="text-xs py-0.5 px-3 bg-modal-btn-bgcl hover:bg-modal-btn-hover-bgcl rounded"
+               >
+                  Clear
+               </button>
+            </div>
+            <RadioGroup onChange={pickMemberType}>
                <FormControlLabel
                   value={EPickMemberValues.NONE_OF_MEMBERS}
                   control={<StyledRadio size="small" />}
@@ -179,7 +193,7 @@ export const FilterByMembers = ({ onFilter }: TFilterByMembersProps) => {
                ))}
             </div>
          </SelectMembersBoard>
-      </>
+      </Fragment>
    )
 }
 

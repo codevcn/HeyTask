@@ -1,5 +1,6 @@
+//>>> removed useCallback at function "moveTaskHandler"
 import { styled, Popover, Select, MenuItem, SelectChangeEvent, FormControl } from "@mui/material"
-import { useCallback, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import CloseIcon from "@mui/icons-material/Close"
 import { useAppDispatch, useAppSelector } from "../../../hooks/redux"
 import { moveTask } from "../../../redux/project/project-slice"
@@ -50,13 +51,13 @@ export const MoveTask = ({ taskId, phaseId }: TMoveTaskProps) => {
       initMoveToData()
    }, [phases, phaseId])
 
-   const moveTaskHandler = useCallback(() => {
+   const moveTaskHandler = () => {
       const { toPhase, toPosition } = moveTo
       if (toPhase && (toPosition || toPosition === 0)) {
          setAnchorEle(null)
          dispatch(moveTask({ fromPhaseId: phaseId, taskId, toPhaseId: toPhase.id, toPosition }))
       }
-   }, [moveTo])
+   }
 
    const handleOpen = (e?: React.MouseEvent<HTMLSpanElement>) => {
       if (e) {
@@ -114,15 +115,15 @@ export const MoveTask = ({ taskId, phaseId }: TMoveTaskProps) => {
                   onChange={onChangePositionToMove}
                   MenuProps={{
                      MenuListProps: {
-                        className: "bg-modal-popover-bgcl bor border border-regular-border-cl",
+                        className:
+                           "bg-modal-popover-bgcl w-[112px] border border-regular-border-cl",
                      },
                   }}
                >
                   {taskPreviewsCount > 0 &&
                      taskPreviews.map(({ id, position }) => (
                         <StyledMenuItem key={id} value={position}>
-                           <span>{position + 1}</span>
-                           {toPosition === position && <span>(current)</span>}
+                           <span>{`${position + 1}${toPosition === position ? " (current)" : ""}`}</span>
                         </StyledMenuItem>
                      ))}
                   <StyledMenuItem value={taskPreviewsCount || 0}>

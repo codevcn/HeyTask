@@ -33,6 +33,7 @@ export type TProjectData = {
    members: TProjectMemberData[]
    shareLink: string | null
    description: string | null
+   starred: boolean
 }
 
 export type TCustomizationData = {

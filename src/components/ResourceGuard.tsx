@@ -9,7 +9,7 @@ import { setAuthStatus } from "../redux/auth/auth-slice"
 import { setUser } from "../redux/user/user-slice"
 import { toast } from "react-toastify"
 import {
-   checkAtLeastUserPermissions,
+   checkAtLeastUserPermission,
    checkUserPermission,
    checkUserPermissions,
    type TAllPermissions,
@@ -82,7 +82,7 @@ export const ProjectRoleGuard = ({
    checkAtLeast,
 }: TProjectRoleGuardProps) => {
    if (permissions.length > 1) {
-      if (checkAtLeast && checkAtLeastUserPermissions(userProjectRole, ...permissions)) {
+      if (checkAtLeast && checkAtLeastUserPermission(userProjectRole, ...permissions)) {
          return children
       } else if (checkUserPermissions(userProjectRole, ...permissions)) {
          return children

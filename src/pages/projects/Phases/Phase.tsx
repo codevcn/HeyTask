@@ -13,7 +13,73 @@ import { Fade, Popover } from "@mui/material"
 import { checkUserPermission } from "../../../configs/user-permissions"
 import { useUserInProject } from "../../../hooks/user"
 
-type TPhaseActions = "copy-phase" | "delete-phase" | "move-phase" | "description"
+type TDeletePhaseConfirmProps = {
+   phaseId: number
+}
+
+const DeletePhaseConfirm = ({ phaseId }: TDeletePhaseConfirmProps) => {
+   const [anchorEle, setAnchorEle] = useState<HTMLElement>()
+   const dispatch = useAppDispatch()
+
+   const handleOpen = (e?: React.MouseEvent<HTMLElement>) => {
+      if (e) {
+         setAnchorEle(e.currentTarget)
+      } else {
+         setAnchorEle(undefined)
+      }
+   }
+
+   const deletePhaseHandler = () => {
+      dispatch(deletePhase(phaseId))
+   }
+
+   return (
+      <>
+         <li
+            onClick={handleOpen}
+            className="cursor-pointer hover:bg-hover-silver-bgcl py-[6px] px-3 text-regular-text-cl text-sm font-medium"
+         >
+            Delete phase
+         </li>
+
+         <StyledPopover
+            anchorEl={anchorEle}
+            open={!!anchorEle}
+            onClose={() => handleOpen()}
+            TransitionComponent={Fade}
+            anchorOrigin={{
+               vertical: "bottom",
+               horizontal: "center",
+            }}
+            transformOrigin={{
+               vertical: "top",
+               horizontal: "center",
+            }}
+         >
+            <div className="bg-modal-popover-bgcl border border-solid border-regular-border-cl rounded-lg p-3 text-regular-text-cl w-[300px]">
+               <div className="relative w-full py-1">
+                  <h3 className="w-full text-center text-sm font-bold">Delete phase</h3>
+                  <button
+                     onClick={() => handleOpen()}
+                     className="flex absolute right-0 top-0 p-1 rounded-md hover:bg-modal-btn-hover-bgcl"
+                  >
+                     <CloseIcon className="text-regular-text-cl" fontSize="small" />
+                  </button>
+               </div>
+               <p className="text-sm mt-2">Deleting a phase is forever. There is no undo.</p>
+               <button
+                  onClick={deletePhaseHandler}
+                  className="text-sm mt-2 bg-delete-btn-bgcl rounded-md p-1 w-full text-black font-bold hover:bg-delete-btn-hover-bgcl"
+               >
+                  Delete phase
+               </button>
+            </div>
+         </StyledPopover>
+      </>
+   )
+}
+
+type TPhaseActions = "copy-phase" | "move-phase" | "description"
 
 type TPhaseActionsProps = {
    phaseData: TPhaseData
@@ -21,16 +87,12 @@ type TPhaseActionsProps = {
 
 const PhaseMenu = ({ phaseData }: TPhaseActionsProps) => {
    const [anchorEle, setAnchorEle] = useState<HTMLButtonElement>()
-   const dispatch = useAppDispatch()
 
    const hanleActions = (type: TPhaseActions) => {
       switch (type) {
          case "copy-phase":
             break
          case "move-phase":
-            break
-         case "delete-phase":
-            dispatch(deletePhase(phaseData.id))
             break
          case "description":
             eventEmitter.emit(EInternalEvents.OPEN_ADD_PHASE_DESCRIPTION, true, phaseData)
@@ -39,7 +101,7 @@ const PhaseMenu = ({ phaseData }: TPhaseActionsProps) => {
       setAnchorEle(undefined)
    }
 
-   const handleOpenActions = (e?: React.MouseEvent<HTMLButtonElement>) => {
+   const handleOpen = (e?: React.MouseEvent<HTMLButtonElement>) => {
       if (e) {
          setAnchorEle(e.currentTarget)
       } else {
@@ -50,7 +112,7 @@ const PhaseMenu = ({ phaseData }: TPhaseActionsProps) => {
    return (
       <>
          <Tooltip title="List actions" arrow>
-            <button className="p-1 h-fit rounded-sm hover:bg-[#282F27]" onClick={handleOpenActions}>
+            <button className="p-1 h-fit rounded-sm hover:bg-[#282F27]" onClick={handleOpen}>
                <MoreHorizIcon fontSize="small" />
             </button>
          </Tooltip>
@@ -58,7 +120,7 @@ const PhaseMenu = ({ phaseData }: TPhaseActionsProps) => {
          <StyledPopover
             anchorEl={anchorEle}
             open={!!anchorEle}
-            onClose={() => handleOpenActions()}
+            onClose={() => handleOpen()}
             TransitionComponent={Fade}
             anchorOrigin={{
                vertical: "top",
@@ -75,19 +137,14 @@ const PhaseMenu = ({ phaseData }: TPhaseActionsProps) => {
                      Phase actions
                   </h3>
                   <button
-                     onClick={() => handleOpenActions()}
+                     onClick={() => handleOpen()}
                      className="flex h-8 w-8 hover:bg-hover-silver-bgcl rounded"
                   >
                      <CloseIcon fontSize="small" className="text-regular-text-cl m-auto" />
                   </button>
                </header>
                <ul className="mt-2">
-                  <li
-                     onClick={() => hanleActions("delete-phase")}
-                     className="cursor-pointer hover:bg-hover-silver-bgcl py-[6px] px-3 text-regular-text-cl text-sm font-medium"
-                  >
-                     Delete phase
-                  </li>
+                  <DeletePhaseConfirm phaseId={phaseData.id} />
                   <li
                      onClick={() => hanleActions("copy-phase")}
                      className="cursor-pointer hover:bg-hover-silver-bgcl py-[6px] px-3 text-regular-text-cl text-sm font-medium"

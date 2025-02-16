@@ -3,20 +3,36 @@ import CalendarTodayIcon from "@mui/icons-material/CalendarToday"
 import AccessTimeIcon from "@mui/icons-material/AccessTime"
 import type { TFilterTasksData } from "./sharing"
 import { EPickDateValues } from "./sharing"
+import { useState } from "react"
 
 type TFilterByDueDateProps = {
    onFilter: (filterData: TFilterTasksData) => void
 }
 
 export const FilterByDueDate = ({ onFilter }: TFilterByDueDateProps) => {
+   const [clearFlag, setClearFlag] = useState<boolean>(false)
+
    const pickDate = (e: React.ChangeEvent<HTMLInputElement>) => {
       const dueDate = e.currentTarget.value as EPickDateValues
       onFilter({ dueDate })
    }
 
+   const clear = () => {
+      onFilter({ dueDate: undefined })
+      setClearFlag((pre) => !pre)
+   }
+
    return (
-      <div className="mt-6">
-         <h3 className="text-sm font-semibold mb-1">Due date</h3>
+      <div key={clearFlag ? 1 : 0} className="mt-6">
+         <div className="flex justify-between items-center w-full">
+            <h3 className="text-sm font-semibold mb-1">Due date</h3>
+            <button
+               onClick={clear}
+               className="text-xs py-0.5 px-3 bg-modal-btn-bgcl hover:bg-modal-btn-hover-bgcl rounded"
+            >
+               Clear
+            </button>
+         </div>
          <RadioGroup onChange={pickDate}>
             <FormControlLabel
                value={EPickDateValues.NO_DUE_DATES}

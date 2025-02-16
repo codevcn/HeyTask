@@ -68,7 +68,7 @@ export const checkUserPermissions = (
 }
 
 /** Check if user has at least one of given permissions */
-export const checkAtLeastUserPermissions = (
+export const checkAtLeastUserPermission = (
    userProjectRole: EProjectRoles,
    ...permissions: TAllPermissions[]
 ): boolean => {
