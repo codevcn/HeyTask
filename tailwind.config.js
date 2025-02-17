@@ -27,6 +27,10 @@ export default {
             "radio-outline-cl": "var(--ht-radio-outline-cl)",
             "warning-text-cl": "var(--ht-warning-text-cl)",
             "silver-white-bgcl": "var(--ht-silver-white-bgcl)",
+            "purple-from-ligr": "var(--ht-purple-from-ligr)",
+            "pink-to-ligr": "var(--ht-pink-to-ligr)",
+            "float-fade-layer-bgcl": "var(--ht-float-fade-layer-bgcl)",
+            "starred-cl": "var(--ht-starred-cl)",
          },
          height: {
             background: "calc(100% - var(--ht-top-nav-height))",

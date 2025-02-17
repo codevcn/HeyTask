@@ -1,7 +1,7 @@
 import { MainBoard } from "./MainBoard"
 import { LeftSideNavigation } from "./LeftSideNavigation"
 import { TopNavigation } from "../TopNavigation"
-import { Background } from "../../components/Background"
+import { Background } from "./Background"
 import { useEffect } from "react"
 import { projectService } from "../../services/project-service"
 import { useAppDispatch } from "../../hooks/redux"
@@ -56,7 +56,7 @@ const ProjectPage = () => {
    }, [])
 
    return (
-      <div className="h-screen bg-gradient-to-b from-[#7B61FF] to-[#FF61A6]">
+      <div className="h-screen bg-gradient-to-b from-purple-from-ligr to-pink-to-ligr">
          <TopNavigation />
          <Background>
             <section className="flex h-full">

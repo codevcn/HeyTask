@@ -2,7 +2,6 @@ import axios from "axios"
 import { perfomDelay, randomInteger } from "../utils/helpers"
 import type {
    TTaskFileData,
-   TCustomizationData,
    TPhaseData,
    TProjectData,
    TTaskData,
@@ -14,7 +13,7 @@ import type {
    TCreateNewShareLinkData,
 } from "./types"
 import { EProjectRoles, EUserRoles } from "../utils/enums"
-import type { TTaskStatus } from "../utils/types"
+import type { TSuccess, TTaskStatus } from "../utils/types"
 
 export const projectMembers: TProjectMemberData[] = [
    {
@@ -113,14 +112,6 @@ class ProjectService {
          shareLink: "http://localhost:5173/projects/1",
          description: "",
          starred: false,
-      }
-      return data
-   }
-
-   async getCustomization(projectId: number): Promise<TCustomizationData> {
-      await perfomDelay(1000)
-      const data = {
-         projectId,
          background:
             "https://trello-backgrounds.s3.amazonaws.com/SharedBackground/2401x1600/ceca11e134be93c2bf61b61bd285fc6f/photo-1691929601779-ead6aeb78d1b.jpg",
       }
@@ -377,6 +368,11 @@ class ProjectService {
 
    async deleteShareLink(projectId: number): Promise<void> {
       await perfomDelay(1000)
+   }
+
+   async createNewProject(projectTitle: string): Promise<TSuccess> {
+      await perfomDelay(1000)
+      return { success: true }
    }
 }
 

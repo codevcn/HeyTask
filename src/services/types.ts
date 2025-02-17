@@ -33,12 +33,8 @@ export type TProjectData = {
    members: TProjectMemberData[]
    shareLink: string | null
    description: string | null
-   starred: boolean
-}
-
-export type TCustomizationData = {
-   projectId: number
    background: string | null
+   starred: boolean
 }
 
 export type TTaskMemberData = TUserData & TUserInProjectData
@@ -94,4 +90,11 @@ export type TUploadedFileData = {
 
 export type TCreateNewShareLinkData = {
    newshareLink: string
+}
+
+export type TProjectPreviewData = {
+   id: number
+   title: string
+   background: string | null
+   starred: boolean
 }

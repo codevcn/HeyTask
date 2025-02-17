@@ -127,7 +127,8 @@ hr {
 .css-logo-loading-container {
    display: flex;
    column-gap: 5px;
-   transform: translateY(-50%);
+   height: fit-content;
+   transform: translateY(-10px);
 
    .css-logo-loading-bar {
       height: 5px;
@@ -149,6 +150,8 @@ hr {
    }
 
    &.size-small {
+      transform: translateY(-5px);
+
       .css-logo-loading-bar {
          animation-name: logo-loading-small;
       }

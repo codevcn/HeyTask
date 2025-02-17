@@ -1,7 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit"
 import type {
    TCommentData,
-   TCustomizationData,
    TPhaseData,
    TProjectData,
    TProjectMemberData,
@@ -21,7 +20,6 @@ type TProjectFetchedState = ("project" | "phases" | "task-data" | "customization
 type TInitialState = {
    fetchedList: TProjectFetchedState
    project: TProjectData | null
-   customization: TCustomizationData | null
    phases: TPhaseData[] | null
    filterResult: TPhaseData[] | null
    taskData: TTaskDataState | null
@@ -30,7 +28,6 @@ type TInitialState = {
 const initialState: TInitialState = {
    fetchedList: [],
    project: null,
-   customization: null,
    phases: null,
    taskData: null,
    filterResult: null,
@@ -52,9 +49,6 @@ export const projectSlice = createSlice({
             Object.assign(currentProject, action.payload)
          }
       },
-      setCustomization: (state, action: PayloadAction<TCustomizationData>) => {
-         state.customization = action.payload
-      },
       setPhases: (state, action: PayloadAction<TPhaseData[]>) => {
          state.phases = action.payload
       },
@@ -66,7 +60,7 @@ export const projectSlice = createSlice({
          const updates = action.payload
          const updatesId = updates.id
          if (updatesId) {
-            const phase = state.phases?.find((phase) => phase.id === updatesId)
+            const phase = state.phases?.find(({ id }) => id === updatesId)
             if (phase) {
                Object.assign(phase, updates)
             }
@@ -248,7 +242,6 @@ export const {
    updateFetchedList,
    setProject,
    updateProject,
-   setCustomization,
    setPhases,
    updateSinglePhase,
    updateTaskPreview,
