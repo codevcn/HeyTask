@@ -141,8 +141,8 @@ const StrangerViewport = ({ userInProject }: TStrangerViewportProps) => {
    }
 
    return (
-      <div className="flex items-center justify-center grow bg-top-nav-bgcl">
-         <div className="bg-top-nav-bgcl text-regular-text-cl p-6 rounded-lg shadow-lg w-96">
+      <div className="flex items-center justify-center grow bg-regular-bgcl">
+         <div className="bg-regular-bgcl text-regular-text-cl p-6 rounded-lg shadow-lg w-96">
             <h2 className="text-xl font-semibold">This project is private.</h2>
             <p className="mt-2 text-modal-text-cl">
                Send a request to the project administrator to gain access.
@@ -172,7 +172,7 @@ const StrangerViewport = ({ userInProject }: TStrangerViewportProps) => {
             >
                {loading ? (
                   <div className="m-auto">
-                     <LogoLoading color="var(--ht-top-nav-bgcl)" size="small" />
+                     <LogoLoading color="var(--ht-regular-bgcl)" size="small" />
                   </div>
                ) : (
                   <b>Request to join this project</b>

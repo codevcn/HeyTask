@@ -14,3 +14,9 @@ export enum EUserRoles {
    ADMIN = "USER_ROLE_ADMIN",
    USER = "USER_ROLE_USER",
 }
+
+export enum EGenders {
+   MALE = "MALE",
+   FEMALE = "FEMALE",
+   OTHERS = "OTHERS",
+}

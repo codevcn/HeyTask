@@ -10,7 +10,7 @@ export const Background = ({ children }: TBackgroundProps) => {
 
    return (
       <div
-         className="w-full h-background bg-cover bg-[center_center] bg-blend-darken bg-float-fade-layer-bgcl"
+         className="w-full h-background bg-cover bg-[center_center] bg-blend-darken bg-fade-layer-bgcl"
          style={{
             backgroundImage: projectBackground ? `url(${projectBackground})` : "none",
          }}

@@ -7,8 +7,7 @@ class WorkspaceService {
       const data: TProjectPreviewData[] = [
          {
             id: 1,
-            background:
-               "https://storage.googleapis.com/a1aa/image/rJEQslJCBLJhbRXpj1xqMqGw6TTlYN90udrcZmecvUo.jpg",
+            background: null,
             starred: false,
             title: "Blog team web app",
          },
@@ -35,8 +34,7 @@ class WorkspaceService {
          },
          {
             id: 5,
-            background:
-               "https://storage.googleapis.com/a1aa/image/rJEQslJCBLJhbRXpj1xqMqGw6TTlYN90udrcZmecvUo.jpg",
+            background: null,
             starred: false,
             title: "Blog team web app",
          },

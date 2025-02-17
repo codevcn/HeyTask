@@ -117,7 +117,7 @@ export const LeftSideNavigation = () => {
 
    return (
       <nav
-         className={`${open ? "w-left-side-nav" : "w-[20px]"} bg-top-nav-bgcl text-regular-text-cl relative overflow-x-visible transition-[width] h-full border-r border-divider-cl`}
+         className={`${open ? "w-left-side-nav" : "w-[20px]"} bg-regular-bgcl text-regular-text-cl relative overflow-x-visible transition-[width] h-full border-r border-divider-cl`}
       >
          <div
             className={`${open ? "translate-x-0" : "-translate-x-[260px]"} flex flex-col h-full w-full overflow-y-hidden overflow-x-hidden transition-transform`}
@@ -133,7 +133,7 @@ export const LeftSideNavigation = () => {
          <button
             hidden={open}
             onClick={() => setOpen(true)}
-            className="flex absolute top-4 right-0 translate-x-1/2 border-divider-cl z-20 p-[5px] border border-solid rounded-full bg-top-nav-bgcl hover:bg-hover-silver-bgcl"
+            className="flex absolute top-4 right-0 translate-x-1/2 border-divider-cl z-20 p-[5px] border border-solid rounded-full bg-regular-bgcl hover:bg-hover-silver-bgcl"
          >
             <ArrowForwardIosIcon sx={{ fontSize: 14, margin: "auto" }} />
          </button>

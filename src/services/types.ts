@@ -1,4 +1,4 @@
-import type { EProjectRoles, EUserRoles } from "../utils/enums"
+import type { EGenders, EProjectRoles, EUserRoles } from "../utils/enums"
 import type { TTaskStatus } from "../utils/types"
 
 export type TUserData = {
@@ -7,6 +7,10 @@ export type TUserData = {
    email: string
    avatar: string | null
    role: EUserRoles
+   bio: string | null
+   birthday: string | null
+   gender: EGenders
+   socialLink: string | null
 }
 
 export type TLoginPayload = {
@@ -97,4 +101,12 @@ export type TProjectPreviewData = {
    title: string
    background: string | null
    starred: boolean
+}
+
+export type TSearchUserData = {
+   id: number
+   fullName: string
+   email: string
+   avatar: string | null
+   role: EUserRoles
 }

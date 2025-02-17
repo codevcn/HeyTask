@@ -8,6 +8,7 @@ import "react-toastify/dist/ReactToastify.css"
 import RegisterPage from "./pages/auth/RegisterPage"
 import ProjectPage from "./pages/projects/ProjectPage"
 import WorkspacePage from "./pages/workspace/WorkspacePage"
+import ProfilePage from "./pages/profile/ProfilePage"
 
 const App = () => {
    return (
@@ -18,6 +19,7 @@ const App = () => {
             <Route path="register" element={<RegisterPage />} />
             <Route path="workspace" element={<WorkspacePage />} />
             <Route path="projects/:projectId" element={<ProjectPage />} />
+            <Route path="profile/:userId" element={<ProfilePage />} />
          </Route>
 
          <Route path="*" element={<Page404 />} />

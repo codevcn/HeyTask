@@ -1,8 +1,8 @@
 import { EUserRoles } from "../utils/enums"
 import { perfomDelay } from "../utils/helpers"
-import type { TUserData } from "./types"
+import type { TSearchUserData } from "./types"
 
-export const staticUsers: TUserData[] = [
+export const staticUsers: TSearchUserData[] = [
    {
       id: 9,
       avatar: null,
@@ -35,9 +35,9 @@ export const staticUsers: TUserData[] = [
 ]
 
 class UserService {
-   async searchUsers(keyword: string): Promise<TUserData[]> {
+   async searchUsers(keyword: string): Promise<TSearchUserData[]> {
       await perfomDelay(1000)
-      const data: TUserData[] = staticUsers
+      const data: TSearchUserData[] = staticUsers
       return data
    }
 }

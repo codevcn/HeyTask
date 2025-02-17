@@ -66,7 +66,7 @@ const SideNav = () => {
 
 const WorkspacePage = () => {
    return (
-      <div className="bg-top-nav-bgcl min-h-screen">
+      <div className="bg-regular-bgcl min-h-screen">
          <TopNavigation />
          <div className="px-10 lg:px-20 pb-10 mt-8">
             <h2 className="text-xl font-bold text-regular-text-cl">Workspace</h2>

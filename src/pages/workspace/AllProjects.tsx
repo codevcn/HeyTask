@@ -123,7 +123,11 @@ const AddNewProject = () => {
                   >
                      {loading ? (
                         <div className="flex w-full h-[20px]">
-                           <LogoLoading size="small" className="m-auto" color="black" />
+                           <LogoLoading
+                              size="small"
+                              className="m-auto"
+                              color="var(--ht-regular-bgcl)"
+                           />
                         </div>
                      ) : (
                         <span>Create</span>
@@ -153,14 +157,14 @@ export const ProjectPreview = ({ projectPreviewData }: TProjectPreviewProps) => 
    return (
       <NavLink
          style={{
-            backgroundImage:
-               `url(${background})` ||
-               "linear-gradient(to bottom, var(--ht-purple-from-ligr), var(--ht-pink-from-ligr))",
+            backgroundImage: background
+               ? `url(${background})`
+               : "linear-gradient(to bottom, var(--ht-purple-from-ligr), var(--ht-pink-to-ligr))",
          }}
          to={`/projects/${id}`}
-         className="group/root relative p-2 h-[100px] bg-cover rounded overflow-hidden cursor-pointer"
+         className="group/root relative p-2 h-[100px] bg-cover bg-center rounded overflow-hidden cursor-pointer"
       >
-         <span className="bg-float-fade-layer-bgcl absolute inset-0 z-10 group-hover/root:bg-[#00000066]"></span>
+         <span className="bg-fade-layer-bgcl absolute inset-0 z-10 group-hover/root:bg-[#00000066]"></span>
          <div className="relative z-20 h-full w-full">
             <span className="text-white font-semibold">{title}</span>
          </div>

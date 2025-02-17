@@ -5,7 +5,7 @@ export default {
       extend: {
          colors: {
             "regular-text-cl": "var(--ht-regular-text-cl)",
-            "top-nav-bgcl": "var(--ht-top-nav-bgcl)",
+            "regular-bgcl": "var(--ht-regular-bgcl)",
             "hover-silver-bgcl": "var(--ht-hover-silver-bgcl)",
             "regular-border-cl": "var(--ht-regular-border-cl)",
             "secondary-text-cl": "var(--ht-secondary-text-cl)",
@@ -29,7 +29,7 @@ export default {
             "silver-white-bgcl": "var(--ht-silver-white-bgcl)",
             "purple-from-ligr": "var(--ht-purple-from-ligr)",
             "pink-to-ligr": "var(--ht-pink-to-ligr)",
-            "float-fade-layer-bgcl": "var(--ht-float-fade-layer-bgcl)",
+            "fade-layer-bgcl": "var(--ht-fade-layer-bgcl)",
             "starred-cl": "var(--ht-starred-cl)",
          },
          height: {
