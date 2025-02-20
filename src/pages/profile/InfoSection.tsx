@@ -19,7 +19,7 @@ type TInputTypes = keyof TUserProfileData
 type TSubmitSectionProps = {
    inputType: TInputTypes
    focused: TFocused
-   onUpdateProfile: (e: React.MouseEvent<HTMLElement>, inputType: TInputTypes) => void
+   onUpdateProfile: (inputType: TInputTypes) => void
    cancelSubmit: (e: React.MouseEvent<HTMLElement>) => void
    loading: TInputTypes | undefined
 }
@@ -43,13 +43,15 @@ export const SubmitSection = ({
          className="flex gap-2 absolute top-full right-0 mt-1 z-20"
       >
          <button
-            onClick={(e) => onUpdateProfile(e, inputType)}
+            onClick={() => onUpdateProfile(inputType)}
+            type="button"
             className="flex p-2 rounded bg-[#2d2d2d] hover:bg-[#3b3e41] border border-regular-border-cl"
          >
             <CheckIcon sx={{ height: 16, width: 16 }} />
          </button>
          <button
             onClick={cancelSubmit}
+            type="button"
             className="flex p-2 rounded bg-[#2d2d2d] hover:bg-[#3b3e41] border border-regular-border-cl"
          >
             <CloseIcon sx={{ height: 16, width: 16 }} />
@@ -108,18 +110,15 @@ export const InfoSection = ({ userData }: TInfoSectionProps) => {
          } else if (inputType === "socialLink") {
             setError({ [inputType]: "Social link must not be empty!" })
          }
-         setFocused({})
          return null
       }
       return profileData
    }
 
-   const updateProfileHandler = (e: React.MouseEvent<HTMLElement>, inputType: TInputTypes) => {
-      e.stopPropagation()
+   const updateProfileHandler = (inputType: TInputTypes) => {
       const formData = new FormData(formRef.current!)
       const data = validate(formData.get(inputType) as string, inputType)
       if (data) {
-         setFocused({})
          setLoading(inputType)
          userService
             .updateProfile({ [inputType]: data })
@@ -132,6 +131,7 @@ export const InfoSection = ({ userData }: TInfoSectionProps) => {
             })
             .finally(() => {
                setLoading(undefined)
+               setFocused({})
             })
       }
    }
@@ -161,11 +161,11 @@ export const InfoSection = ({ userData }: TInfoSectionProps) => {
          <hr className="my-4" />
          <form onSubmit={(e) => e.preventDefault()} ref={formRef} className="space-y-7">
             <div className="flex justify-between items-center">
-               <div className="w-fit">
+               <div className="w-full">
                   <label className="block text-sm">Full name</label>
-                  <div className="relative w-fit" onClick={(e) => onFocusInput(e, "fullName")}>
+                  <div className="relative w-full" onClick={(e) => onFocusInput(e, "fullName")}>
                      <input
-                        className={`${loading === "fullName" ? "bg-hover-silver-bgcl" : ""} text-base bg-regular-bgcl px-4 py-2 rounded min-w-32 hover:bg-hover-silver-bgcl focus:bg-hover-silver-bgcl`}
+                        className={`${loading === "fullName" ? "bg-hover-silver-bgcl" : "bg-regular-bgcl"} w-full text-base px-4 py-2 rounded hover:bg-hover-silver-bgcl focus:bg-hover-silver-bgcl`}
                         defaultValue={userData.fullName}
                         placeholder="Enter your full name here..."
                         name="fullName"
@@ -182,7 +182,7 @@ export const InfoSection = ({ userData }: TInfoSectionProps) => {
                </div>
             </div>
             <div className="flex justify-between items-center">
-               <div className="w-fit">
+               <div className="w-full">
                   <label className="block text-sm">Email (Read only)</label>
                   <input
                      className="text-base bg-regular-bgcl px-4 py-2 rounded min-w-32"
@@ -205,6 +205,7 @@ export const InfoSection = ({ userData }: TInfoSectionProps) => {
                         maxRows={10}
                         defaultValue={userData.bio || ""}
                         placeholder="Enter your bio here..."
+                        customProp={{ isUpdating: loading === "bio" }}
                      />
                      <SubmitSection
                         focused={focused}
@@ -218,32 +219,45 @@ export const InfoSection = ({ userData }: TInfoSectionProps) => {
                </div>
             </div>
             <div className="flex justify-between items-center">
-               <div className="w-fit">
+               <div className="w-full">
                   <label className="block text-sm">Gender</label>
-                  <StyledSelect
-                     defaultValue={userData.gender}
-                     size="small"
-                     name="gender"
-                     MenuProps={{
-                        MenuListProps: {
-                           className: "bg-modal-popover-bgcl bor border border-regular-border-cl",
-                        },
-                     }}
-                  >
-                     <StyledMenuItem value={EGenders.FEMALE}>Female</StyledMenuItem>
-                     <StyledMenuItem value={EGenders.MALE}>Male</StyledMenuItem>
-                     <StyledMenuItem value={EGenders.OTHERS}>Other</StyledMenuItem>
-                  </StyledSelect>
+                  <div className="relative w-full">
+                     <UserGenderInput
+                        defaultValue={userData.gender}
+                        size="small"
+                        name="gender"
+                        customProp={{ isUpdating: loading === "gender" }}
+                        MenuProps={{
+                           MenuListProps: {
+                              className:
+                                 "bg-modal-popover-bgcl bor border border-regular-border-cl",
+                           },
+                        }}
+                        onChange={() => updateProfileHandler("gender")}
+                     >
+                        <StyledMenuItem value={EGenders.FEMALE}>Female</StyledMenuItem>
+                        <StyledMenuItem value={EGenders.MALE}>Male</StyledMenuItem>
+                        <StyledMenuItem value={EGenders.OTHERS}>Other</StyledMenuItem>
+                     </UserGenderInput>
+                     {loading === "gender" && (
+                        <div className="flex gap-2 absolute top-full right-0 mt-1 z-20">
+                           <div className="pt-1.5 pr-1">
+                              <LogoLoading size="small" />
+                           </div>
+                        </div>
+                     )}
+                  </div>
                </div>
             </div>
             <div className="flex justify-between items-center">
-               <div className="w-fit">
+               <div className="w-full">
                   <label className="block text-sm">Birthday</label>
-                  <div className="relative w-fit" onClick={(e) => onFocusInput(e, "birthday")}>
+                  <div className="relative w-full" onClick={(e) => onFocusInput(e, "birthday")}>
                      <UserBirthdayInput
-                        format="DD-MM-YYYY"
+                        format="YYYY-MM-DD"
                         defaultValue={dayjs(userData.birthday || "")}
                         slotProps={{ textField: { name: "birthday" } }}
+                        customProp={{ isUpdating: loading === "birthday" }}
                      />
                      <SubmitSection
                         focused={focused}
@@ -257,11 +271,11 @@ export const InfoSection = ({ userData }: TInfoSectionProps) => {
                </div>
             </div>
             <div className="flex justify-between items-center">
-               <div className="w-fit">
+               <div className="w-full">
                   <label className="block text-sm">Social link</label>
-                  <div className="relative w-fit" onClick={(e) => onFocusInput(e, "socialLink")}>
+                  <div className="relative w-full" onClick={(e) => onFocusInput(e, "socialLink")}>
                      <input
-                        className={`${loading === "socialLink" ? "bg-hover-silver-bgcl" : ""} text-base bg-regular-bgcl px-4 py-2 rounded min-w-32 hover:bg-hover-silver-bgcl focus:bg-hover-silver-bgcl`}
+                        className={`${loading === "socialLink" ? "bg-hover-silver-bgcl" : "bg-regular-bgcl"} w-full text-base px-4 py-2 rounded hover:bg-hover-silver-bgcl focus:bg-hover-silver-bgcl`}
                         placeholder="Ex: https://facebook.com/your-profile..."
                         defaultValue={userData.socialLink || ""}
                         name="socialLink"
@@ -282,10 +296,20 @@ export const InfoSection = ({ userData }: TInfoSectionProps) => {
    )
 }
 
-const UserBioInput = styled(TextField)({
+type TCustomInputProps = {
+   customProp: {
+      isUpdating: boolean
+   }
+}
+
+const UserBioInput = styled(TextField, {
+   shouldForwardProp: (prop) => prop !== "customProp",
+})<TCustomInputProps>(({ customProp }) => ({
    "& .MuiInputBase-root": {
       color: "var(--ht-regular-text-cl)",
       padding: "8px 16px",
+      backgroundColor: customProp.isUpdating ? "var(--ht-hover-silver-bgcl)" : "inherit",
+      width: "100%",
       "&:hover": {
          backgroundColor: "var(--ht-hover-silver-bgcl)",
       },
@@ -296,12 +320,17 @@ const UserBioInput = styled(TextField)({
    "& .MuiOutlinedInput-notchedOutline": {
       border: "none",
    },
-})
+}))
 
-const UserBirthdayInput = styled(DateField)({
+const UserBirthdayInput = styled(DateField, {
+   shouldForwardProp: (prop) => prop !== "customProp",
+})<TCustomInputProps>(({ customProp }) => ({
+   width: "100%",
    "& .MuiInputBase-root": {
       color: "var(--ht-regular-text-cl)",
       padding: "8px 16px",
+      width: "100%",
+      backgroundColor: customProp.isUpdating ? "var(--ht-hover-silver-bgcl)" : "inherit",
       "& .MuiInputBase-input": {
          padding: 0,
          lineHeight: "1.5rem",
@@ -316,11 +345,15 @@ const UserBirthdayInput = styled(DateField)({
    "& .MuiOutlinedInput-notchedOutline": {
       border: "none",
    },
-})
+}))
 
-const StyledSelect = styled(Select)({
+const UserGenderInput = styled(Select, {
+   shouldForwardProp: (prop) => prop !== "customProp",
+})<TCustomInputProps>(({ customProp }) => ({
    fontSize: "15px",
    color: "var(--ht-modal-text-cl)",
+   width: "100%",
+   backgroundColor: customProp.isUpdating ? "var(--ht-hover-silver-bgcl)" : "inherit",
    "& svg": {
       fill: "var(--ht-modal-text-cl)",
    },
@@ -338,7 +371,7 @@ const StyledSelect = styled(Select)({
          borderColor: "var(--ht-regular-border-cl)",
       },
    },
-})
+}))
 
 const StyledMenuItem = styled(MenuItem)({
    color: "var(--ht-regular-text-cl)",

@@ -265,7 +265,7 @@ export const AvatarSection = ({ originalAvatar, fullName }: TAvatarSectionProps)
                   </button>
                   <button
                      onClick={updateUserAvatarHandler}
-                     className={`${imgPreview ? "" : "cursor-no-drop opacity-70"} flex gap-2 items-center bg-confirm-btn-bgcl hover:bg-confirm-btn-hover-bgcl text-black py-1.5 px-4 rounded font-bold`}
+                     className={`${imgPreview ? "" : "cursor-no-drop opacity-50"} flex gap-2 items-center bg-confirm-btn-bgcl hover:bg-confirm-btn-hover-bgcl text-black py-1.5 px-4 rounded font-bold`}
                   >
                      <CloudUploadIcon fontSize="small" />
                      <span>Upload</span>
