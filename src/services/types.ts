@@ -1,16 +1,19 @@
 import type { EGenders, EProjectRoles, EUserRoles } from "../utils/enums"
 import type { TTaskStatus } from "../utils/types"
 
-export type TUserData = {
-   id: number
+export type TUserProfileData = {
    fullName: string
-   email: string
-   avatar: string | null
-   role: EUserRoles
    bio: string | null
    birthday: string | null
    gender: EGenders
    socialLink: string | null
+   avatar: string | null
+}
+
+export type TUserData = TUserProfileData & {
+   id: number
+   email: string
+   role: EUserRoles
 }
 
 export type TLoginPayload = {
@@ -109,4 +112,8 @@ export type TSearchUserData = {
    email: string
    avatar: string | null
    role: EUserRoles
+}
+
+export type TUploadPhotoData = {
+   imageURL: string
 }

@@ -37,7 +37,7 @@ const Nav = ({ projectData, onCloseNav }: TCreatorViewportProps) => {
       <>
          <div className="flex items-center justify-between gap-x-2 px-3 py-3 border-b border-divider-cl w-full">
             <div className="flex items-center gap-x-2">
-               <NavLink to={`/profiles/${projectCreator.id}`}>
+               <NavLink to="profile">
                   <>
                      {projectCreator.avatar ? (
                         <Avatar

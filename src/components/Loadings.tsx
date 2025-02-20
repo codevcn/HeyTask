@@ -14,14 +14,14 @@ type TLogoLoadingProps = Partial<{
    className: string
    style: React.CSSProperties
    color: string
-   size: "small"
+   size: "small" | "medium"
 }>
 
 export const LogoLoading = ({ className, color, style, size }: TLogoLoadingProps) => {
    return (
       <div
          style={style}
-         className={`${className || ""} ${size ? `size-${size}` : ""} css-logo-loading-container`}
+         className={`${className || ""} ${size ? `size-${size}` : "size-medium"} css-logo-loading-container`}
       >
          <div
             style={{ backgroundColor: color }}

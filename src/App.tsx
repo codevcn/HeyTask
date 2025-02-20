@@ -19,7 +19,7 @@ const App = () => {
             <Route path="register" element={<RegisterPage />} />
             <Route path="workspace" element={<WorkspacePage />} />
             <Route path="projects/:projectId" element={<ProjectPage />} />
-            <Route path="profile/:userId" element={<ProfilePage />} />
+            <Route path="profile" element={<ProfilePage />} />
          </Route>
 
          <Route path="*" element={<Page404 />} />

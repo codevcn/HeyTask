@@ -31,6 +31,8 @@ export default {
             "pink-to-ligr": "var(--ht-pink-to-ligr)",
             "fade-layer-bgcl": "var(--ht-fade-layer-bgcl)",
             "starred-cl": "var(--ht-starred-cl)",
+            "error-text-cl": "var(--ht-error-text-cl)",
+            "regular-modal-bgcl": "var(--ht-regular-modal-bgcl)",
          },
          height: {
             background: "calc(100% - var(--ht-top-nav-height))",

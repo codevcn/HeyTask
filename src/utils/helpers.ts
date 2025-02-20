@@ -2,6 +2,7 @@ import dayjs from "dayjs"
 import { EInternalEvents, eventEmitter } from "./events"
 import type { SnackbarOrigin } from "@mui/material"
 import { EProjectRoles } from "./enums"
+import type { Area } from "react-easy-crop"
 
 export const pureNavigator = (href: string, isReloadPage?: boolean): void => {
    if (isReloadPage) {
@@ -96,4 +97,50 @@ export const checkFetchedState = <T extends string[]>(
 
 export const createWebWorker = (pathToWorkerFile: string): Worker => {
    return new Worker(new URL(pathToWorkerFile, import.meta.url), { type: "module" })
+}
+
+export const getCroppedImg = (imageSrc: string, croppedAreaPixels: Area): Promise<Blob | null> => {
+   return new Promise((resolve, reject) => {
+      const image = new Image()
+      image.src = imageSrc
+      image.crossOrigin = "anonymous" // Đảm bảo load ảnh từ nguồn bên ngoài không bị lỗi CORS
+
+      image.onload = () => {
+         const canvas = document.createElement("canvas")
+         const ctx = canvas.getContext("2d")
+
+         if (!ctx) {
+            reject(new Error("Canvas context is null"))
+            return
+         }
+
+         // Set kích thước của canvas theo vùng crop
+         canvas.width = croppedAreaPixels.width
+         canvas.height = croppedAreaPixels.height
+
+         // Vẽ ảnh đã crop lên canvas
+         ctx.drawImage(
+            image,
+            croppedAreaPixels.x,
+            croppedAreaPixels.y,
+            croppedAreaPixels.width,
+            croppedAreaPixels.height,
+            0,
+            0,
+            croppedAreaPixels.width,
+            croppedAreaPixels.height,
+         )
+
+         // Chuyển canvas thành Data URL hoặc Blob
+         canvas.toBlob((blob) => {
+            if (blob) {
+               resolve(blob)
+            } else {
+               reject(new Error("Failed to create Blob"))
+            }
+         }, "image/png")
+      }
+
+      image.onerror = (error) => reject(error)
+   })
 }

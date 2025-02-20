@@ -6,7 +6,7 @@ import { RouteLoading } from "./Loadings"
 import { useUser } from "../hooks/user"
 import { authService } from "../services/auth-service"
 import { setAuthStatus } from "../redux/auth/auth-slice"
-import { setUser } from "../redux/user/user-slice"
+import { setUserData } from "../redux/user/user-slice"
 import { toast } from "react-toastify"
 import {
    checkAtLeastUserPermission,
@@ -39,7 +39,7 @@ const AuthGuard = ({ children, fallback }: TGuardProps) => {
             .checkAuth()
             .then((res) => {
                dispatch(setAuthStatus(EAuthStatus.IS_AUTHENTICATED))
-               dispatch(setUser(res))
+               dispatch(setUserData(res))
             })
             .catch(() => {
                dispatch(setAuthStatus(EAuthStatus.UNAUTHENTICATED))

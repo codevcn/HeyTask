@@ -12,7 +12,7 @@ import type {
    TUserData,
    TCreateNewShareLinkData,
 } from "./types"
-import { EProjectRoles, EUserRoles } from "../utils/enums"
+import { EGenders, EProjectRoles, EUserRoles } from "../utils/enums"
 import type { TSuccess, TTaskStatus } from "../utils/types"
 
 export const projectMembers: TProjectMemberData[] = [
@@ -23,6 +23,10 @@ export const projectMembers: TProjectMemberData[] = [
       email: "demo-email@mail.ru",
       role: EUserRoles.USER,
       projectRole: EProjectRoles.ADMIN,
+      bio: "A full-stack developer passionate about minimalism and efficiency. Always looking for ways to optimize workflows for maximum productivity!",
+      birthday: "2000-02-02",
+      gender: EGenders.MALE,
+      socialLink: "github.com/minhhuydev",
    },
    {
       id: 2,
@@ -31,6 +35,10 @@ export const projectMembers: TProjectMemberData[] = [
       email: "demo-email@maim.rv",
       role: EUserRoles.USER,
       projectRole: EProjectRoles.MEMBER,
+      bio: "A full-stack developer passionate about minimalism and efficiency. Always looking for ways to optimize workflows for maximum productivity!",
+      birthday: "2000-02-02",
+      gender: EGenders.MALE,
+      socialLink: "github.com/minhhuydev",
    },
    {
       id: 3,
@@ -39,6 +47,10 @@ export const projectMembers: TProjectMemberData[] = [
       email: "demo-email@main.rw",
       role: EUserRoles.USER,
       projectRole: EProjectRoles.MEMBER,
+      bio: "A full-stack developer passionate about minimalism and efficiency. Always looking for ways to optimize workflows for maximum productivity!",
+      birthday: "2000-02-02",
+      gender: EGenders.MALE,
+      socialLink: "github.com/minhhuydev",
    },
    {
       id: 4,
@@ -48,6 +60,10 @@ export const projectMembers: TProjectMemberData[] = [
       email: "demo-email@maio.rx",
       role: EUserRoles.USER,
       projectRole: EProjectRoles.MEMBER,
+      bio: "A full-stack developer passionate about minimalism and efficiency. Always looking for ways to optimize workflows for maximum productivity!",
+      birthday: "2000-02-02",
+      gender: EGenders.MALE,
+      socialLink: "github.com/minhhuydev",
    },
    {
       id: 5,
@@ -56,6 +72,10 @@ export const projectMembers: TProjectMemberData[] = [
       email: "demo-email@maip.ry",
       role: EUserRoles.USER,
       projectRole: EProjectRoles.MEMBER,
+      bio: "A full-stack developer passionate about minimalism and efficiency. Always looking for ways to optimize workflows for maximum productivity!",
+      birthday: "2000-02-02",
+      gender: EGenders.MALE,
+      socialLink: "github.com/minhhuydev",
    },
    {
       id: 6,
@@ -65,6 +85,10 @@ export const projectMembers: TProjectMemberData[] = [
       email: "demo-email@maiq.rz",
       role: EUserRoles.USER,
       projectRole: EProjectRoles.MEMBER,
+      bio: "A full-stack developer passionate about minimalism and efficiency. Always looking for ways to optimize workflows for maximum productivity!",
+      birthday: "2000-02-02",
+      gender: EGenders.MALE,
+      socialLink: "github.com/minhhuydev",
    },
    {
       id: 7,
@@ -73,6 +97,10 @@ export const projectMembers: TProjectMemberData[] = [
       email: "demo-email@mair.sa",
       role: EUserRoles.USER,
       projectRole: EProjectRoles.MEMBER,
+      bio: "A full-stack developer passionate about minimalism and efficiency. Always looking for ways to optimize workflows for maximum productivity!",
+      birthday: "2000-02-02",
+      gender: EGenders.MALE,
+      socialLink: "github.com/minhhuydev",
    },
    {
       id: 8,
@@ -81,6 +109,10 @@ export const projectMembers: TProjectMemberData[] = [
       email: "demo-email@mais.sb",
       role: EUserRoles.USER,
       projectRole: EProjectRoles.MEMBER,
+      bio: "A full-stack developer passionate about minimalism and efficiency. Always looking for ways to optimize workflows for maximum productivity!",
+      birthday: "2000-02-02",
+      gender: EGenders.MALE,
+      socialLink: "github.com/minhhuydev",
    },
    {
       id: 9,
@@ -89,6 +121,10 @@ export const projectMembers: TProjectMemberData[] = [
       email: "demo-email@mait.sc",
       role: EUserRoles.USER,
       projectRole: EProjectRoles.MEMBER,
+      bio: "A full-stack developer passionate about minimalism and efficiency. Always looking for ways to optimize workflows for maximum productivity!",
+      birthday: "2000-02-02",
+      gender: EGenders.MALE,
+      socialLink: "github.com/minhhuydev",
    },
 ]
 

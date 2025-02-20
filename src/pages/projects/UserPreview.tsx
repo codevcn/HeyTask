@@ -64,23 +64,22 @@ export const UserPreview = () => {
                      </div>
                   </div>
                   <div className="w-full text-sm">
-                     {userData.id === userInProject.id ? (
-                        <NavLink
-                           to={`/profiles/${userData.id}`}
-                           className="flex items-center gap-x-2 hover:bg-modal-btn-hover-bgcl py-2 px-3 w-full text-start"
-                        >
-                           <EditIcon fontSize="small" />
-                           <span>Edit Profile Info</span>
-                        </NavLink>
-                     ) : (
-                        <NavLink
-                           to={`/profiles/${userData.id}`}
-                           className="flex items-center gap-x-2 hover:bg-modal-btn-hover-bgcl py-2 px-3 w-full text-start"
-                        >
-                           <RemoveRedEyeIcon fontSize="small" />
-                           <span>View Profile Info</span>
-                        </NavLink>
-                     )}
+                     <NavLink
+                        to={`/user-preview/${userData.id}`}
+                        className="flex items-center gap-x-2 hover:bg-modal-btn-hover-bgcl py-2 px-3 w-full text-start"
+                     >
+                        {userData.id === userInProject.id ? (
+                           <>
+                              <EditIcon fontSize="small" />
+                              <span>Edit Profile Info</span>
+                           </>
+                        ) : (
+                           <>
+                              <RemoveRedEyeIcon fontSize="small" />
+                              <span>View Profile Info</span>
+                           </>
+                        )}
+                     </NavLink>
                   </div>
                </>
             )}

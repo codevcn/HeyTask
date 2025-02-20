@@ -139,13 +139,20 @@ hr {
       animation-duration: 1s;
       animation-timing-function: ease-in-out;
       animation-iteration-count: infinite;
-      animation-name: logo-loading-medium;
 
       &.loading-bar-2 {
          animation-delay: 0.1s;
       }
       &.loading-bar-3 {
          animation-delay: 0.2s;
+      }
+   }
+
+   &.size-medium {
+      transform: translateY(-10px);
+
+      .css-logo-loading-bar {
+         animation-name: logo-loading-medium;
       }
    }
 
