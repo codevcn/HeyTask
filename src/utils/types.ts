@@ -8,6 +8,7 @@ import type {
 } from "../services/types"
 import type { PopoverOrigin } from "@mui/material"
 import type { TFilterTasksData } from "../pages/projects/Filter/sharing"
+import type { EAppMessageTypes } from "./enums"
 
 export type TSuccess = {
    success: boolean
@@ -98,3 +99,8 @@ export type TFilterTasksWorkerMsg = {
 }
 
 export type TFilterTasksWorkerRes = TTaskData["id"][]
+
+export type TGoogleOAuthMsgData = {
+   appMsgType: EAppMessageTypes
+   code: string | null
+}

@@ -9,6 +9,7 @@ import RegisterPage from "./pages/auth/RegisterPage"
 import ProjectPage from "./pages/projects/ProjectPage"
 import WorkspacePage from "./pages/workspace/WorkspacePage"
 import ProfilePage from "./pages/profile/ProfilePage"
+import AuthRedirectPage from "./pages/auth/AuthRedirectPage"
 
 const App = () => {
    return (
@@ -17,6 +18,7 @@ const App = () => {
             <Route index element={<HomePage />} />
             <Route path="login" element={<LoginPage />} />
             <Route path="register" element={<RegisterPage />} />
+            <Route path="google-auth-redirect" element={<AuthRedirectPage />} />
             <Route path="workspace" element={<WorkspacePage />} />
             <Route path="projects/:projectId" element={<ProjectPage />} />
             <Route path="profile" element={<ProfilePage />} />

@@ -20,3 +20,8 @@ export enum EGenders {
    FEMALE = "FEMALE",
    OTHERS = "OTHERS",
 }
+
+export enum EAppMessageTypes {
+   OAUTH_SUCCESS = "APP_MSG_OAUTH_SUCCESS",
+   OAUTH_ERROR = "APP_MSG_OAUTH_ERROR",
+}

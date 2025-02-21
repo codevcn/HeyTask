@@ -1,4 +1,4 @@
-import type { TLoginPayload, TRegisterPayload, TUserData } from "./types"
+import type { TLoginPayload, TGoogleOAuthData, TRegisterPayload, TUserData } from "./types"
 import type { TSuccess } from "../utils/types"
 // import { clientAxios } from "../configs/api-configs"
 import { perfomDelay } from "../utils/helpers"
@@ -31,6 +31,21 @@ class AuthService {
          socialLink: "github.com/minhhuydev",
       }
       return data
+   }
+
+   async getGoogleOAuthCredentials(): Promise<TGoogleOAuthData> {
+      await perfomDelay(1000)
+      const data: TGoogleOAuthData = {
+         clientId: "545889255969-mp33ncvcd1dm7kfffmpfbvassiqalopo.apps.googleusercontent.com",
+         redirectURI: "http://localhost:5173/google-auth-redirect",
+         scope: "openid email profile",
+      }
+      return data
+   }
+
+   async exchangeOAuthCode(code: string): Promise<TSuccess> {
+      await perfomDelay(1000)
+      return { success: true }
    }
 }
 

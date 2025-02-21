@@ -14,6 +14,7 @@ import { pureNavigator } from "../../utils/helpers"
 import { toast } from "react-toastify"
 import axiosErrorHandler from "../../utils/axios-error-handler"
 import { passwordRegex } from "../../utils/regex"
+import { OAuth } from "./OAuth"
 
 interface IFormData {
    email: string
@@ -67,7 +68,7 @@ const LoginPage = () => {
    }
 
    return (
-      <div className="relative z-[1] bg-transparent w-full h-screen">
+      <section className="relative z-10 bg-transparent w-full min-h-screen py-12">
          <div
             style={{
                backgroundImage: `url(${authBgLeft}), url(${authBgRight})`,
@@ -77,22 +78,20 @@ const LoginPage = () => {
                backgroundPosition: "left bottom, right bottom",
             }}
             className="flex bg-[#fafbfc] absolute w-full h-full -z-[1] top-0 left-0"
-         >
-            <form
-               action="#"
-               onSubmit={handleSubmit(loginHandler)}
-               className="flex flex-col items-center w-[400px] py-[32px] px-[40px] mt-12 rounded bg-white m-auto shadow-md text-[#44546f]"
-            >
-               <div className="flex gap-x-[5px] items-center text-black">
-                  <img src={appLogo} alt="App Logo" className="h-[35px]" />
-                  <span className="text-[2rem] font-bold">HeyTask</span>
-               </div>
-               <span className="font-semibold mt-5">Đăng nhập để tiếp tục.</span>
+         ></div>
+
+         <div className="flex flex-col items-center w-[400px] py-[32px] px-[40px] rounded bg-white m-auto shadow-md text-[#44546f]">
+            <div className="flex gap-x-[5px] items-center text-black">
+               <img src={appLogo} alt="App Logo" className="h-[35px]" />
+               <span className="text-[2rem] font-bold">HeyTask</span>
+            </div>
+            <span className="font-semibold mt-5">Login to continue.</span>
+            <form action="#" onSubmit={handleSubmit(loginHandler)} className="w-full">
                <div className="w-full mt-6">
                   <TextField
                      variant="outlined"
                      size="small"
-                     label="Nhập email của bạn..."
+                     label="Enter your email..."
                      fullWidth
                      {...register("email")}
                      error={!!errors.email}
@@ -103,7 +102,7 @@ const LoginPage = () => {
                   <TextField
                      variant="outlined"
                      size="small"
-                     label="Nhập mật khẩu của bạn..."
+                     label="Enter your password..."
                      fullWidth
                      type={showPassword ? "text" : "password"}
                      {...register("password")}
@@ -125,18 +124,19 @@ const LoginPage = () => {
                   {loading ? (
                      <CircularProgress thickness={5} size={24.5} color="inherit" />
                   ) : (
-                     <span>Đăng nhập</span>
+                     <span>Login</span>
                   )}
                </Button>
-               <div className="flex gap-x-[5px] mt-5">
-                  <span>Bạn chưa có tài khoản?</span>
-                  <NavLink to="/register" className="font-bold text-yellow-700 hover:underline">
-                     Đăng ký
-                  </NavLink>
-               </div>
             </form>
+            <OAuth />
+            <div className="flex gap-x-[5px] mt-5">
+               <span>You haven't had an account?</span>
+               <NavLink to="/register" className="font-bold text-yellow-700 hover:underline">
+                  Register
+               </NavLink>
+            </div>
          </div>
-      </div>
+      </section>
    )
 }
 

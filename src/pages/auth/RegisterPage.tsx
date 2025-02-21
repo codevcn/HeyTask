@@ -14,6 +14,7 @@ import { pureNavigator } from "../../utils/helpers"
 import { toast } from "react-toastify"
 import axiosErrorHandler from "../../utils/axios-error-handler"
 import { passwordRegex } from "../../utils/regex"
+import { OAuth } from "./OAuth"
 
 interface IFormData {
    fullName: string
@@ -84,7 +85,7 @@ const RegisterPage = () => {
    }
 
    return (
-      <div className="relative z-[1] bg-transparent w-full h-full pb-12">
+      <div className="relative z-[1] bg-transparent w-full min-h-screen py-12">
          <div
             style={{
                backgroundImage: `url(${authBgLeft}), url(${authBgRight})`,
@@ -96,11 +97,7 @@ const RegisterPage = () => {
             className="flex bg-[#fafbfc] absolute w-full h-full -z-[1] top-0 left-0"
          ></div>
 
-         <form
-            action="#"
-            onSubmit={handleSubmit(loginHandler)}
-            className="flex flex-col items-center w-[400px] py-[32px] px-[40px] mt-12 rounded bg-white m-auto shadow-md text-[#44546f]"
-         >
+         <div className="flex flex-col items-center w-[400px] py-[32px] px-[40px] rounded bg-white m-auto shadow-md text-[#44546f]">
             <div className="flex gap-x-[5px] items-center text-black">
                <img src={appLogo} alt="App Logo" className="h-[35px]" />
                <span className="text-[2rem] font-bold">HeyTask</span>
@@ -112,79 +109,82 @@ const RegisterPage = () => {
                   Trước hết hãy đăng ký một tài khoản trên HeyTask để sử dụng dịch vụ của chúng tôi.
                </span>
             </span>
-            <div className="w-full mt-6">
-               <TextField
-                  variant="outlined"
-                  size="small"
-                  label="Nhập tên đầy đủ của bạn..."
-                  fullWidth
-                  {...register("fullName")}
-                  error={!!errors.fullName}
-                  helperText={errors.fullName?.message || ""}
-               />
-            </div>
-            <div className="w-full mt-3">
-               <TextField
-                  variant="outlined"
-                  size="small"
-                  label="Nhập email của bạn..."
-                  fullWidth
-                  {...register("email")}
-                  error={!!errors.email}
-                  helperText={errors.email?.message || ""}
-               />
-            </div>
-            <div className="w-full mt-3 relative">
-               <TextField
-                  variant="outlined"
-                  size="small"
-                  label="Nhập mật khẩu của bạn..."
-                  fullWidth
-                  type={showPassword ? "text" : "password"}
-                  {...register("password")}
-                  error={!!errors.password}
-                  helperText={errors.password?.message || ""}
-               />
-               <div onClick={handleShowPassword} className="absolute top-[1px] right-0">
-                  <IconButton>{showPassword ? <Visibility /> : <VisibilityOff />}</IconButton>
+            <form action="#" onSubmit={handleSubmit(loginHandler)} className="w-full">
+               <div className="w-full mt-6">
+                  <TextField
+                     variant="outlined"
+                     size="small"
+                     label="Nhập tên đầy đủ của bạn..."
+                     fullWidth
+                     {...register("fullName")}
+                     error={!!errors.fullName}
+                     helperText={errors.fullName?.message || ""}
+                  />
                </div>
-            </div>
-            <div className="w-full mt-3 relative">
-               <TextField
-                  variant="outlined"
-                  size="small"
-                  label="Nhập lại mật khẩu của bạn..."
-                  fullWidth
-                  type={showPassword ? "text" : "password"}
-                  {...register("reTypePassword")}
-                  error={!!errors.reTypePassword}
-                  helperText={errors.reTypePassword?.message || ""}
-               />
-               <div onClick={handleShowPassword} className="absolute top-[1px] right-0">
-                  <IconButton>{showPassword ? <Visibility /> : <VisibilityOff />}</IconButton>
+               <div className="w-full mt-3">
+                  <TextField
+                     variant="outlined"
+                     size="small"
+                     label="Nhập email của bạn..."
+                     fullWidth
+                     {...register("email")}
+                     error={!!errors.email}
+                     helperText={errors.email?.message || ""}
+                  />
                </div>
-            </div>
-            <Button
-               sx={{ marginTop: "20px", fontWeight: "bold", color: "white" }}
-               variant="contained"
-               size="medium"
-               fullWidth
-               {...(loading ? {} : { endIcon: <SendIcon /> })}
-               type="submit"
-            >
-               {loading ? (
-                  <CircularProgress thickness={5} size={24.5} color="inherit" />
-               ) : (
-                  <span>Đăng ký</span>
-               )}
-            </Button>
+               <div className="w-full mt-3 relative">
+                  <TextField
+                     variant="outlined"
+                     size="small"
+                     label="Nhập mật khẩu của bạn..."
+                     fullWidth
+                     type={showPassword ? "text" : "password"}
+                     {...register("password")}
+                     error={!!errors.password}
+                     helperText={errors.password?.message || ""}
+                  />
+                  <div onClick={handleShowPassword} className="absolute top-[1px] right-0">
+                     <IconButton>{showPassword ? <Visibility /> : <VisibilityOff />}</IconButton>
+                  </div>
+               </div>
+               <div className="w-full mt-3 relative">
+                  <TextField
+                     variant="outlined"
+                     size="small"
+                     label="Nhập lại mật khẩu của bạn..."
+                     fullWidth
+                     type={showPassword ? "text" : "password"}
+                     {...register("reTypePassword")}
+                     error={!!errors.reTypePassword}
+                     helperText={errors.reTypePassword?.message || ""}
+                  />
+                  <div onClick={handleShowPassword} className="absolute top-[1px] right-0">
+                     <IconButton>{showPassword ? <Visibility /> : <VisibilityOff />}</IconButton>
+                  </div>
+               </div>
+               <Button
+                  sx={{ marginTop: "20px", fontWeight: "bold", color: "white" }}
+                  variant="contained"
+                  size="medium"
+                  fullWidth
+                  {...(loading ? {} : { endIcon: <SendIcon /> })}
+                  type="submit"
+               >
+                  {loading ? (
+                     <CircularProgress thickness={5} size={24.5} color="inherit" />
+                  ) : (
+                     <span>Đăng ký</span>
+                  )}
+               </Button>
+            </form>
+            <OAuth />
             <div className="flex gap-x-[5px] mt-5">
                <span>Bạn đã có tài khoản?</span>
                <NavLink to="/login" className="font-bold text-yellow-700 hover:underline">
                   Đăng nhập
                </NavLink>
             </div>
-         </form>
+         </div>
       </div>
    )
 }

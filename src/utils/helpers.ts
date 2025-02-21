@@ -144,3 +144,16 @@ export const getCroppedImg = (imageSrc: string, croppedAreaPixels: Area): Promis
       image.onerror = (error) => reject(error)
    })
 }
+
+type TStringKeyObject = {
+   [key: string]: string
+}
+
+export const generateURLWithParams = <T extends TStringKeyObject>(
+   url: string,
+   params: T,
+): string => {
+   const urlWithParams = new URL(url)
+   urlWithParams.search = new URLSearchParams(params).toString()
+   return urlWithParams.toString()
+}

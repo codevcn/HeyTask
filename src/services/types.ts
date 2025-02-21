@@ -117,3 +117,9 @@ export type TSearchUserData = {
 export type TUploadPhotoData = {
    imageURL: string
 }
+
+export type TGoogleOAuthData = {
+   clientId: string
+   redirectURI: string
+   scope: string
+}

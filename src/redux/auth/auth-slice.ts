@@ -1,12 +1,15 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit"
 import { EAuthStatus } from "../../utils/enums"
+import { TGoogleOAuthData } from "../../services/types"
 
 type TInitialState = {
    authStatus: EAuthStatus
+   googleOAuthData: TGoogleOAuthData | null
 }
 
 const initialState: TInitialState = {
    authStatus: EAuthStatus.UNKNOWN,
+   googleOAuthData: null,
 }
 
 export const authSlice = createSlice({
@@ -16,7 +19,10 @@ export const authSlice = createSlice({
       setAuthStatus: (state, action: PayloadAction<EAuthStatus>) => {
          state.authStatus = action.payload
       },
+      setOAuthData: (state, action: PayloadAction<TGoogleOAuthData>) => {
+         state.googleOAuthData = action.payload
+      },
    },
 })
 
-export const { setAuthStatus } = authSlice.actions
+export const { setAuthStatus, setOAuthData } = authSlice.actions
