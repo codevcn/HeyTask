@@ -3,6 +3,7 @@ import { authSlice } from "./auth/auth-slice"
 import { userSlice } from "./user/user-slice"
 import { projectSlice } from "./project/project-slice"
 import { workspaceSlice } from "./workspace/workspace-slice"
+import { notificationSlice } from "./notification/notification-slice"
 
 export const store = configureStore({
    reducer: {
@@ -10,6 +11,7 @@ export const store = configureStore({
       [userSlice.name]: userSlice.reducer,
       [projectSlice.name]: projectSlice.reducer,
       [workspaceSlice.name]: workspaceSlice.reducer,
+      [notificationSlice.name]: notificationSlice.reducer,
    },
 })
 

@@ -3,6 +3,7 @@ import { EInternalEvents, eventEmitter } from "./events"
 import type { SnackbarOrigin } from "@mui/material"
 import { EProjectRoles } from "./enums"
 import type { Area } from "react-easy-crop"
+import DOMPurify from "dompurify"
 
 export const pureNavigator = (href: string, isReloadPage?: boolean): void => {
    if (isReloadPage) {
@@ -157,3 +158,5 @@ export const generateURLWithParams = <T extends TStringKeyObject>(
    urlWithParams.search = new URLSearchParams(params).toString()
    return urlWithParams.toString()
 }
+
+export const sanitizeHTMLString = (htmlString: string) => DOMPurify.sanitize(htmlString)

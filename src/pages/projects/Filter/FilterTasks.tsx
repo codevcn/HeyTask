@@ -158,7 +158,7 @@ const Filter = ({ phases }: TFilterTasksProps) => {
       return count === 0
    }
 
-   const filterTasks = debounce((partialData: TFilterTasksData): void => {
+   const filterTasks = (partialData: TFilterTasksData): void => {
       const filterData = { ...filterDataRef.current, ...partialData }
       if (checkFilterDataIsEmpty(filterData)) {
          dispatch(setFilterResult(null))
@@ -170,7 +170,7 @@ const Filter = ({ phases }: TFilterTasksProps) => {
          filterTasksWorkerRef.current?.postMessage(message)
       }
       filterDataRef.current = filterData
-   }, 400)
+   }
 
    const handleOpenFilterBoard = (e?: React.MouseEvent<HTMLButtonElement>) => {
       if (e) {
@@ -233,13 +233,13 @@ const Filter = ({ phases }: TFilterTasksProps) => {
             }}
          >
             <div className="flex flex-col bg-modal-popover-bgcl text-modal-text-cl pt-3 rounded-lg w-full h-full">
-               <header className="pt-1 pb-4 px-5 items-center">
+               <header className="pt-1 pb-4 px-5 relative">
                   <h3 className="text-regular-text-cl font-semibold text-base text-center">
                      Filter tasks
                   </h3>
                   <button
                      onClick={() => handleOpenFilterBoard()}
-                     className="flex h-8 w-8 hover:bg-hover-silver-bgcl rounded absolute top-2 right-2"
+                     className="flex h-8 w-8 hover:bg-hover-silver-bgcl rounded absolute top-0 right-2"
                   >
                      <CloseIcon fontSize="small" className="text-regular-text-cl m-auto" />
                   </button>
@@ -248,7 +248,7 @@ const Filter = ({ phases }: TFilterTasksProps) => {
                   key={clearAllFlag ? 1 : 0}
                   className="css-styled-vt-scrollbar overflow-y-auto grow px-4 pb-3"
                >
-                  <FilterByTaskTitle onFilter={filterTasks} />
+                  <FilterByTaskTitle onFilter={debounce(filterTasks, 400)} />
                   <FilterByMembers onFilter={filterTasks} />
                   <FilterByStatus onFilter={filterTasks} />
                   <FilterByDueDate onFilter={filterTasks} />

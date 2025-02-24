@@ -123,3 +123,16 @@ export type TGoogleOAuthData = {
    redirectURI: string
    scope: string
 }
+
+export type TGeneralNotificationData = {
+   id: number
+   description: string
+   timestamp: string
+   seen: boolean
+}
+
+export type TNotificationData = TGeneralNotificationData
+
+export type TFetchNotificationsData = {
+   notifications: TNotificationData[]
+}

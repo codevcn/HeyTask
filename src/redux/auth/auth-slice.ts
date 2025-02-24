@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit"
 import { EAuthStatus } from "../../utils/enums"
-import { TGoogleOAuthData } from "../../services/types"
+import type { TGoogleOAuthData } from "../../services/types"
 
 type TInitialState = {
    authStatus: EAuthStatus

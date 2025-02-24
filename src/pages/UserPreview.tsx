@@ -1,9 +1,9 @@
 import { Popover, Fade, styled, Avatar, Tooltip } from "@mui/material"
 import { useEffect, useState } from "react"
-import { EInternalEvents, eventEmitter } from "../../utils/events"
-import type { TUserPreviewBoardData } from "../../utils/types"
+import { EInternalEvents, eventEmitter } from "../utils/events"
+import type { TUserPreviewBoardData } from "../utils/types"
 import EditIcon from "@mui/icons-material/Edit"
-import { useUserInProject } from "../../hooks/user"
+import { useUserInProject } from "../hooks/user"
 import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye"
 import { NavLink } from "react-router-dom"
 

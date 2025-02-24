@@ -1,6 +1,6 @@
-import DOMPurify from "dompurify"
 import { useEffect, useRef } from "react"
 import { EInternalEvents, eventEmitter } from "../utils/events"
+import { sanitizeHTMLString } from "../utils/helpers"
 
 type TRichTextContentProps = {
    content: string
@@ -37,7 +37,7 @@ export const CustomRichTextContent = ({ content, wrapperClassName }: TRichTextCo
       <div
          ref={contentWrapperRef}
          className={`css-rich-text-content-section ${wrapperClassName || ""}`}
-         dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(content) }}
+         dangerouslySetInnerHTML={{ __html: sanitizeHTMLString(content) }}
       ></div>
    )
 }

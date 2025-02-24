@@ -3,11 +3,11 @@ import appLogo from "../assets/app-logo.png"
 import { Menu, MenuItem, Button, styled, Avatar, Popover } from "@mui/material"
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore"
 import SearchIcon from "@mui/icons-material/Search"
-import NotificationsIcon from "@mui/icons-material/Notifications"
 import { useUser } from "../hooks/user"
 import { StyledIconButton } from "../components/StyledIconButton"
 import LogoutIcon from "@mui/icons-material/Logout"
 import OpenInNewIcon from "@mui/icons-material/OpenInNew"
+import { Notification } from "./Notification"
 
 type TActive = "projects" | "more" | undefined
 
@@ -65,14 +65,6 @@ const Search = () => {
          />
          <SearchIcon className="text-[#8C9BAB] mr-2" fontSize="small" />
       </div>
-   )
-}
-
-const Notification = () => {
-   return (
-      <StyledIconButton>
-         <NotificationsIcon className="text-white" fontSize="small" />
-      </StyledIconButton>
    )
 }
 
