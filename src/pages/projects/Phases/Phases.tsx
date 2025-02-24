@@ -12,7 +12,6 @@ import type { DragEndEvent, DragStartEvent } from "@dnd-kit/core"
 import { arrayMove, SortableContext, horizontalListSortingStrategy } from "@dnd-kit/sortable"
 import { useAppDispatch, useAppSelector } from "../../../hooks/redux"
 import { addNewPhase, setPhases } from "../../../redux/project/project-slice"
-import { projectService } from "../../../services/project-service"
 import { toast } from "react-toastify"
 import axiosErrorHandler from "../../../utils/axios-error-handler"
 import type { TPhaseData, TProjectMemberData } from "../../../services/types"
@@ -26,6 +25,7 @@ import { randomInteger } from "../../../utils/helpers"
 import { Phase } from "./Phase"
 import { checkUserPermission } from "../../../configs/user-permissions"
 import { ProjectRoleGuard } from "../../../components/ResourceGuard"
+import { phaseService } from "../../../services/phase-service"
 
 type TAddNewPhaseProps = {
    currentFinalPos: number | null
@@ -282,7 +282,7 @@ export const Phases = ({ userInProject }: TCanDragAndDropProps) => {
    const dispatch = useAppDispatch()
 
    const getPhases = () => {
-      projectService
+      phaseService
          .getPhases()
          .then((res) => {
             dispatch(setPhases(res))

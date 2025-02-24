@@ -1,7 +1,6 @@
-export const useDebounce =
-   () =>
-   <P extends any[]>(func: (...args: P) => void, delayInMs: number) => {
-      let timer: number | undefined
+export const useDebounce = () => {
+   let timer: number
+   return <P extends any[]>(func: (...args: P) => void, delayInMs: number) => {
       return (...args: Parameters<typeof func>) => {
          clearTimeout(timer)
          timer = setTimeout(() => {
@@ -9,3 +8,4 @@ export const useDebounce =
          }, delayInMs)
       }
    }
+}

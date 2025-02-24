@@ -219,7 +219,7 @@ export const AvatarSection = ({ originalAvatar, fullName }: TAvatarSectionProps)
                            ref={avatarInputRef}
                            onChange={pickImage}
                         />
-                        <img src={uploadIcon} alt="Upload Icon" height="78px" />
+                        <img src={uploadIcon} alt="Upload Icon" height={78} width={78} />
                         <p className="text-gray-500">Drag and drop your image here</p>
                      </label>
                      <p className="text-gray-500 mb-4">or</p>
@@ -240,7 +240,7 @@ export const AvatarSection = ({ originalAvatar, fullName }: TAvatarSectionProps)
                   </button>
                   <button
                      onClick={updateUserAvatarHandler}
-                     className={`${imgPreview ? "" : "cursor-no-drop opacity-50"} flex gap-2 items-center bg-confirm-btn-bgcl hover:bg-confirm-btn-hover-bgcl text-black py-1.5 px-4 rounded font-bold`}
+                     className={`${imgPreview ? "hover:bg-confirm-btn-hover-bgcl" : "cursor-no-drop opacity-50"} flex gap-2 items-center bg-confirm-btn-bgcl text-black py-1.5 px-4 rounded font-bold`}
                   >
                      <CloudUploadIcon fontSize="small" />
                      <span>Upload</span>

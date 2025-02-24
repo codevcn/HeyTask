@@ -4,7 +4,6 @@ import { EInternalEvents, eventEmitter } from "../../../utils/events"
 import SubtitlesIcon from "@mui/icons-material/Subtitles"
 import CloseIcon from "@mui/icons-material/Close"
 import { LogoLoading } from "../../../components/Loadings"
-import { projectService } from "../../../services/project-service"
 import { toast } from "react-toastify"
 import axiosErrorHandler from "../../../utils/axios-error-handler"
 import { useAppDispatch, useAppSelector } from "../../../hooks/redux"
@@ -21,6 +20,7 @@ import type { TTaskDataState } from "../../../utils/types"
 import type { TPhaseData } from "../../../services/types"
 import { MoveTask } from "./MoveTask"
 import { TaskActions } from "./TaskActions"
+import { taskService } from "../../../services/task-service"
 
 type TTitleProps = {
    taskTitle: string
@@ -120,7 +120,7 @@ export const TaskDetails = () => {
    const [phaseData, setPhaseData] = useState<TPhaseData>()
 
    const getTaskDetailsHandler = (taskId: number, phaseId: number) => {
-      projectService
+      taskService
          .getTaskDetails(taskId)
          .then((res) => {
             dispatch(setTaskData({ ...res, phaseId }))

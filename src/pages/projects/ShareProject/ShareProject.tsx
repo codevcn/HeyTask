@@ -9,13 +9,12 @@ import {
    DialogContent,
    Chip,
 } from "@mui/material"
-import type { TProjectData, TUserData } from "../../../services/types"
+import type { TProjectData, TSearchUserData, TUserData } from "../../../services/types"
 import CloseIcon from "@mui/icons-material/Close"
 import LinkIcon from "@mui/icons-material/Link"
 import { openAppSnackbarHandler, openFixedLoadingHandler } from "../../../utils/helpers"
 import { SimpleSnackbarTemplate } from "../../../components/NonInteractiveTemplates"
-import { ProjectMembers } from "./ProjectMembers"
-import { useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import { projectService } from "../../../services/project-service"
 import { toast } from "react-toastify"
 import axiosErrorHandler from "../../../utils/axios-error-handler"
@@ -25,36 +24,40 @@ import { LogoLoading } from "../../../components/Loadings"
 import { EInternalEvents, eventEmitter } from "../../../utils/events"
 import { useAppDispatch } from "../../../hooks/redux"
 import { updateProject } from "../../../redux/project/project-slice"
+import { MemberAndRequests } from "./MemberAndRequests"
 
 type TSearchStatus = "searching" | "search-done"
 
 const SearchSection = () => {
    const inputRef = useRef<HTMLInputElement>(null)
-   const [searchResult, setResult] = useState<TUserData[]>()
+   const [searchResult, setResult] = useState<TSearchUserData[]>()
    const [searchStatus, setSearchStatus] = useState<TSearchStatus>()
-   const [pickedUsers, setPickedUsers] = useState<TUserData[]>()
+   const [pickedUsers, setPickedUsers] = useState<TSearchUserData[]>()
    const debounce = useDebounce()
 
-   const searchUser = debounce(() => {
-      const inputValue = inputRef.current?.value
-      if (inputValue) {
-         setSearchStatus("searching")
-         userService
-            .searchUsers(inputValue)
-            .then((res) => {
-               setResult(res)
-            })
-            .catch((error) => {
-               toast.error(axiosErrorHandler.handleHttpError(error).message)
-            })
-            .finally(() => {
-               setSearchStatus("search-done")
-            })
-      } else {
-         setResult(undefined)
-         setSearchStatus(undefined)
-      }
-   }, 300)
+   const searchUser = useCallback(
+      debounce(() => {
+         const inputValue = inputRef.current?.value
+         if (inputValue) {
+            setSearchStatus("searching")
+            userService
+               .searchUsers(inputValue)
+               .then((res) => {
+                  setResult(res)
+               })
+               .catch((error) => {
+                  toast.error(axiosErrorHandler.handleHttpError(error).message)
+               })
+               .finally(() => {
+                  setSearchStatus("search-done")
+               })
+         } else {
+            setResult(undefined)
+            setSearchStatus(undefined)
+         }
+      }, 300),
+      [],
+   )
 
    const sendInvitationViaLink = () => {
       if (pickedUsers && pickedUsers.length > 0) {
@@ -73,21 +76,24 @@ const SearchSection = () => {
       }
    }
 
-   const pickUsers = (user: TUserData) => {
+   const pickUsers = (user: TSearchUserData) => {
       setPickedUsers((pre) => (pre && pre.length > 0 ? [...pre, user] : [user]))
    }
 
-   const unpickUser = (userId: TUserData["id"]) => {
+   const unpickUser = (userId: TSearchUserData["id"]) => {
       setPickedUsers((pre) => pre?.filter((user) => user.id !== userId))
    }
 
-   const checkUserPicked = (userId: TUserData["id"], pickedUsers: TUserData[]): boolean => {
+   const checkUserPicked = (
+      userId: TSearchUserData["id"],
+      pickedUsers: TSearchUserData[],
+   ): boolean => {
       return pickedUsers.some((user) => user.id === userId)
    }
 
    return (
       <div className="flex gap-x-4 justify-between w-full">
-         <div className="flex items-center flex-wrap gap-1 relative grow pl-1 py-1 border-2 border-regular-border-cl bg-focused-textfield-bgcl hover:bg-[#2f363b] focus:border-outline-cl rounded">
+         <div className="flex items-center flex-wrap gap-1 relative grow border-2 border-regular-border-cl bg-focused-textfield-bgcl rounded">
             {pickedUsers && pickedUsers.length > 0 && (
                <div className="flex flex-wrap gap-1">
                   {pickedUsers.map(({ id, fullName }) => (
@@ -100,7 +106,7 @@ const SearchSection = () => {
             <input
                ref={inputRef}
                placeholder="Enter user's email address or name..."
-               className="px-1 w-full bg-inherit"
+               className="px-2 w-full py-1 bg-inherit focus:border-outline-cl hover:bg-[#2f363b]"
                onChange={searchUser}
             />
             {searchStatus && (
@@ -257,7 +263,7 @@ type TShareProjectProps = {
 }
 
 export const ShareProject = ({ projectData }: TShareProjectProps) => {
-   const { members } = projectData
+   const { members, shareLink, id } = projectData
    const [openDialog, setOpenDialog] = useState<boolean>(false)
 
    const openUserPreview = (e: React.MouseEvent<HTMLElement>, userData: TUserData) => {
@@ -303,7 +309,6 @@ export const ShareProject = ({ projectData }: TShareProjectProps) => {
             scroll="body"
             maxWidth="sm"
             fullWidth
-            aria-hidden="true"
          >
             <DialogContent>
                <div className="flex flex-col rounded-xl min-h-[300px] w-full px-3 py-1">
@@ -319,8 +324,8 @@ export const ShareProject = ({ projectData }: TShareProjectProps) => {
                      </button>
                   </header>
                   <div className="w-full mt-5">
-                     <SharingSection shareLink={projectData.shareLink} projectId={projectData.id} />
-                     <ProjectMembers projectMembers={members} />
+                     <SharingSection shareLink={shareLink} projectId={id} />
+                     <MemberAndRequests projectMembers={members} projectId={id} />
                   </div>
                </div>
             </DialogContent>

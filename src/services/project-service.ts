@@ -1,21 +1,23 @@
-import axios from "axios"
-import { perfomDelay, randomInteger } from "../utils/helpers"
+import { perfomDelay } from "../utils/helpers"
 import type {
-   TTaskFileData,
-   TPhaseData,
    TProjectData,
-   TTaskData,
-   TUploadedFileData,
-   TTaskMemberData,
    TUserInProjectData,
    TProjectMemberData,
    TUserData,
    TCreateNewShareLinkData,
+   TProjectInvitationData,
+   TProjectRequestData,
 } from "./types"
-import { EGenders, EProjectRoles, EUserRoles } from "../utils/enums"
+import {
+   EGenders,
+   EProjectInvitationStatus,
+   EProjectRequestStatus,
+   EProjectRoles,
+   EUserRoles,
+} from "../utils/enums"
 import type { TSuccess, TTaskStatus } from "../utils/types"
 
-export const projectMembers: TProjectMemberData[] = [
+const projectMembers: TProjectMemberData[] = [
    {
       id: 1,
       avatar: "https://trello-logos.s3.amazonaws.com/7c17ee5f87fa99637dce66430e395d97/170.png",
@@ -128,7 +130,281 @@ export const projectMembers: TProjectMemberData[] = [
    },
 ]
 
-export const taskMembers: TTaskMemberData[] = projectMembers
+const projectInvitations: TProjectInvitationData[] = [
+   {
+      id: 1,
+      projectId: 101,
+      sender: { id: 1001 },
+      receiver: {
+         id: 2001,
+         fullName: "Nguyễn Văn A",
+         email: "nguyenvana@example.com",
+         avatar:
+            "https://gravatar.com/avatar/ae1a3a4e0759ad91eafc212b7f887ab7?s=400&d=robohash&r=x",
+      },
+      status: EProjectInvitationStatus.PENDING,
+      sendAt: "2025-02-24T10:30:00Z",
+   },
+   {
+      id: 2,
+      projectId: 102,
+      sender: { id: 1002 },
+      receiver: {
+         id: 2002,
+         fullName: "Trần Thị B",
+         email: "tranthib@example.com",
+         avatar:
+            "https://gravatar.com/avatar/ae1a3a4e0759ad91eafc212b7f887ab7?s=400&d=robohash&r=x",
+      },
+      status: EProjectInvitationStatus.ACCEPTED,
+      sendAt: "2025-02-23T14:15:00Z",
+   },
+   {
+      id: 3,
+      projectId: 103,
+      sender: { id: 1003 },
+      receiver: {
+         id: 2003,
+         fullName: "Lê Văn C",
+         email: "levanc@example.com",
+         avatar:
+            "https://gravatar.com/avatar/ae1a3a4e0759ad91eafc212b7f887ab7?s=400&d=robohash&r=x",
+      },
+      status: EProjectInvitationStatus.DECLINED,
+      sendAt: "2025-02-22T08:45:00Z",
+   },
+   {
+      id: 4,
+      projectId: 104,
+      sender: { id: 1004 },
+      receiver: {
+         id: 2004,
+         fullName: "Phạm Thị D",
+         email: "phamthid@example.com",
+         avatar:
+            "https://gravatar.com/avatar/ae1a3a4e0759ad91eafc212b7f887ab7?s=400&d=robohash&r=x",
+      },
+      status: EProjectInvitationStatus.PENDING,
+      sendAt: "2025-02-21T12:00:00Z",
+   },
+   {
+      id: 5,
+      projectId: 105,
+      sender: { id: 1005 },
+      receiver: {
+         id: 2005,
+         fullName: "Hoàng Văn E",
+         email: "hoangvane@example.com",
+         avatar:
+            "https://gravatar.com/avatar/ae1a3a4e0759ad91eafc212b7f887ab7?s=400&d=robohash&r=x",
+      },
+      status: EProjectInvitationStatus.ACCEPTED,
+      sendAt: "2025-02-20T09:20:00Z",
+   },
+   {
+      id: 6,
+      projectId: 106,
+      sender: { id: 1006 },
+      receiver: {
+         id: 2006,
+         fullName: "Đỗ Thị F",
+         email: "dothif@example.com",
+         avatar:
+            "https://gravatar.com/avatar/ae1a3a4e0759ad91eafc212b7f887ab7?s=400&d=robohash&r=x",
+      },
+      status: EProjectInvitationStatus.DECLINED,
+      sendAt: "2025-02-19T16:40:00Z",
+   },
+   {
+      id: 7,
+      projectId: 107,
+      sender: { id: 1007 },
+      receiver: {
+         id: 2007,
+         fullName: "Ngô Văn G",
+         email: "ngovang@example.com",
+         avatar:
+            "https://gravatar.com/avatar/ae1a3a4e0759ad91eafc212b7f887ab7?s=400&d=robohash&r=x",
+      },
+      status: EProjectInvitationStatus.PENDING,
+      sendAt: "2025-02-18T11:10:00Z",
+   },
+   {
+      id: 8,
+      projectId: 108,
+      sender: { id: 1008 },
+      receiver: {
+         id: 2008,
+         fullName: "Bùi Thị H",
+         email: "buithih@example.com",
+         avatar:
+            "https://gravatar.com/avatar/ae1a3a4e0759ad91eafc212b7f887ab7?s=400&d=robohash&r=x",
+      },
+      status: EProjectInvitationStatus.ACCEPTED,
+      sendAt: "2025-02-17T13:25:00Z",
+   },
+   {
+      id: 9,
+      projectId: 109,
+      sender: { id: 1009 },
+      receiver: {
+         id: 2009,
+         fullName: "Dương Văn I",
+         email: "duongvani@example.com",
+         avatar:
+            "https://gravatar.com/avatar/ae1a3a4e0759ad91eafc212b7f887ab7?s=400&d=robohash&r=x",
+      },
+      status: EProjectInvitationStatus.DECLINED,
+      sendAt: "2025-02-16T15:55:00Z",
+   },
+   {
+      id: 10,
+      projectId: 110,
+      sender: { id: 1010 },
+      receiver: {
+         id: 2010,
+         fullName: "Vũ Thị J",
+         email: "vuthij@example.com",
+         avatar:
+            "https://gravatar.com/avatar/ae1a3a4e0759ad91eafc212b7f887ab7?s=400&d=robohash&r=x",
+      },
+      status: EProjectInvitationStatus.PENDING,
+      sendAt: "2025-02-15T07:30:00Z",
+   },
+]
+
+const projectRequests: TProjectRequestData[] = [
+   {
+      id: 1,
+      projectId: 101,
+      sender: {
+         id: 1001,
+         fullName: "Nguyễn Văn A",
+         email: "nguyenvana@example.com",
+         avatar:
+            "https://gravatar.com/avatar/ae1a3a4e0759ad91eafc212b7f887ab7?s=400&d=robohash&r=x",
+      },
+      status: EProjectRequestStatus.PENDING,
+      sendAt: "2025-02-24T10:30:00Z",
+   },
+   {
+      id: 2,
+      projectId: 102,
+      sender: {
+         id: 1002,
+         fullName: "Trần Thị B",
+         email: "tranthib@example.com",
+         avatar:
+            "https://gravatar.com/avatar/ae1a3a4e0759ad91eafc212b7f887ab7?s=400&d=robohash&r=x",
+      },
+      status: EProjectRequestStatus.ACCEPTED,
+      sendAt: "2025-02-23T14:15:00Z",
+   },
+   {
+      id: 3,
+      projectId: 103,
+      sender: {
+         id: 1003,
+         fullName: "Lê Văn C",
+         email: "levanc@example.com",
+         avatar:
+            "https://gravatar.com/avatar/ae1a3a4e0759ad91eafc212b7f887ab7?s=400&d=robohash&r=x",
+      },
+      status: EProjectRequestStatus.DECLINED,
+      sendAt: "2025-02-22T08:45:00Z",
+   },
+   {
+      id: 4,
+      projectId: 104,
+      sender: {
+         id: 1004,
+         fullName: "Phạm Thị D",
+         email: "phamthid@example.com",
+         avatar:
+            "https://gravatar.com/avatar/ae1a3a4e0759ad91eafc212b7f887ab7?s=400&d=robohash&r=x",
+      },
+      status: EProjectRequestStatus.PENDING,
+      sendAt: "2025-02-21T12:00:00Z",
+   },
+   {
+      id: 5,
+      projectId: 105,
+      sender: {
+         id: 1005,
+         fullName: "Hoàng Văn E",
+         email: "hoangvane@example.com",
+         avatar:
+            "https://gravatar.com/avatar/ae1a3a4e0759ad91eafc212b7f887ab7?s=400&d=robohash&r=x",
+      },
+      status: EProjectRequestStatus.ACCEPTED,
+      sendAt: "2025-02-20T09:20:00Z",
+   },
+   {
+      id: 6,
+      projectId: 106,
+      sender: {
+         id: 1006,
+         fullName: "Đỗ Thị F",
+         email: "dothif@example.com",
+         avatar:
+            "https://gravatar.com/avatar/ae1a3a4e0759ad91eafc212b7f887ab7?s=400&d=robohash&r=x",
+      },
+      status: EProjectRequestStatus.DECLINED,
+      sendAt: "2025-02-19T16:40:00Z",
+   },
+   {
+      id: 7,
+      projectId: 107,
+      sender: {
+         id: 1007,
+         fullName: "Ngô Văn G",
+         email: "ngovang@example.com",
+         avatar:
+            "https://gravatar.com/avatar/ae1a3a4e0759ad91eafc212b7f887ab7?s=400&d=robohash&r=x",
+      },
+      status: EProjectRequestStatus.PENDING,
+      sendAt: "2025-02-18T11:10:00Z",
+   },
+   {
+      id: 8,
+      projectId: 108,
+      sender: {
+         id: 1008,
+         fullName: "Bùi Thị H",
+         email: "buithih@example.com",
+         avatar:
+            "https://gravatar.com/avatar/ae1a3a4e0759ad91eafc212b7f887ab7?s=400&d=robohash&r=x",
+      },
+      status: EProjectRequestStatus.ACCEPTED,
+      sendAt: "2025-02-17T13:25:00Z",
+   },
+   {
+      id: 9,
+      projectId: 109,
+      sender: {
+         id: 1009,
+         fullName: "Dương Văn I",
+         email: "duongvani@example.com",
+         avatar:
+            "https://gravatar.com/avatar/ae1a3a4e0759ad91eafc212b7f887ab7?s=400&d=robohash&r=x",
+      },
+      status: EProjectRequestStatus.DECLINED,
+      sendAt: "2025-02-16T15:55:00Z",
+   },
+   {
+      id: 10,
+      projectId: 110,
+      sender: {
+         id: 1010,
+         fullName: "Vũ Thị J",
+         email: "vuthij@example.com",
+         avatar:
+            "https://gravatar.com/avatar/ae1a3a4e0759ad91eafc212b7f887ab7?s=400&d=robohash&r=x",
+      },
+      status: EProjectRequestStatus.PENDING,
+      sendAt: "2025-02-15T07:30:00Z",
+   },
+]
 
 class ProjectService {
    async getUserInfoInProject(userId: number): Promise<TUserInProjectData> {
@@ -152,230 +428,6 @@ class ProjectService {
             "https://trello-backgrounds.s3.amazonaws.com/SharedBackground/2401x1600/ceca11e134be93c2bf61b61bd285fc6f/photo-1691929601779-ead6aeb78d1b.jpg",
       }
       return data
-   }
-
-   async getPhases(): Promise<TPhaseData[]> {
-      await perfomDelay(1000)
-      const data: TPhaseData[] = [
-         {
-            id: 1,
-            title: "Todo",
-            position: 1,
-            description: "desc 1",
-            taskPreviews: [
-               {
-                  id: 1,
-                  title: "Lời mở đầu 1",
-                  hasDescription: true,
-                  position: 0,
-                  taskMembers: taskMembers.slice(0, 5),
-                  status: "uncomplete",
-                  dueDate: "2025-02-14T09:45:11.925653Z",
-               },
-               {
-                  id: 3,
-                  title: "Mẫu giao diện 1",
-                  hasDescription: true,
-                  position: 1,
-                  taskMembers: null,
-                  status: "uncomplete",
-                  dueDate: "2025-02-16T09:45:11.925653Z",
-               },
-            ],
-         },
-         {
-            id: 2,
-            title: "In Progress",
-            position: 2,
-            description: "desc 2",
-            taskPreviews: [
-               {
-                  id: 4,
-                  title: "Lời mở đầu 2",
-                  hasDescription: true,
-                  position: 0,
-                  taskMembers: null,
-                  status: "uncomplete",
-                  dueDate: null,
-               },
-               {
-                  id: 5,
-                  title: "Web to do okay? vcn",
-                  hasDescription: true,
-                  position: 1,
-                  taskMembers: taskMembers.slice(0, 4),
-                  status: "uncomplete",
-                  dueDate: "2025-02-14T09:45:11.925653Z",
-               },
-               {
-                  id: 6,
-                  title: "Mẫu giao diện 2",
-                  hasDescription: true,
-                  position: 2,
-                  taskMembers: null,
-                  status: "uncomplete",
-                  dueDate: "2025-01-05T08:39:41.890Z",
-               },
-               {
-                  id: 99,
-                  title: "Mẫu giao diện 3",
-                  hasDescription: true,
-                  position: 3,
-                  taskMembers: null,
-                  status: "uncomplete",
-                  dueDate: "2025-03-15T09:45:11.925653Z",
-               },
-               {
-                  id: 101,
-                  title: "Mẫu giao diện 4",
-                  hasDescription: true,
-                  position: 4,
-                  taskMembers: taskMembers.slice(5, 8),
-                  status: "uncomplete",
-                  dueDate: "2025-01-07T08:39:41.890Z",
-               },
-               {
-                  id: 105,
-                  title: "Mẫu giao diện 5",
-                  hasDescription: true,
-                  position: 5,
-                  taskMembers: taskMembers.slice(3, 6),
-                  status: "uncomplete",
-                  dueDate: "2025-02-16T09:45:11.925653Z",
-               },
-               {
-                  id: 102,
-                  title: "Mẫu giao diện 6",
-                  hasDescription: true,
-                  position: 6,
-                  taskMembers: null,
-                  status: "uncomplete",
-                  dueDate: "2025-03-15T09:45:11.925653Z",
-               },
-               {
-                  id: 103,
-                  title: "Mẫu giao diện 7",
-                  hasDescription: true,
-                  position: 7,
-                  taskMembers: null,
-                  status: "uncomplete",
-                  dueDate: "2025-02-16T09:45:11.925653Z",
-               },
-            ],
-         },
-         {
-            id: 3,
-            title: "Complete",
-            position: 3,
-            description: "desc 3",
-            taskPreviews: [
-               {
-                  id: 11,
-                  title: "Lời mở đầuLời mở đầuLời mở đầuLời mở đầuLời mở đầuLời mở đầuLời mở đầu",
-                  hasDescription: true,
-                  position: 0,
-                  taskMembers: null,
-                  status: "uncomplete",
-                  dueDate: null,
-               },
-            ],
-         },
-         {
-            id: 4,
-            title: "Done",
-            position: 4,
-            description: "desc 4",
-            taskPreviews: [
-               {
-                  id: 9,
-                  title: "Lời mở đầu 3",
-                  hasDescription: true,
-                  position: 0,
-                  taskMembers: null,
-                  status: "uncomplete",
-                  dueDate: "2025-01-12T08:39:41.890Z",
-               },
-            ],
-         },
-         {
-            id: 5,
-            title: "Need Help",
-            position: 5,
-            description: "desc 5",
-            taskPreviews: [
-               {
-                  id: 10,
-                  title: "Lời mở đầu 4",
-                  hasDescription: true,
-                  position: 0,
-                  taskMembers: null,
-                  status: "uncomplete",
-                  dueDate: null,
-               },
-               {
-                  id: 20,
-                  title: "Phân tích & Thiết kế",
-                  hasDescription: true,
-                  position: 1,
-                  taskMembers: null,
-                  status: "uncomplete",
-                  dueDate: "2025-02-20T09:45:11.925653Z",
-               },
-            ],
-         },
-      ]
-      return data
-   }
-
-   async getTaskDetails(taskId: number): Promise<TTaskData> {
-      await perfomDelay(1000)
-      const data: TTaskData = {
-         description: `<p><span style="color: #ced4d9;">oke lala</span><span style="color: #3598db;"><em><strong> vcn! no no no.<a title="Gardfield and friends Cartoon!!!" href="https://www.imdb.com/title/tt0094469/" target="_blank" rel="noopener">aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</a></strong></em></span></p><h1><span style="color: #ced4d9;">aaadadadda</span></h1><ol><li><span style="color: #ced4d9;">aaaa</span></li><li><span style="color: #ced4d9;">bbbb</span></li><li><span style="color: #ced4d9;">cc</span></li></ol><p style="text-align: center;"><span style="color: #ced4d9;">T.T</span></p><p style="text-align: center;"><span style="color: #ced4d9;">o</span></p><p style="text-align: center;"><span style="color: #ced4d9;">o</span></p><p style="text-align: center;"><span style="color: #ced4d9;">o</span></p><ul><li style="text-align: left;"><span style="color: #ced4d9;">1111</span></li><li style="text-align: left;"><span style="color: #ced4d9;">222</span></li><li style="text-align: left;"><span style="color: #ced4d9;">333</span></li><li style="text-align: left;"><span style="color: #ced4d9;">4</span></li><li style="text-align: left;">&nbsp;</li></ul>`,
-         id: taskId,
-         members: null,
-         title: "Web to do okay? vcn",
-         comments: null,
-         dueDate: "2025-01-30T08:39:41.890Z",
-         status: "uncomplete",
-      }
-      return data
-   }
-
-   async uploadTaskFile(file: File): Promise<TUploadedFileData> {
-      const formData = new FormData()
-      formData.append("file", file)
-      await perfomDelay(1000)
-      const data = {
-         id: 1,
-         // url: "https://www.dropbox.com/scl/fi/ywyj0fc0dh5duf9dtlx3k/Bai-tap-Thuc-hanh-SQL.pdf?rlkey=xwebotclt9umt4njwul48pwt9&st=ekgd62lu&dl=0",
-         url:
-            randomInteger(1, 2) % 2 === 0
-               ? "https://res.cloudinary.com/doe8ogwij/image/upload/v1734920687/web-xem-phim/images/odlhurychbvf3iukjzkg.jpg"
-               : "https://res.cloudinary.com/doe8ogwij/image/upload/v1734891046/web-xem-phim/images/dg0whhotakygd4cja442.png",
-      }
-      return data
-   }
-
-   async getTaskFileDetails(fileId: TTaskFileData["id"]): Promise<TTaskFileData> {
-      await perfomDelay(1000)
-      const data: TTaskFileData = {
-         id: fileId,
-         fileName: "file cua loi",
-         fileSize: "111KB",
-         uploadedAt: "2025-01-21T15:21:45.219Z",
-         downloadUrl:
-            "https://www.dropbox.com/scl/fi/ywyj0fc0dh5duf9dtlx3k/Bai-tap-Thuc-hanh-SQL.pdf?rlkey=xwebotclt9umt4njwul48pwt9&st=ekgd62lu&dl=1",
-      }
-      return data
-   }
-
-   async downloadTaskFile(): Promise<void> {
-      await perfomDelay(1000)
-      const { data } = await axios.get(
-         "https://www.dropbox.com/scl/fi/ywyj0fc0dh5duf9dtlx3k/Bai-tap-Thuc-hanh-SQL.pdf?rlkey=xwebotclt9umt4njwul48pwt9&st=3yzhcmdq&dl=1",
-         { responseType: "blob" },
-      )
-      console.log(">>> data:", data)
    }
 
    async leaveProject(): Promise<void> {
@@ -407,6 +459,21 @@ class ProjectService {
    }
 
    async createNewProject(projectTitle: string): Promise<TSuccess> {
+      await perfomDelay(1000)
+      return { success: true }
+   }
+
+   async getProjectInvitations(projectId: number): Promise<TProjectInvitationData[]> {
+      await perfomDelay(1000)
+      return projectInvitations
+   }
+
+   async getProjectRequests(projectId: number): Promise<TProjectRequestData[]> {
+      await perfomDelay(1000)
+      return projectRequests
+   }
+
+   async acceptDeclineRequest(requestId: number, isAccept: boolean): Promise<TSuccess> {
       await perfomDelay(1000)
       return { success: true }
    }

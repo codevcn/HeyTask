@@ -1,7 +1,6 @@
 import { Editor } from "@tinymce/tinymce-react"
 import { Editor as TinyMCEEditor } from "tinymce"
 import { TTinyMCEFilePickerCallback } from "../utils/types"
-import { projectService } from "../services/project-service"
 import { toast } from "react-toastify"
 import axiosErrorHandler from "../utils/axios-error-handler"
 import { RichFileTitleTemplate } from "../components/NonInteractiveTemplates"
@@ -9,6 +8,7 @@ import { renderToStaticMarkup } from "react-dom/server"
 import { useState } from "react"
 import { LogoLoading } from "./Loadings"
 import { openFixedLoadingHandler } from "../utils/helpers"
+import { taskService } from "../services/task-service"
 
 const { VITE_TINYMCE_API_KEY } = import.meta.env
 
@@ -52,7 +52,7 @@ export const CustomRichTextEditor = ({
          const file = (e.target as HTMLInputElement | undefined)?.files?.[0]
          if (file && file instanceof File) {
             openFixedLoadingHandler(true)
-            projectService
+            taskService
                .uploadTaskFile(file)
                .then((res) => {
                   if (filetype === "image") {
@@ -84,7 +84,7 @@ export const CustomRichTextEditor = ({
                const file = (e.target as HTMLInputElement | undefined)?.files?.[0]
                if (file && file instanceof File) {
                   openFixedLoadingHandler(true)
-                  projectService
+                  taskService
                      .uploadTaskFile(file)
                      .then((res) => {
                         editor.insertContent(

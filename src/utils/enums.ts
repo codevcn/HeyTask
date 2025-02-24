@@ -25,3 +25,15 @@ export enum EAppMessageTypes {
    OAUTH_SUCCESS = "APP_MSG_OAUTH_SUCCESS",
    OAUTH_ERROR = "APP_MSG_OAUTH_ERROR",
 }
+
+export enum EProjectInvitationStatus {
+   PENDING = "PENDING",
+   ACCEPTED = "ACCEPTED",
+   DECLINED = "DECLINED",
+}
+
+export enum EProjectRequestStatus {
+   PENDING = "PENDING",
+   ACCEPTED = "ACCEPTED",
+   DECLINED = "DECLINED",
+}

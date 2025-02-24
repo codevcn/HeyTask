@@ -1,4 +1,10 @@
-import type { EGenders, EProjectRoles, EUserRoles } from "../utils/enums"
+import type {
+   EGenders,
+   EProjectInvitationStatus,
+   EProjectRequestStatus,
+   EProjectRoles,
+   EUserRoles,
+} from "../utils/enums"
 import type { TTaskStatus } from "../utils/types"
 
 export type TUserProfileData = {
@@ -135,4 +141,33 @@ export type TNotificationData = TGeneralNotificationData
 
 export type TFetchNotificationsData = {
    notifications: TNotificationData[]
+}
+
+export type TProjectInvitationData = {
+   id: number
+   projectId: number
+   sender: {
+      id: number
+   }
+   receiver: {
+      id: number
+      fullName: string
+      email: string
+      avatar: string
+   }
+   status: EProjectInvitationStatus
+   sendAt: string
+}
+
+export type TProjectRequestData = {
+   id: number
+   projectId: number
+   sender: {
+      id: number
+      fullName: string
+      email: string
+      avatar: string
+   }
+   status: EProjectRequestStatus
+   sendAt: string
 }

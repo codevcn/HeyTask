@@ -162,6 +162,7 @@ const AddNewTask = ({ phaseData, finalTaskPosition }: TAddNewTaskProps) => {
                phaseId,
                position: finalTaskPosition ? finalTaskPosition + 1 : 1,
                status: "uncomplete",
+               dueDate: null,
             }),
          )
       }
