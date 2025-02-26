@@ -120,7 +120,7 @@ export type TSearchUserData = {
    role: EUserRoles
 }
 
-export type TUploadPhotoData = {
+export type TUploadImageData = {
    imageURL: string
 }
 

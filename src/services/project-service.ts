@@ -7,6 +7,7 @@ import type {
    TCreateNewShareLinkData,
    TProjectInvitationData,
    TProjectRequestData,
+   TUploadImageData,
 } from "./types"
 import {
    EGenders,
@@ -476,6 +477,17 @@ class ProjectService {
    async acceptDeclineRequest(requestId: number, isAccept: boolean): Promise<TSuccess> {
       await perfomDelay(1000)
       return { success: true }
+   }
+
+   async updateProjectBackground(
+      projectId: number,
+      backgroundImage: Blob,
+   ): Promise<TUploadImageData> {
+      await perfomDelay(1000)
+      return {
+         imageURL:
+            "https://trello-backgrounds.s3.amazonaws.com/SharedBackground/2560x1703/6f971f0ef48c1a5f2cde86f2d3a9ab56/photo-1736297150541-89378f055b96.webp",
+      }
    }
 }
 

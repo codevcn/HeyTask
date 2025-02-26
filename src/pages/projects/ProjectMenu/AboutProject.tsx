@@ -2,7 +2,7 @@ import InfoIcon from "@mui/icons-material/Info"
 import AccountCircleIcon from "@mui/icons-material/AccountCircle"
 import type { TProjectData, TProjectMemberData, TUserData } from "../../../services/types"
 import { Avatar, AvatarGroup, styled, Tooltip } from "@mui/material"
-import { useProjectMenuContext } from "./sharing"
+import { TProjectMenuActive, useProjectMenuContext } from "./sharing"
 import ReorderIcon from "@mui/icons-material/Reorder"
 import { EProjectRoles } from "../../../utils/enums"
 import { useEffect, useMemo, useRef, useState } from "react"
@@ -13,6 +13,7 @@ import { useAppDispatch } from "../../../hooks/redux"
 import { updateProject } from "../../../redux/project/project-slice"
 import { CustomRichTextContent } from "../../../components/RichTextContent"
 import SubtitlesIcon from "@mui/icons-material/Subtitles"
+import { ProjectMenuSlider } from "./ProjectMenuSlider"
 
 type TProjectAdminsProps = {
    projectMembers: TProjectMemberData[]
@@ -163,22 +164,21 @@ type TAboutProjectProps = {
 }
 
 export const AboutProject = ({ projectData }: TAboutProjectProps) => {
-   const { members, title } = projectData
-   const { setMenuItemActive, menuItemActive } = useProjectMenuContext()
-   const isActive = menuItemActive === "about-project"
+   const { setActiveMenuItem, activeMenuItem } = useProjectMenuContext()
+   const isActive = activeMenuItem === "about-project"
 
-   const handleOpen = (isOpen: boolean) => {
+   const handleOpen = (isOpen: boolean, menuItemName: TProjectMenuActive) => {
       if (isOpen) {
-         setMenuItemActive("about-project")
+         setActiveMenuItem(menuItemName)
       } else {
-         setMenuItemActive(undefined)
+         setActiveMenuItem(undefined)
       }
    }
 
    return (
       <>
          <button
-            onClick={() => handleOpen(true)}
+            onClick={() => handleOpen(true, "about-project")}
             className="flex items-center gap-x-3 p-2 hover:bg-modal-btn-hover-bgcl rounded w-full mt-1"
          >
             <InfoIcon fontSize="small" />
@@ -188,22 +188,24 @@ export const AboutProject = ({ projectData }: TAboutProjectProps) => {
             </div>
          </button>
 
-         <section
-            className={`${isActive ? "left-0" : "left-[105%]"} transition-[left] absolute z-20 top-0 px-4 py-2 pb-4 h-[inherit] w-full bg-modal-board-bgcl`}
-         >
-            <div className="text-regular-text-cl">
-               <div className="flex items-center gap-x-3">
-                  <SubtitlesIcon />
-                  <h3 className="font-bold text-base">Title</h3>
+         <ProjectMenuSlider active={isActive}>
+            <>
+               <div className="text-regular-text-cl">
+                  <div className="flex items-center gap-x-3">
+                     <SubtitlesIcon />
+                     <h3 className="font-bold text-base">Title</h3>
+                  </div>
+                  <div className="mt-2 text-base py-2 px-3 rounded bg-modal-btn-bgcl">
+                     {projectData.title}
+                  </div>
                </div>
-               <div className="mt-2 text-base py-2 px-3 rounded bg-modal-btn-bgcl">{title}</div>
-            </div>
-            <ProjectAdmins projectMembers={members} />
-            <ProjectDescription
-               projectDescription={projectData.description}
-               menuIsActive={isActive}
-            />
-         </section>
+               <ProjectAdmins projectMembers={projectData.members} />
+               <ProjectDescription
+                  projectDescription={projectData.description}
+                  menuIsActive={isActive}
+               />
+            </>
+         </ProjectMenuSlider>
       </>
    )
 }

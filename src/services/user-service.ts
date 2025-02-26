@@ -1,7 +1,7 @@
 import { EUserRoles } from "../utils/enums"
 import { perfomDelay } from "../utils/helpers"
 import { TSuccess } from "../utils/types"
-import type { TSearchUserData, TUploadPhotoData, TUserProfileData } from "./types"
+import type { TSearchUserData, TUploadImageData, TUserProfileData } from "./types"
 
 export const staticUsers: TSearchUserData[] = [
    {
@@ -51,7 +51,7 @@ class UserService {
       return { success: true }
    }
 
-   async uploadImage(image: Blob): Promise<TUploadPhotoData> {
+   async uploadImage(image: Blob): Promise<TUploadImageData> {
       await perfomDelay(1000)
       return {
          imageURL: "https://trello-logos.s3.amazonaws.com/7c17ee5f87fa99637dce66430e395d97/170.png",

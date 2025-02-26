@@ -56,14 +56,15 @@ const ProjectPage = () => {
    }, [])
 
    return (
-      <div className="h-screen bg-gradient-to-b from-purple-from-ligr to-pink-to-ligr">
+      <div className="h-screen relative bg-gradient-to-b from-purple-from-ligr to-pink-to-ligr">
          <TopNavigation />
-         <Background>
+         <Background />
+         <div className="w-full h-background bg-cover relative z-20">
             <section className="flex h-full">
                <LeftSideNavigation />
                <MainBoard />
             </section>
-         </Background>
+         </div>
       </div>
    )
 }

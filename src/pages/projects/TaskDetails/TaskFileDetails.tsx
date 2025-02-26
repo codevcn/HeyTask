@@ -2,7 +2,6 @@ import { Modal, styled } from "@mui/material"
 import { useEffect, useState } from "react"
 import { EInternalEvents, eventEmitter } from "../../../utils/events"
 import type { TTaskFileData } from "../../../services/types"
-import { projectService } from "../../../services/project-service"
 import { LogoLoading } from "../../../components/Loadings"
 import CloseIcon from "@mui/icons-material/Close"
 import dayjs from "dayjs"
@@ -11,6 +10,7 @@ import FileDownloadIcon from "@mui/icons-material/FileDownload"
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever"
 import { toast } from "react-toastify"
 import axiosErrorHandler from "../../../utils/axios-error-handler"
+import { taskService } from "../../../services/task-service"
 
 export const TaskFileDetails = () => {
    const [fileData, setFileData] = useState<TTaskFileData>()
@@ -20,7 +20,7 @@ export const TaskFileDetails = () => {
       setOpen(isShown)
       if (isShown) {
          if (fileData && fileData.id === fileId) return
-         projectService
+         taskService
             .getTaskFileDetails(fileId)
             .then((res) => {
                setFileData(res)
@@ -114,6 +114,6 @@ export const TaskFileDetails = () => {
 
 const StyledModal = styled(Modal)({
    "& .MuiBackdrop-root": {
-      backgroundColor: "#000000ad",
+      backgroundColor: "var(--ht-regular-modal-bgcl)",
    },
 })

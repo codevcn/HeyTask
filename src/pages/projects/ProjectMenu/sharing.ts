@@ -1,15 +1,15 @@
 import { createContext, useContext } from "react"
 
-export type TProjectMenuActive = "about-project" | undefined
+export type TProjectMenuActive = "about-project" | "project-background" | undefined
 
 export type TProjectMenuContext = {
-   menuItemActive: TProjectMenuActive
-   setMenuItemActive: React.Dispatch<React.SetStateAction<TProjectMenuActive>>
+   activeMenuItem: TProjectMenuActive
+   setActiveMenuItem: React.Dispatch<React.SetStateAction<TProjectMenuActive>>
 }
 
 export const ProjectMenuContext = createContext<TProjectMenuContext>({
-   menuItemActive: undefined,
-   setMenuItemActive: () => {},
+   activeMenuItem: undefined,
+   setActiveMenuItem: () => {},
 })
 
 export const useProjectMenuContext = () => useContext(ProjectMenuContext)

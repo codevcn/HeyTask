@@ -12,13 +12,14 @@ import axiosErrorHandler from "../../../utils/axios-error-handler"
 import { ProjectMenuContext, useProjectMenuContext } from "./sharing"
 import type { TProjectMenuActive } from "./sharing"
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew"
+import { ProjectBackground } from "./ProjectBackground"
 
 type TTitleSectionProps = {
    onCloseMenu: () => void
 }
 
 const TitleSection = ({ onCloseMenu }: TTitleSectionProps) => {
-   const { menuItemActive, setMenuItemActive } = useProjectMenuContext()
+   const { activeMenuItem, setActiveMenuItem } = useProjectMenuContext()
 
    const displayTitle = (active: TProjectMenuActive) => {
       switch (active) {
@@ -30,16 +31,16 @@ const TitleSection = ({ onCloseMenu }: TTitleSectionProps) => {
 
    return (
       <header className="relative py-2 px-3 w-full">
-         {menuItemActive && (
+         {activeMenuItem && (
             <button
-               onClick={() => setMenuItemActive(undefined)}
+               onClick={() => setActiveMenuItem(undefined)}
                className="flex absolute left-3 top-1/2 -translate-y-1/2 p-1 rounded-md hover:bg-modal-btn-hover-bgcl"
             >
                <ArrowBackIosNewIcon className="text-modal-text-cl" sx={{ height: 18, width: 18 }} />
             </button>
          )}
          <h3 className="w-full text-center text-base font-bold text-regular-text-cl">
-            {displayTitle(menuItemActive)}
+            {displayTitle(activeMenuItem)}
          </h3>
          <button
             onClick={onCloseMenu}
@@ -56,10 +57,10 @@ type TContextProviderProps = {
 }
 
 const ContextProvider = ({ children }: TContextProviderProps) => {
-   const [menuItemActive, setMenuItemActive] = useState<TProjectMenuActive>()
+   const [activeMenuItem, setActiveMenuItem] = useState<TProjectMenuActive>()
 
    return (
-      <ProjectMenuContext.Provider value={{ menuItemActive, setMenuItemActive }}>
+      <ProjectMenuContext.Provider value={{ activeMenuItem, setActiveMenuItem }}>
          {children}
       </ProjectMenuContext.Provider>
    )
@@ -98,8 +99,12 @@ export const ProjectMenu = () => {
                <hr className="my-2" />
                <div className="css-styled-vt-scrollbar overflow-y-auto overflow-x-hidden text-modal-text-cl text-sm px-3 grow relative">
                   <AboutProject projectData={projectData} />
+                  <ProjectBackground
+                     projectBackground={projectData.background}
+                     projectId={projectData.id}
+                  />
+                  <hr className="my-2" />
                   <div className="relative z-10">
-                     <hr className="my-2" />
                      <button
                         onClick={leaveProject}
                         className="flex items-center gap-x-3 p-2 hover:bg-modal-btn-hover-bgcl rounded w-full mt-1"
