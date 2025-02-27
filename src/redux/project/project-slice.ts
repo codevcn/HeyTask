@@ -9,6 +9,7 @@ import type {
 import type {
    TAddNewTaskMemberAction,
    TDeleteTaskAction,
+   TMovePhaseAction,
    TMoveTaskState,
    TPhaseTaskPreview,
    TRemoveTaskMemberAction,
@@ -235,6 +236,23 @@ export const projectSlice = createSlice({
       setFilterResult: (state, action: PayloadAction<TPhaseData[] | null>) => {
          state.filterResult = action.payload
       },
+      copyPhase: (state, action: PayloadAction<TPhaseData>) => {
+         const phaseData = { ...action.payload }
+         const phaseId = phaseData.id
+         const phaseIndex = state.phases!.findIndex(({ id }) => phaseId === id)!
+         state.phases!.splice(phaseIndex, 0, phaseData)
+      },
+      movePhase: (state, action: PayloadAction<TMovePhaseAction>) => {
+         const { phaseId, toPosition } = action.payload
+         const phases = [...state.phases!]
+         const fromIndex = phases.findIndex(({ id }) => id === phaseId)
+         const [movedPhase] = phases.splice(fromIndex, 1)
+         phases.splice(toPosition, 0, movedPhase)
+         state.phases = phases.map((task, index) => ({
+            ...task,
+            position: index,
+         }))
+      },
    },
 })
 
@@ -260,4 +278,6 @@ export const {
    removeMemberFromProject,
    moveTask,
    setFilterResult,
+   copyPhase,
+   movePhase,
 } = projectSlice.actions

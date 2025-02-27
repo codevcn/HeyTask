@@ -9,6 +9,7 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore"
 
 type TPositionsToMove = {
    taskPreviews: TTaskPreviewData[]
+   phasePosition: number
 }
 
 type TPhasesToMoveProps = {
@@ -103,7 +104,7 @@ export const MoveTask = ({ taskId, phaseId }: TMoveTaskProps) => {
       )
    }
 
-   const PositionsToMove = ({ taskPreviews }: TPositionsToMove) => {
+   const PositionsToMove = ({ taskPreviews, phasePosition }: TPositionsToMove) => {
       const taskPreviewsCount = taskPreviews.length
       return (
          <div className="w-[78px]">
@@ -123,7 +124,7 @@ export const MoveTask = ({ taskId, phaseId }: TMoveTaskProps) => {
                   {taskPreviewsCount > 0 &&
                      taskPreviews.map(({ id, position }) => (
                         <StyledMenuItem key={id} value={position}>
-                           <span>{`${position + 1}${toPosition === position ? " (current)" : ""}`}</span>
+                           <span>{`${position + 1}${phasePosition === position ? " (current)" : ""}`}</span>
                         </StyledMenuItem>
                      ))}
                   <StyledMenuItem value={taskPreviewsCount || 0}>
@@ -179,7 +180,10 @@ export const MoveTask = ({ taskId, phaseId }: TMoveTaskProps) => {
                <div className="w-full mt-2">
                   <div className="flex items-center gap-3">
                      <PhasesToMove phases={phases} toPhase={toPhase} />
-                     <PositionsToMove taskPreviews={toPhase.taskPreviews || []} />
+                     <PositionsToMove
+                        taskPreviews={toPhase.taskPreviews || []}
+                        phasePosition={phaseData.position}
+                     />
                   </div>
                   <button
                      onClick={moveTaskHandler}

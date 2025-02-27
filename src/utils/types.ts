@@ -104,3 +104,8 @@ export type TGoogleOAuthMsgData = {
    appMsgType: EAppMessageTypes
    code: string | null
 }
+
+export type TMovePhaseAction = {
+   phaseId: number
+   toPosition: number
+}

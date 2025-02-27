@@ -1,5 +1,6 @@
 import { EGenders, EProjectRoles, EUserRoles } from "../utils/enums"
 import { perfomDelay } from "../utils/helpers"
+import { TSuccess } from "../utils/types"
 import type { TPhaseData, TTaskMemberData } from "./types"
 
 const taskMembers: TTaskMemberData[] = [
@@ -103,178 +104,194 @@ const taskMembers: TTaskMemberData[] = [
    },
 ]
 
-class PhaseService {
-   async getPhases(): Promise<TPhaseData[]> {
-      await perfomDelay(1000)
-      const data: TPhaseData[] = [
+const phases: TPhaseData[] = [
+   {
+      id: 1,
+      title: "Todo",
+      position: 0,
+      description: "desc 1",
+      taskPreviews: [
          {
             id: 1,
-            title: "Todo",
-            position: 1,
-            description: "desc 1",
-            taskPreviews: [
-               {
-                  id: 1,
-                  title: "Lời mở đầu 1",
-                  hasDescription: true,
-                  position: 0,
-                  taskMembers: taskMembers.slice(0, 5),
-                  status: "uncomplete",
-                  dueDate: "2025-02-14T09:45:11.925653Z",
-               },
-               {
-                  id: 3,
-                  title: "Mẫu giao diện 1",
-                  hasDescription: true,
-                  position: 1,
-                  taskMembers: null,
-                  status: "uncomplete",
-                  dueDate: "2025-02-16T09:45:11.925653Z",
-               },
-            ],
-         },
-         {
-            id: 2,
-            title: "In Progress",
-            position: 2,
-            description: "desc 2",
-            taskPreviews: [
-               {
-                  id: 4,
-                  title: "Lời mở đầu 2",
-                  hasDescription: true,
-                  position: 0,
-                  taskMembers: null,
-                  status: "uncomplete",
-                  dueDate: null,
-               },
-               {
-                  id: 5,
-                  title: "Web to do okay? vcn",
-                  hasDescription: true,
-                  position: 1,
-                  taskMembers: taskMembers.slice(0, 4),
-                  status: "uncomplete",
-                  dueDate: "2025-02-14T09:45:11.925653Z",
-               },
-               {
-                  id: 6,
-                  title: "Mẫu giao diện 2",
-                  hasDescription: true,
-                  position: 2,
-                  taskMembers: null,
-                  status: "uncomplete",
-                  dueDate: "2025-01-05T08:39:41.890Z",
-               },
-               {
-                  id: 99,
-                  title: "Mẫu giao diện 3",
-                  hasDescription: true,
-                  position: 3,
-                  taskMembers: null,
-                  status: "uncomplete",
-                  dueDate: "2025-03-15T09:45:11.925653Z",
-               },
-               {
-                  id: 101,
-                  title: "Mẫu giao diện 4",
-                  hasDescription: true,
-                  position: 4,
-                  taskMembers: taskMembers.slice(5, 8),
-                  status: "uncomplete",
-                  dueDate: "2025-01-07T08:39:41.890Z",
-               },
-               {
-                  id: 105,
-                  title: "Mẫu giao diện 5",
-                  hasDescription: true,
-                  position: 5,
-                  taskMembers: taskMembers.slice(3, 6),
-                  status: "uncomplete",
-                  dueDate: "2025-02-16T09:45:11.925653Z",
-               },
-               {
-                  id: 102,
-                  title: "Mẫu giao diện 6",
-                  hasDescription: true,
-                  position: 6,
-                  taskMembers: null,
-                  status: "uncomplete",
-                  dueDate: "2025-03-15T09:45:11.925653Z",
-               },
-               {
-                  id: 103,
-                  title: "Mẫu giao diện 7",
-                  hasDescription: true,
-                  position: 7,
-                  taskMembers: null,
-                  status: "uncomplete",
-                  dueDate: "2025-02-16T09:45:11.925653Z",
-               },
-            ],
+            title: "Lời mở đầu 1",
+            hasDescription: true,
+            position: 0,
+            taskMembers: taskMembers.slice(0, 5),
+            status: "uncomplete",
+            dueDate: "2025-02-14T09:45:11.925653Z",
          },
          {
             id: 3,
-            title: "Complete",
-            position: 3,
-            description: "desc 3",
-            taskPreviews: [
-               {
-                  id: 11,
-                  title: "Lời mở đầuLời mở đầuLời mở đầuLời mở đầuLời mở đầuLời mở đầuLời mở đầu",
-                  hasDescription: true,
-                  position: 0,
-                  taskMembers: null,
-                  status: "uncomplete",
-                  dueDate: null,
-               },
-            ],
+            title: "Mẫu giao diện 1",
+            hasDescription: true,
+            position: 1,
+            taskMembers: null,
+            status: "uncomplete",
+            dueDate: "2025-02-16T09:45:11.925653Z",
          },
+      ],
+   },
+   {
+      id: 2,
+      title: "In Progress",
+      position: 1,
+      description: "desc 2",
+      taskPreviews: [
          {
             id: 4,
-            title: "Done",
-            position: 4,
-            description: "desc 4",
-            taskPreviews: [
-               {
-                  id: 9,
-                  title: "Lời mở đầu 3",
-                  hasDescription: true,
-                  position: 0,
-                  taskMembers: null,
-                  status: "uncomplete",
-                  dueDate: "2025-01-12T08:39:41.890Z",
-               },
-            ],
+            title: "Lời mở đầu 2",
+            hasDescription: true,
+            position: 0,
+            taskMembers: null,
+            status: "uncomplete",
+            dueDate: null,
          },
          {
             id: 5,
-            title: "Need Help",
-            position: 5,
-            description: "desc 5",
-            taskPreviews: [
-               {
-                  id: 10,
-                  title: "Lời mở đầu 4",
-                  hasDescription: true,
-                  position: 0,
-                  taskMembers: null,
-                  status: "uncomplete",
-                  dueDate: null,
-               },
-               {
-                  id: 20,
-                  title: "Phân tích & Thiết kế",
-                  hasDescription: true,
-                  position: 1,
-                  taskMembers: null,
-                  status: "uncomplete",
-                  dueDate: "2025-02-20T09:45:11.925653Z",
-               },
-            ],
+            title: "Web to do okay? vcn",
+            hasDescription: true,
+            position: 1,
+            taskMembers: taskMembers.slice(0, 4),
+            status: "uncomplete",
+            dueDate: "2025-02-14T09:45:11.925653Z",
          },
-      ]
-      return data
+         {
+            id: 6,
+            title: "Mẫu giao diện 2",
+            hasDescription: true,
+            position: 2,
+            taskMembers: null,
+            status: "uncomplete",
+            dueDate: "2025-01-05T08:39:41.890Z",
+         },
+         {
+            id: 99,
+            title: "Mẫu giao diện 3",
+            hasDescription: true,
+            position: 3,
+            taskMembers: null,
+            status: "uncomplete",
+            dueDate: "2025-03-15T09:45:11.925653Z",
+         },
+         {
+            id: 101,
+            title: "Mẫu giao diện 4",
+            hasDescription: true,
+            position: 4,
+            taskMembers: taskMembers.slice(5, 8),
+            status: "uncomplete",
+            dueDate: "2025-01-07T08:39:41.890Z",
+         },
+         {
+            id: 105,
+            title: "Mẫu giao diện 5",
+            hasDescription: true,
+            position: 5,
+            taskMembers: taskMembers.slice(3, 6),
+            status: "uncomplete",
+            dueDate: "2025-02-16T09:45:11.925653Z",
+         },
+         {
+            id: 102,
+            title: "Mẫu giao diện 6",
+            hasDescription: true,
+            position: 6,
+            taskMembers: null,
+            status: "uncomplete",
+            dueDate: "2025-03-15T09:45:11.925653Z",
+         },
+         {
+            id: 103,
+            title: "Mẫu giao diện 7",
+            hasDescription: true,
+            position: 7,
+            taskMembers: null,
+            status: "uncomplete",
+            dueDate: "2025-02-16T09:45:11.925653Z",
+         },
+      ],
+   },
+   {
+      id: 3,
+      title: "Complete",
+      position: 2,
+      description: "desc 3",
+      taskPreviews: [
+         {
+            id: 11,
+            title: "Lời mở đầuLời mở đầuLời mở đầuLời mở đầuLời mở đầuLời mở đầuLời mở đầu",
+            hasDescription: true,
+            position: 0,
+            taskMembers: null,
+            status: "uncomplete",
+            dueDate: null,
+         },
+      ],
+   },
+   {
+      id: 4,
+      title: "Done",
+      position: 3,
+      description: "desc 4",
+      taskPreviews: [
+         {
+            id: 9,
+            title: "Lời mở đầu 3",
+            hasDescription: true,
+            position: 0,
+            taskMembers: null,
+            status: "uncomplete",
+            dueDate: "2025-01-12T08:39:41.890Z",
+         },
+      ],
+   },
+   {
+      id: 5,
+      title: "Need Help",
+      position: 4,
+      description: "desc 5",
+      taskPreviews: [
+         {
+            id: 10,
+            title: "Lời mở đầu 4",
+            hasDescription: true,
+            position: 0,
+            taskMembers: null,
+            status: "uncomplete",
+            dueDate: null,
+         },
+         {
+            id: 20,
+            title: "Phân tích & Thiết kế",
+            hasDescription: true,
+            position: 1,
+            taskMembers: null,
+            status: "uncomplete",
+            dueDate: "2025-02-20T09:45:11.925653Z",
+         },
+      ],
+   },
+]
+
+class PhaseService {
+   async getPhases(): Promise<TPhaseData[]> {
+      await perfomDelay(1000)
+      return phases
+   }
+
+   async copyPhase(phaseId: number): Promise<TPhaseData> {
+      await perfomDelay(1000)
+      return phases.find(({ id }) => id === phaseId)!
+   }
+
+   async deletePhase(phaseId: number): Promise<TSuccess> {
+      await perfomDelay(1000)
+      return { success: true }
+   }
+
+   async movePhase(projectId: number, phaseId: number, position: number): Promise<TSuccess> {
+      await perfomDelay(1000)
+      return { success: true }
    }
 }
 
