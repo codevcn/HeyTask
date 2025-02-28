@@ -1,6 +1,15 @@
 import NotificationsIcon from "@mui/icons-material/Notifications"
 import { StyledIconButton } from "../components/StyledIconButton"
-import { Popover, styled, Fade, FormControlLabel, Switch, Tooltip } from "@mui/material"
+import {
+   Popover,
+   styled,
+   Fade,
+   FormControlLabel,
+   Switch,
+   Tooltip,
+   Badge,
+   BadgeProps,
+} from "@mui/material"
 import { useEffect, useRef, useState } from "react"
 import CloseIcon from "@mui/icons-material/Close"
 import { useAppDispatch, useAppSelector } from "../hooks/redux"
@@ -269,6 +278,33 @@ const NotificationsList = () => {
    )
 }
 
+type TNotificationButtonProps = {
+   onOpenNotificationsList: (e?: React.MouseEvent<HTMLButtonElement>) => void
+}
+
+const NotificationButton = ({ onOpenNotificationsList }: TNotificationButtonProps) => {
+   const [unreadCount, setUnreadCount] = useState<number>(0)
+
+   useEffect(() => {
+      notificationService
+         .countUnreadNotifcations()
+         .then((res) => {
+            setUnreadCount(res.total)
+         })
+         .catch((error) => {
+            toast.error(axiosErrorHandler.handleHttpError(error).message)
+         })
+   }, [])
+
+   return (
+      <StyledBadge color="error" badgeContent={unreadCount} max={9}>
+         <StyledIconButton onClick={onOpenNotificationsList}>
+            <NotificationsIcon className="text-white" fontSize="small" />
+         </StyledIconButton>
+      </StyledBadge>
+   )
+}
+
 export const Notification = () => {
    const [anchorEle, setAnchorEle] = useState<HTMLElement | null>(null)
 
@@ -282,15 +318,14 @@ export const Notification = () => {
 
    return (
       <>
-         <StyledIconButton onClick={handleOpenNotification}>
-            <NotificationsIcon className="text-white" fontSize="small" />
-         </StyledIconButton>
+         <NotificationButton onOpenNotificationsList={handleOpenNotification} />
 
          <NotificationBoard
             anchorEl={anchorEle}
             open={!!anchorEle}
             onClose={() => handleOpenNotification()}
             TransitionComponent={Fade}
+            keepMounted
             anchorOrigin={{
                vertical: "bottom",
                horizontal: "right",
@@ -384,5 +419,12 @@ const OnlyShowUnreadBtn = styled(FormControlLabel)({
    marginLeft: "0",
    "& .MuiFormControlLabel-label": {
       fontSize: "14px",
+   },
+})
+
+const StyledBadge = styled(Badge)<BadgeProps>({
+   "& .MuiBadge-badge": {
+      right: 5,
+      top: 5,
    },
 })

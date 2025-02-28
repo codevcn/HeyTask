@@ -1,66 +1,109 @@
-import { LogoLoading } from "../components/Loadings"
+import { useState, useRef, useEffect, MouseEvent } from "react"
 
-export default function page() {
+const items: string[] = [
+   "https://storage.googleapis.com/a1aa/image/FcNVUSSjEutyWOY3r4_AyYmtTgV3KLniM17sftR1t7c.jpg",
+   "https://storage.googleapis.com/a1aa/image/C5ZK8iYrM8CcfRpYIE3H2Ba9FL3oLvjCVw4qBGCHipc.jpg",
+   "https://storage.googleapis.com/a1aa/image/DefV6-crshU8zj5k0ux88uAqc2uqcOTkKhiLgJIbKvc.jpg",
+]
+
+type TSliderProps = {
+   slides: JSX.Element[]
+}
+
+const Slider = ({ slides }: TSliderProps) => {
+   const [currentIndex, setCurrentIndex] = useState(0)
+   const sliderRef = useRef<HTMLDivElement>(null)
+   const isDragging = useRef(false)
+   const startPosition = useRef<number | null>(null)
+   const currentTranslate = useRef<number>(0)
+   const prevTranslate = useRef<number>(0)
+
+   const handleMouseDown = (e: React.MouseEvent) => {
+      isDragging.current = true
+      startPosition.current = e.clientX
+      if (sliderRef.current) {
+         sliderRef.current.style.transition = "none"
+      }
+   }
+
+   const handleMouseMove = (e: MouseEvent<HTMLElement>) => {
+      if (!isDragging.current || !startPosition.current) return
+
+      const currentPosition = e.clientX
+      currentTranslate.current = currentPosition - startPosition.current
+
+      if (sliderRef.current) {
+         sliderRef.current.style.transform = `translateX(calc(${prevTranslate.current}% + ${currentTranslate.current}px))`
+      }
+   }
+
+   const handleMouseUp = () => {
+      isDragging.current = false
+
+      const moveBy = currentTranslate.current
+      if (Math.abs(moveBy) > 100) {
+         if (moveBy > 0) {
+            setCurrentIndex((prev) => Math.max(prev - 1, 0))
+         } else {
+            setCurrentIndex((prev) => Math.min(prev + 1, items.length - 1))
+         }
+      }
+
+      prevTranslate.current = currentIndex * -100
+      if (sliderRef.current) {
+         sliderRef.current.style.transition = "transform 0.3s ease"
+         sliderRef.current.style.transform = `translateX(${prevTranslate.current}%)`
+      }
+   }
+
+   const handleMouseLeave = () => {
+      if (isDragging.current) {
+         handleMouseUp()
+      }
+   }
+
+   useEffect(() => {
+      prevTranslate.current = currentIndex * -100
+      if (sliderRef.current) {
+         sliderRef.current.style.transition = "transform 0.3s ease"
+         sliderRef.current.style.transform = `translateX(${prevTranslate.current}%)`
+      }
+   }, [currentIndex])
+
    return (
-      <div className="max-w-md mx-auto">
-         <div className="flex justify-between items-center mb-4">
-            <h1 className="text-xl font-semibold">Notifications</h1>
-            <div className="flex items-center space-x-2">
-               <span>Only show unread</span>
-               <input type="checkbox" checked className="toggle-checkbox" />
-               <i className="fas fa-ellipsis-v text-gray-400"></i>
-            </div>
-         </div>
-         <button className="text-blue-500 mb-4">Mark all as read</button>
-         <div className="space-y-4">
-            <div className="bg-gray-800 p-4 rounded-lg relative">
-               <div className="flex items-center space-x-2 mb-2">
-                  <img
-                     src="https://placehold.co/32x32"
-                     alt="Personal CodeVCN logo"
-                     className="w-8 h-8 rounded-full"
-                  />
-                  <span className="font-semibold">Personal CodeVCN</span>
-               </div>
-               <div className="flex items-center space-x-2 mb-2">
-                  <div className="w-8 h-8 bg-blue-500 text-white flex items-center justify-center rounded-full">
-                     HH
-                  </div>
-                  <div>
-                     <span className="font-semibold">Hoa Ho</span>
-                     <span>wants to join the Workspace</span>
-                     <span className="text-blue-500">Personal CodeVCN</span>.
-                     <div className="text-gray-400 text-sm">Feb 6, 2025, 5:41 PM</div>
-                  </div>
-               </div>
-               <button className="bg-gray-700 text-white py-1 px-3 rounded">
-                  Review pending requests
-               </button>
-               <div className="absolute top-4 right-4 w-3 h-3 bg-blue-500 rounded-full"></div>
-            </div>
-            <div className="bg-gray-800 p-4 rounded-lg relative">
-               <div className="flex items-center space-x-2 mb-2">
-                  <img
-                     src="https://placehold.co/32x32"
-                     alt="App interface sample"
-                     className="w-8 h-8 rounded-full"
-                  />
-                  <span className="font-semibold">Mẫu giao diện của App</span>
-               </div>
-               <div className="flex items-center space-x-2 mb-2">
-                  <div className="w-8 h-8 bg-red-500 text-white flex items-center justify-center rounded-full">
-                     <i className="fas fa-calendar-alt"></i>
-                  </div>
-                  <div>
-                     <span className="text-red-500">Feb 5</span>
-                  </div>
-               </div>
-               <div className="text-gray-400 text-sm mb-2">blog team web: Concepts &amp; Notes</div>
-               <div className="text-gray-400 text-sm">Reminder: Was due Feb 5, 2025, 3:16 PM</div>
-               <div className="text-gray-400 text-sm">Feb 4, 2025, 3:16 PM</div>
-               <div className="absolute top-4 right-4 w-3 h-3 bg-blue-500 rounded-full"></div>
-            </div>
+      <div
+         className="relative w-full overflow-hidden cursor-grab"
+         onMouseDown={handleMouseDown}
+         onMouseMove={handleMouseMove}
+         onMouseUp={handleMouseUp}
+         onMouseLeave={handleMouseLeave}
+      >
+         <div
+            ref={sliderRef}
+            className="flex transition-transform duration-300 ease-in-out"
+            onDragStart={(e) => e.preventDefault()}
+         >
+            {slides}
          </div>
       </div>
    )
 }
+
+const App = () => {
+   return (
+      <div className="flex justify-center items-center h-screen bg-gray-100">
+         <Slider
+            slides={items.map((image, index) => (
+               <img
+                  key={index}
+                  src={image}
+                  alt={`Slide ${index}`}
+                  className="w-full h-auto flex-shrink-0"
+               />
+            ))}
+         />
+      </div>
+   )
+}
+
+export default App

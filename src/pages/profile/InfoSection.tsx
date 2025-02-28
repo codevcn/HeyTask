@@ -142,8 +142,8 @@ export const InfoSection = ({ userData }: TInfoSectionProps) => {
    }
 
    const handleMouseClickOnPage = (e: MouseEvent) => {
-      const inputEle = focused.element
-      if (inputEle && !inputEle.contains(e.target as Node)) {
+      const focusedContainerEle = focused.element
+      if (focusedContainerEle && !focusedContainerEle.contains(e.target as Node)) {
          setFocused({})
       }
    }

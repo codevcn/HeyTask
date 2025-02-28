@@ -1,6 +1,10 @@
 import { perfomDelay } from "../utils/helpers"
 import { TSuccess } from "../utils/types"
-import type { TFetchNotificationsData, TNotificationData } from "./types"
+import type {
+   TCountUnreadNotificationsData,
+   TFetchNotificationsData,
+   TNotificationData,
+} from "./types"
 
 const notifications: TNotificationData[] = [
    {
@@ -61,6 +65,11 @@ class NotificationService {
                Math.random(),
          })),
       }
+   }
+
+   async countUnreadNotifcations(): Promise<TCountUnreadNotificationsData> {
+      await perfomDelay(1000)
+      return { total: 11 }
    }
 }
 

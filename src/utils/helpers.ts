@@ -151,12 +151,10 @@ type TStringKeyObject = {
 }
 
 export const generateURLWithParams = <T extends TStringKeyObject>(
-   url: string,
+   route: string,
    params: T,
 ): string => {
-   const urlWithParams = new URL(url)
-   urlWithParams.search = new URLSearchParams(params).toString()
-   return urlWithParams.toString()
+   return `${route}?${new URLSearchParams(params).toString()}`
 }
 
 export const sanitizeHTMLString = (htmlString: string) => DOMPurify.sanitize(htmlString)

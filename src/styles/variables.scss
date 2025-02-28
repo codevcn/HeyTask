@@ -2,6 +2,7 @@
    // text color
    --ht-regular-text-cl: #9fadbc;
    --ht-secondary-text-cl: #172b4d;
+   --ht-light-text-cl: #c6ced5;
    --ht-rich-file-title-cl: #579dff;
    --ht-selected-text-cl: var(--ht-outline-cl);
    --ht-modal-text-cl: #b6c2cf;
@@ -9,6 +10,8 @@
    --ht-warning-text-cl: #f5cd47;
    --ht-starred-cl: #ffd95e;
    --ht-error-text-cl: #ff0000;
+   --ht-regular-dark-blue-cl: #065ad4;
+   --ht-hover-dark-blue-cl: #4f71df;
 
    // outline
    --ht-regular-border-cl: #738496;
@@ -46,6 +49,6 @@
    --ht-top-nav-height: 56px;
 
    // width
-   --ht-left-side-nav-width: 260px;
+   --ht-left-side-nav-width: 220px;
    --ht-task-modal-width: 768px;
 }

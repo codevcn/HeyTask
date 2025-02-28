@@ -171,3 +171,32 @@ export type TProjectRequestData = {
    status: EProjectRequestStatus
    sendAt: string
 }
+
+export type TCountUnreadNotificationsData = {
+   total: number
+}
+
+export type TGeneralSearchData = {
+   projects: {
+      id: number
+      title: string
+      background: string | null
+   }[]
+   phases: {
+      id: number
+      title: string
+      project: {
+         title: string
+      }
+   }[]
+   tasks: {
+      id: number
+      title: string
+      project: {
+         title: string
+      }
+      phase: {
+         title: string
+      }
+   }[]
+}

@@ -10,14 +10,29 @@ import ProjectPage from "./pages/projects/ProjectPage"
 import WorkspacePage from "./pages/workspace/WorkspacePage"
 import ProfilePage from "./pages/profile/ProfilePage"
 import AuthRedirectPage from "./pages/auth/AuthRedirectPage"
+import { LoginRegisterChecker } from "./pages/auth/LoginRegisterChecker"
 
 const App = () => {
    return (
       <Routes>
          <Route path="/" element={<Layout />}>
             <Route index element={<HomePage />} />
-            <Route path="login" element={<LoginPage />} />
-            <Route path="register" element={<RegisterPage />} />
+            <Route
+               path="login"
+               element={
+                  <LoginRegisterChecker>
+                     <LoginPage />
+                  </LoginRegisterChecker>
+               }
+            />
+            <Route
+               path="register"
+               element={
+                  <LoginRegisterChecker>
+                     <RegisterPage />
+                  </LoginRegisterChecker>
+               }
+            />
             <Route path="google-auth-redirect" element={<AuthRedirectPage />} />
             <Route path="workspace" element={<WorkspacePage />} />
             <Route path="projects/:projectId" element={<ProjectPage />} />

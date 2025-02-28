@@ -4,8 +4,9 @@ import { EInternalEvents, eventEmitter } from "../utils/events"
 
 export const RouteLoading = () => {
    return (
-      <div>
-         <div className="bg-black w-full text-white">Loading...</div>
+      <div className="flex flex-col justify-center items-center h-screen w-screen">
+         <LogoLoading color="black" />
+         <p className="text-base mt-5">Downloadng data...</p>
       </div>
    )
 }
@@ -17,11 +18,11 @@ type TLogoLoadingProps = Partial<{
    size: "small" | "medium"
 }>
 
-export const LogoLoading = ({ className, color, style, size }: TLogoLoadingProps) => {
+export const LogoLoading = ({ className, color, style, size = "medium" }: TLogoLoadingProps) => {
    return (
       <div
          style={style}
-         className={`${className || ""} ${size ? `size-${size}` : "size-medium"} css-logo-loading-container`}
+         className={`${className || ""} ${size ? `size-${size}` : ""} css-logo-loading-container`}
       >
          <div
             style={{ backgroundColor: color }}

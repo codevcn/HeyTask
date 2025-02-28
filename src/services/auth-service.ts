@@ -19,6 +19,7 @@ class AuthService {
 
    async checkAuth(): Promise<TUserData> {
       await perfomDelay(1000)
+      // throw new Error("aaaa oke error")
       const data: TUserData = {
          id: 1,
          email: "demo-email-2@mail.ru",
@@ -44,6 +45,11 @@ class AuthService {
    }
 
    async exchangeOAuthCode(code: string): Promise<TSuccess> {
+      await perfomDelay(1000)
+      return { success: true }
+   }
+
+   async logout(): Promise<TSuccess> {
       await perfomDelay(1000)
       return { success: true }
    }

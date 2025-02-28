@@ -1,12 +1,8 @@
 import { useLocation, useNavigate } from "react-router-dom"
-import { useAppDispatch, useAppSelector } from "../hooks/redux"
 import { useEffect, useState } from "react"
 import { EAuthStatus, EProjectRoles } from "../utils/enums"
 import { RouteLoading } from "./Loadings"
 import { useUser } from "../hooks/user"
-import { authService } from "../services/auth-service"
-import { setAuthStatus } from "../redux/auth/auth-slice"
-import { setUserData } from "../redux/user/user-slice"
 import { toast } from "react-toastify"
 import {
    checkAtLeastUserPermission,
@@ -14,18 +10,20 @@ import {
    checkUserPermissions,
    type TAllPermissions,
 } from "../configs/user-permissions"
+import { useAuth } from "../hooks/auth"
+import { generateURLWithParams } from "../utils/helpers"
 
 type TGuardProps = {
    children: JSX.Element
    fallback?: JSX.Element
+   pathname: string
 }
 
-const AuthGuard = ({ children, fallback }: TGuardProps) => {
-   const { authStatus } = useAppSelector(({ auth }) => auth)
+const AuthGuard = ({ children, fallback, pathname }: TGuardProps) => {
+   const { authStatus } = useAuth()
    const user = useUser()
    const [isValid, setIsValid] = useState<boolean>(false)
    const navigate = useNavigate()
-   const dispatch = useAppDispatch()
 
    useEffect(() => {
       if (authStatus === EAuthStatus.IS_AUTHENTICATED && user) {
@@ -33,17 +31,7 @@ const AuthGuard = ({ children, fallback }: TGuardProps) => {
       } else if (authStatus === EAuthStatus.UNAUTHENTICATED) {
          setIsValid(false)
          toast.error("Phiên đăng nhập hết hạn hoặc người dùng không có quyền truy cập tài nguyên.")
-         navigate("/login")
-      } else {
-         authService
-            .checkAuth()
-            .then((res) => {
-               dispatch(setAuthStatus(EAuthStatus.IS_AUTHENTICATED))
-               dispatch(setUserData(res))
-            })
-            .catch(() => {
-               dispatch(setAuthStatus(EAuthStatus.UNAUTHENTICATED))
-            })
+         navigate(generateURLWithParams("/login", { redirect: pathname }))
       }
    }, [authStatus, user])
 
@@ -60,10 +48,15 @@ type TResourceGuardProps = {
 }
 
 export const RouteGuard = ({ children, nonGuardRoutes }: TResourceGuardProps) => {
-   if (nonGuardRoutes.includes(useLocation().pathname)) {
+   const pathname = useLocation().pathname
+   if (nonGuardRoutes.includes(pathname)) {
       return children
    }
-   return <AuthGuard fallback={<RouteLoading />}>{children}</AuthGuard>
+   return (
+      <AuthGuard pathname={pathname} fallback={<RouteLoading />}>
+         {children}
+      </AuthGuard>
+   )
 }
 
 type TProjectRoleGuardProps = {

@@ -1,6 +1,5 @@
 import authBgLeft from "../../assets/trello-left.4f52d13c.svg"
 import authBgRight from "../../assets/trello-right.e6e102c7.svg"
-import appLogo from "../../assets/app-logo.png"
 import { TextField, Button, IconButton, CircularProgress } from "@mui/material"
 import SendIcon from "@mui/icons-material/Send"
 import { useState } from "react"
@@ -15,6 +14,7 @@ import { toast } from "react-toastify"
 import axiosErrorHandler from "../../utils/axios-error-handler"
 import { passwordRegex } from "../../utils/regex"
 import { OAuth } from "./OAuth"
+import { AppLogo } from "../../components/AppLogo"
 
 interface IFormData {
    fullName: string
@@ -98,10 +98,12 @@ const RegisterPage = () => {
          ></div>
 
          <div className="flex flex-col items-center w-[400px] py-[32px] px-[40px] rounded bg-white m-auto shadow-md text-[#44546f]">
-            <div className="flex gap-x-[5px] items-center text-black">
-               <img src={appLogo} alt="App Logo" className="h-[35px]" />
+            <NavLink to="/" className="flex gap-x-2 items-center text-black">
+               <div className="p-1 rounded-sm bg-[#065AD4]">
+                  <AppLogo height={25} width={25} barWidth={5} barSpacing={5} color="white" />
+               </div>
                <span className="text-[2rem] font-bold">HeyTask</span>
-            </div>
+            </NavLink>
             <span className="font-semibold leading-tight mt-5 text-center">
                <span>Chào mừng bạn đến với HeyTask.</span>
                <br />

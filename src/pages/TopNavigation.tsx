@@ -1,13 +1,14 @@
 import { type MouseEvent, useRef, useState } from "react"
-import appLogo from "../assets/app-logo.png"
 import { Menu, MenuItem, Button, styled, Avatar, Popover } from "@mui/material"
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore"
-import SearchIcon from "@mui/icons-material/Search"
 import { useUser } from "../hooks/user"
 import { StyledIconButton } from "../components/StyledIconButton"
 import LogoutIcon from "@mui/icons-material/Logout"
 import OpenInNewIcon from "@mui/icons-material/OpenInNew"
 import { Notification } from "./Notification"
+import { AppLogo } from "../components/AppLogo"
+import { NavLink, useNavigate } from "react-router-dom"
+import { GeneralSearch } from "./GeneralSearch"
 
 type TActive = "projects" | "more" | undefined
 
@@ -55,22 +56,10 @@ const MenuList = () => {
    )
 }
 
-const Search = () => {
-   return (
-      <div className="border border-[#8C9BAB] border-solid rounded hover:bg-hover-silver-bgcl mr-2">
-         <input
-            type="text"
-            className="text-[#8C9BAB] bg-transparent outline-none px-2 py-1 pr-3 text-sm"
-            placeholder="Tìm kiếm..."
-         />
-         <SearchIcon className="text-[#8C9BAB] mr-2" fontSize="small" />
-      </div>
-   )
-}
-
 const AccountMenu = () => {
    const user = useUser()!
    const [anchorEle, setAnchorEle] = useState<HTMLButtonElement | null>(null)
+   const navigate = useNavigate()
 
    const handleOpenAddMemberBoard = (e?: React.MouseEvent<HTMLButtonElement>) => {
       if (e) {
@@ -78,6 +67,10 @@ const AccountMenu = () => {
       } else {
          setAnchorEle(null)
       }
+   }
+
+   const logout = () => {
+      navigate("/login")
    }
 
    return (
@@ -91,6 +84,7 @@ const AccountMenu = () => {
                </Avatar>
             )}
          </StyledIconButton>
+
          <StyledPopover
             open={!!anchorEle}
             anchorEl={anchorEle}
@@ -114,16 +108,22 @@ const AccountMenu = () => {
                   </div>
                </div>
                <div className="mt-4 w-full">
-                  <button className="flex items-center gap-x-3 justify-between mb-3 w-full px-4 py-1 hover:bg-modal-btn-hover-bgcl">
+                  <NavLink
+                     to="/profile"
+                     className="flex items-center gap-x-3 justify-between mb-3 w-full px-4 py-1 hover:bg-modal-btn-hover-bgcl"
+                  >
                      <span className="text-sm">Manage account</span>
                      <span>
                         <OpenInNewIcon fontSize="small" />
                      </span>
-                  </button>
+                  </NavLink>
                </div>
                <div className="bg-regular-border-cl h-[1px] w-[90%] mx-auto"></div>
                <div className="mt-3 w-full">
-                  <button className="flex items-center gap-x-3 justify-between w-full px-4 py-1 hover:bg-[#ff2d1f66]">
+                  <button
+                     onClick={logout}
+                     className="flex items-center gap-x-3 justify-between w-full px-4 py-1 hover:bg-[#ff2d1f66]"
+                  >
                      <span className="text-sm font-bold">Logout</span>
                      <span>
                         <LogoutIcon fontSize="small" />
@@ -138,16 +138,18 @@ const AccountMenu = () => {
 
 export const TopNavigation = () => {
    return (
-      <nav className="flex justify-between gap-x-5 h-top-nav bg-regular-bgcl py-2 px-4 border-b border-divider-cl relative z-20">
+      <nav className="flex justify-between gap-x-5 h-top-nav bg-regular-bgcl py-2 px-4 border-b border-divider-cl relative z-30">
          <div className="flex gap-x-5">
-            <div className="flex gap-x-[5px] items-center text-[#9EACBA] cursor-pointer">
-               <img src={appLogo} alt="App Logo" className="h-[1.2rem]" />
+            <NavLink to="/" className="flex gap-x-2 items-center text-[#9EACBA] cursor-pointer">
+               <div className="p-1 bg-regular-text-cl rounded-sm">
+                  <AppLogo color="black" />
+               </div>
                <span className="text-[1.2rem] font-bold">HeyTask</span>
-            </div>
+            </NavLink>
             <MenuList />
          </div>
          <div className="flex items-center gap-x-1">
-            <Search />
+            <GeneralSearch />
             <Notification />
             <AccountMenu />
          </div>

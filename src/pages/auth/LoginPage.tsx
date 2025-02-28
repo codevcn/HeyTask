@@ -1,22 +1,20 @@
 import authBgLeft from "../../assets/trello-left.4f52d13c.svg"
 import authBgRight from "../../assets/trello-right.e6e102c7.svg"
-import appLogo from "../../assets/app-logo.png"
 import { TextField, Button, IconButton, CircularProgress } from "@mui/material"
 import SendIcon from "@mui/icons-material/Send"
 import { useState } from "react"
 import Visibility from "@mui/icons-material/Visibility"
 import VisibilityOff from "@mui/icons-material/VisibilityOff"
-import { NavLink } from "react-router-dom"
+import { NavLink, useSearchParams } from "react-router-dom"
 import { authService } from "../../services/auth-service"
 import { useForm } from "react-hook-form"
-import validator from "validator"
-import { pureNavigator } from "../../utils/helpers"
 import { toast } from "react-toastify"
 import axiosErrorHandler from "../../utils/axios-error-handler"
-import { passwordRegex } from "../../utils/regex"
 import { OAuth } from "./OAuth"
+import { AppLogo } from "../../components/AppLogo"
+import { pureNavigator } from "../../utils/helpers"
 
-interface IFormData {
+type TFormData = {
    email: string
    password: string
 }
@@ -29,30 +27,31 @@ const LoginPage = () => {
       handleSubmit,
       setError,
       formState: { errors },
-   } = useForm<IFormData>()
+   } = useForm<TFormData>()
+   const [searchParams] = useSearchParams()
 
-   const validateForm = (data: IFormData): boolean => {
+   const validateForm = (data: TFormData): boolean => {
       let isValid: boolean = true
-      if (!validator.isEmail(data.email)) {
-         setError("email", { message: "Email không hợp lệ." })
+      if (!data.email) {
+         setError("email", { message: "Email không được bỏ trống." })
          isValid = false
       }
-      if (!passwordRegex.test(data.password)) {
+      if (!data.password) {
          setError("password", {
-            message: "Mật khẩu phải có ít nhất 4 kí tự, 1 chữ viết thường và 1 số.",
+            message: "Mật khẩu không được bỏ trống.",
          })
          isValid = false
       }
       return isValid
    }
 
-   const loginHandler = (data: IFormData) => {
+   const loginHandler = (data: TFormData) => {
       if (validateForm(data)) {
          setLoading(true)
          authService
             .login(data)
             .then(() => {
-               pureNavigator("/dashboard")
+               pureNavigator(searchParams.get("redirect") || "/workspace")
             })
             .catch((error) => {
                toast.error(axiosErrorHandler.handleHttpError(error).message)
@@ -79,12 +78,13 @@ const LoginPage = () => {
             }}
             className="flex bg-[#fafbfc] absolute w-full h-full -z-[1] top-0 left-0"
          ></div>
-
          <div className="flex flex-col items-center w-[400px] py-[32px] px-[40px] rounded bg-white m-auto shadow-md text-[#44546f]">
-            <div className="flex gap-x-[5px] items-center text-black">
-               <img src={appLogo} alt="App Logo" className="h-[35px]" />
+            <NavLink to="/" className="flex gap-x-2 items-center text-black">
+               <div className="p-1 rounded-sm bg-[#065AD4]">
+                  <AppLogo height={25} width={25} barWidth={5} barSpacing={5} color="white" />
+               </div>
                <span className="text-[2rem] font-bold">HeyTask</span>
-            </div>
+            </NavLink>
             <span className="font-semibold mt-5">Login to continue.</span>
             <form action="#" onSubmit={handleSubmit(loginHandler)} className="w-full">
                <div className="w-full mt-6">

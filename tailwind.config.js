@@ -33,6 +33,9 @@ export default {
             "starred-cl": "var(--ht-starred-cl)",
             "error-text-cl": "var(--ht-error-text-cl)",
             "regular-modal-bgcl": "var(--ht-regular-modal-bgcl)",
+            "regular-dark-blue-cl": "var(--ht-regular-dark-blue-cl)",
+            "hover-dark-blue-cl": "var(--ht-hover-dark-blue-cl)",
+            "light-text-cl": "var(--ht-light-text-cl)",
          },
          height: {
             background: "calc(100% - var(--ht-top-nav-height))",
