@@ -1,6 +1,7 @@
 import axios from "axios"
 import { perfomDelay, randomInteger } from "../utils/helpers"
 import type { TTaskFileData, TTaskData, TUploadedFileData } from "./types"
+import type { TSuccess, TTaskStatus } from "../utils/types"
 
 class TaskService {
    async getTaskDetails(taskId: number): Promise<TTaskData> {
@@ -52,6 +53,15 @@ class TaskService {
          { responseType: "blob" },
       )
       console.log(">>> data:", data)
+   }
+
+   async markAsCompleteTask(taskId: number, taskStatus: TTaskStatus): Promise<void> {
+      await perfomDelay(1000)
+   }
+
+   async deleteTask(taskId: number): Promise<TSuccess> {
+      await perfomDelay(1000)
+      return { success: true }
    }
 }
 

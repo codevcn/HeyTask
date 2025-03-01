@@ -443,10 +443,6 @@ class ProjectService {
       await perfomDelay(1000)
    }
 
-   async markAsCompleteTask(taskId: number, taskStatus: TTaskStatus): Promise<void> {
-      await perfomDelay(1000)
-   }
-
    async createNewShareLink(projectId: number): Promise<TCreateNewShareLinkData> {
       await perfomDelay(1000)
       const data: TCreateNewShareLinkData = {

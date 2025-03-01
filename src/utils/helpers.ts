@@ -150,7 +150,7 @@ type TStringKeyObject = {
    [key: string]: string
 }
 
-export const generateURLWithParams = <T extends TStringKeyObject>(
+export const generateRouteWithParams = <T extends TStringKeyObject>(
    route: string,
    params: T,
 ): string => {

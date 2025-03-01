@@ -1,6 +1,6 @@
 import { toast } from "react-toastify"
 import { EAppMessageTypes } from "../utils/enums"
-import { generateURLWithParams } from "../utils/helpers"
+import { generateRouteWithParams } from "../utils/helpers"
 import type { TGoogleOAuthMsgData } from "../utils/types"
 
 type TOnGetCodeHandler = (code: string) => void
@@ -11,7 +11,7 @@ export class GoogleOAuthManager {
    private listener: ((e: MessageEvent<TGoogleOAuthMsgData>) => void) | null
 
    constructor(googleClientId: string, redirectURI: string, scope: string) {
-      this.authURL = generateURLWithParams("https://accounts.google.com/o/oauth2/v2/auth", {
+      this.authURL = generateRouteWithParams("https://accounts.google.com/o/oauth2/v2/auth", {
          client_id: googleClientId,
          redirect_uri: redirectURI,
          response_type: "code",

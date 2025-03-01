@@ -37,3 +37,12 @@ export enum EProjectRequestStatus {
    ACCEPTED = "ACCEPTED",
    DECLINED = "DECLINED",
 }
+
+export enum EQueryStringKeys {
+   TASK_ID = "task-id",
+   PHASE_ID = "phase-id",
+}
+
+export enum ENavigateStates {
+   GENERAL_SEARCH_NAVIGATE = "GENERAL_SEARCH_NAVIGATE",
+}

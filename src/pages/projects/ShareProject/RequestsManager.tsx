@@ -8,6 +8,8 @@ import type { TProjectInvitationData, TProjectRequestData } from "../../../servi
 import { LogoLoading } from "../../../components/Loadings"
 import { Avatar } from "@mui/material"
 import { EProjectInvitationStatus, EProjectRequestStatus } from "../../../utils/enums"
+import { useAppDispatch, useAppSelector } from "../../../hooks/redux"
+import { setRequests, updateRequests } from "../../../redux/project/project-slice"
 
 type TJoinRequestsProps = {
    active: boolean
@@ -96,14 +98,15 @@ type TSentRequestsProps = {
 }
 
 const JoinRequests = ({ active, projectId }: TSentRequestsProps) => {
-   const [requests, setRequests] = useState<TProjectRequestData[]>()
+   const { requests } = useAppSelector(({ project }) => project)
    const [loading, setLoading] = useState<TProjectRequestData["id"]>()
+   const dispatch = useAppDispatch()
 
    const fetchRequests = () => {
       projectService
          .getProjectRequests(projectId)
          .then((res) => {
-            setRequests(res)
+            dispatch(setRequests(res))
          })
          .catch((error) => {
             toast.error(axiosErrorHandler.handleHttpError(error).message)
@@ -119,18 +122,16 @@ const JoinRequests = ({ active, projectId }: TSentRequestsProps) => {
       projectService
          .acceptDeclineRequest(requestId, isAccept)
          .then(() => {
-            setRequests((pre) => {
-               if (pre && pre.length > 0) {
-                  for (const req of pre) {
-                     if (req.id === requestId) {
-                        req.status = isAccept
-                           ? EProjectRequestStatus.ACCEPTED
-                           : EProjectRequestStatus.DECLINED
-                     }
-                  }
-               }
-               return pre
-            })
+            dispatch(
+               updateRequests([
+                  {
+                     id: requestId,
+                     status: isAccept
+                        ? EProjectRequestStatus.ACCEPTED
+                        : EProjectRequestStatus.DECLINED,
+                  },
+               ]),
+            )
          })
          .catch((error) => {
             toast.error(axiosErrorHandler.handleHttpError(error).message)

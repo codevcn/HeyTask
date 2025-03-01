@@ -449,3 +449,7 @@ hr {
 .css-styled-vt-scrollbar::-webkit-scrollbar-thumb:hover {
    background-color: #54636d;
 }
+
+.css-highlight-phase {
+   animation: highlight-phase 0.5s ease-in 4 forwards;
+}

@@ -13,3 +13,14 @@ export const getAllMembersSelector = () =>
          projectMembers: projectState.project!.members!,
       }
    })
+
+// export const countUnreadRequests = () =>
+//    createSelector([({ project }: TRootState) => project], (projectState) => {
+//       return {
+//          count:
+//             projectState.requests?.reduce(
+//                (preCount, currReq) => preCount + (currReq.seen ? 1 : -1),
+//                0,
+//             ) || 0,
+//       }
+//    })

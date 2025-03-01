@@ -109,3 +109,10 @@ export type TMovePhaseAction = {
    phaseId: number
    toPosition: number
 }
+
+export type TProjectFetchedItem = "project" | "phases" | "task-data" | "customization"
+
+export type TUpdateFetchedListAction = {
+   fetchedItems: TProjectFetchedItem[]
+   type: "fetched" | "unfetched"
+}

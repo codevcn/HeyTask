@@ -88,7 +88,10 @@ const DeletePhaseAction = ({ phaseId }: TDeletePhaseActionProps) => {
                      <CloseIcon className="text-regular-text-cl" fontSize="small" />
                   </button>
                </div>
-               <p className="text-sm mt-2">Deleting a phase is forever. There is no undo.</p>
+               <p className="text-sm mt-2">
+                  Deleting a phase will delete all tasks in the phase. Deleting a phase is forever,
+                  there is no undo.
+               </p>
                <button
                   onClick={deletePhaseHandler}
                   className="text-sm mt-2 bg-delete-btn-bgcl rounded-md p-1 w-full text-black font-bold hover:bg-delete-btn-hover-bgcl"

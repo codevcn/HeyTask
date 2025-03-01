@@ -10,7 +10,7 @@ import { setUserInProject } from "../../redux/user/user-slice"
 import { toast } from "react-toastify"
 import axiosErrorHandler from "../../utils/axios-error-handler"
 import { useParams } from "react-router-dom"
-import { setProject, updateFetchedList } from "../../redux/project/project-slice"
+import { resetState, setProject, updateFetchedList } from "../../redux/project/project-slice"
 import validator from "validator"
 import type { TProjectPageParams } from "../../utils/types"
 
@@ -19,7 +19,7 @@ const ProjectPage = () => {
    const { projectId } = useParams<TProjectPageParams>()
    const dispatch = useAppDispatch()
 
-   const fetchProjectData = async (projectId: number) => {
+   const fetchProjectData = (projectId: number) => {
       projectService
          .getProjectData(projectId)
          .then((res) => {
@@ -29,7 +29,7 @@ const ProjectPage = () => {
             toast.error(axiosErrorHandler.handleHttpError(error).message)
          })
          .finally(() => {
-            dispatch(updateFetchedList(["project"]))
+            dispatch(updateFetchedList({ type: "fetched", fetchedItems: ["project"] }))
          })
    }
 
@@ -44,7 +44,12 @@ const ProjectPage = () => {
          })
    }
 
+   const resetData = () => {
+      dispatch(resetState())
+   }
+
    useEffect(() => {
+      resetData()
       fetchUserInfoInProject()
       if (projectId) {
          if (validator.isInt(projectId)) {
@@ -53,10 +58,10 @@ const ProjectPage = () => {
             toast.error("Project id must be an integer")
          }
       }
-   }, [])
+   }, [projectId])
 
    return (
-      <div className="h-screen relative bg-gradient-to-b from-purple-from-ligr to-pink-to-ligr">
+      <div className="h-screen overflow-hidden relative bg-gradient-to-b from-purple-from-ligr to-pink-to-ligr">
          <TopNavigation />
          <Background />
          <div className="w-full h-background bg-cover relative z-20">

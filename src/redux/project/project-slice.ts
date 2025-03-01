@@ -4,6 +4,7 @@ import type {
    TPhaseData,
    TProjectData,
    TProjectMemberData,
+   TProjectRequestData,
    TTaskData,
 } from "../../services/types"
 import type {
@@ -12,18 +13,19 @@ import type {
    TMovePhaseAction,
    TMoveTaskState,
    TPhaseTaskPreview,
+   TProjectFetchedItem,
    TRemoveTaskMemberAction,
    TTaskDataState,
+   TUpdateFetchedListAction,
 } from "../../utils/types"
 
-type TProjectFetchedState = ("project" | "phases" | "task-data" | "customization")[]
-
 type TInitialState = {
-   fetchedList: TProjectFetchedState
+   fetchedList: TProjectFetchedItem[]
    project: TProjectData | null
    phases: TPhaseData[] | null
    filterResult: TPhaseData[] | null
    taskData: TTaskDataState | null
+   requests: TProjectRequestData[] | null
 }
 
 const initialState: TInitialState = {
@@ -32,16 +34,24 @@ const initialState: TInitialState = {
    phases: null,
    taskData: null,
    filterResult: null,
+   requests: null,
 }
 
 export const projectSlice = createSlice({
    name: "project",
    initialState,
    reducers: {
-      updateFetchedList: (state, action: PayloadAction<TProjectFetchedState>) => {
-         state.fetchedList.push(...action.payload)
+      updateFetchedList: (state, action: PayloadAction<TUpdateFetchedListAction>) => {
+         const updates = action.payload
+         if (updates.type === "fetched") {
+            state.fetchedList.push(...updates.fetchedItems)
+         } else {
+            state.fetchedList = state.fetchedList.filter((fetchedItem) =>
+               updates.fetchedItems.includes(fetchedItem),
+            )
+         }
       },
-      setProject: (state, action: PayloadAction<TProjectData>) => {
+      setProject: (state, action: PayloadAction<TProjectData | null>) => {
          state.project = action.payload
       },
       updateProject: (state, action: PayloadAction<Partial<TProjectData>>) => {
@@ -50,7 +60,7 @@ export const projectSlice = createSlice({
             Object.assign(currentProject, action.payload)
          }
       },
-      setPhases: (state, action: PayloadAction<TPhaseData[]>) => {
+      setPhases: (state, action: PayloadAction<TPhaseData[] | null>) => {
          state.phases = action.payload
       },
       deletePhase: (state, action: PayloadAction<TPhaseData["id"]>) => {
@@ -253,6 +263,19 @@ export const projectSlice = createSlice({
             position: index,
          }))
       },
+      setRequests: (state, action: PayloadAction<TProjectRequestData[]>) => {
+         state.requests = action.payload
+      },
+      updateRequests: (state, action: PayloadAction<Partial<TProjectRequestData>[]>) => {
+         const requests = state.requests
+         const updates = action.payload
+         if (requests && requests.length > 0) {
+            for (const req of requests) {
+               Object.assign(req, updates.find(({ id }) => req.id === id)!)
+            }
+         }
+      },
+      resetState: () => initialState,
    },
 })
 
@@ -280,4 +303,7 @@ export const {
    setFilterResult,
    copyPhase,
    movePhase,
+   setRequests,
+   updateRequests,
+   resetState,
 } = projectSlice.actions

@@ -186,6 +186,7 @@ export type TGeneralSearchData = {
       id: number
       title: string
       project: {
+         id: number
          title: string
       }
    }[]
@@ -193,9 +194,11 @@ export type TGeneralSearchData = {
       id: number
       title: string
       project: {
+         id: number
          title: string
       }
       phase: {
+         id: number
          title: string
       }
    }[]

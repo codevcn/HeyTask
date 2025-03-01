@@ -65,7 +65,7 @@ export const Phase = ({ phaseData, className }: TPhaseProps) => {
          }}
       >
          <div
-            className={`flex flex-col relative m-0 h-fit max-h-full z-20 text-regular-text-cl bg-phase-bgcl w-[272px] rounded-xl ${className} ${cssClass}`}
+            className={`${className} ${cssClass} ${`Top-Phase-Container-${id}`} flex flex-col relative m-0 h-fit max-h-full z-20 text-regular-text-cl bg-phase-bgcl w-[272px] rounded-xl`}
          >
             <div
                ref={setNodeRef}

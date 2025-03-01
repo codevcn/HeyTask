@@ -56,7 +56,7 @@ const MenuList = () => {
    )
 }
 
-const AccountMenu = () => {
+const ProfileMenu = () => {
    const user = useUser()!
    const [anchorEle, setAnchorEle] = useState<HTMLButtonElement | null>(null)
    const navigate = useNavigate()
@@ -151,7 +151,7 @@ export const TopNavigation = () => {
          <div className="flex items-center gap-x-1">
             <GeneralSearch />
             <Notification />
-            <AccountMenu />
+            <ProfileMenu />
          </div>
       </nav>
    )

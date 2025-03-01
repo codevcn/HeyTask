@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react"
 import { useDebounce } from "../hooks/debounce"
 import { searchService } from "../services/search-service"
-import { TGeneralSearchData } from "../services/types"
+import type { TGeneralSearchData } from "../services/types"
 import { toast } from "react-toastify"
 import axiosErrorHandler from "../utils/axios-error-handler"
 import AssignmentIcon from "@mui/icons-material/Assignment"
@@ -11,6 +11,9 @@ import SearchOffIcon from "@mui/icons-material/SearchOff"
 import { useUser } from "../hooks/user"
 import SearchIcon from "@mui/icons-material/Search"
 import WorkIcon from "@mui/icons-material/Work"
+import { NavigateOptions, useNavigate } from "react-router-dom"
+import { generateRouteWithParams } from "../utils/helpers"
+import { ENavigateStates, EQueryStringKeys } from "../utils/enums"
 
 export const GeneralSearch = () => {
    const [startSearch, setStartSearch] = useState<boolean>(false)
@@ -19,6 +22,45 @@ export const GeneralSearch = () => {
    const [loading, setLoading] = useState<boolean>(false)
    const searchcContainerRef = useRef<HTMLDivElement>(null)
    const user = useUser()!
+   const navigate = useNavigate()
+
+   const handleOnClickSearchResult = (
+      type: "task" | "phase" | "project",
+      projectId: number,
+      phaseId?: number,
+      taskId?: number,
+   ) => {
+      const options: NavigateOptions = {
+         state: { [ENavigateStates.GENERAL_SEARCH_NAVIGATE]: true },
+      }
+      switch (type) {
+         case "task":
+            if (phaseId && taskId) {
+               navigate(
+                  generateRouteWithParams(`/projects/${projectId}`, {
+                     [EQueryStringKeys.PHASE_ID]: `${phaseId}`,
+                     [EQueryStringKeys.TASK_ID]: `${taskId}`,
+                  }),
+                  options,
+               )
+            }
+            break
+         case "phase":
+            if (phaseId) {
+               navigate(
+                  generateRouteWithParams(`/projects/${projectId}`, {
+                     [EQueryStringKeys.PHASE_ID]: `${phaseId}`,
+                  }),
+                  options,
+               )
+            }
+            break
+         case "project":
+            navigate(`/projects/${projectId}`, options)
+            break
+      }
+      setStartSearch(false)
+   }
 
    const handleSearch = useCallback(
       debounce((e: React.ChangeEvent<HTMLInputElement>) => {
@@ -106,6 +148,14 @@ export const GeneralSearch = () => {
                                     <div
                                        key={id}
                                        className="flex items-center gap-1 p-2 px-4 hover:bg-hover-silver-bgcl cursor-pointer"
+                                       onClick={() =>
+                                          handleOnClickSearchResult(
+                                             "task",
+                                             project.id,
+                                             phase.id,
+                                             id,
+                                          )
+                                       }
                                     >
                                        <AssignmentIcon sx={{ height: 36, width: 36 }} />
                                        <div>
@@ -127,6 +177,9 @@ export const GeneralSearch = () => {
                                     <div
                                        key={id}
                                        className="flex items-center gap-1 p-2 px-4 hover:bg-hover-silver-bgcl cursor-pointer"
+                                       onClick={() =>
+                                          handleOnClickSearchResult("phase", project.id, id)
+                                       }
                                     >
                                        <HomeRepairServiceIcon sx={{ height: 36, width: 36 }} />
                                        <div>
@@ -144,6 +197,7 @@ export const GeneralSearch = () => {
                                     <div
                                        key={id}
                                        className="flex items-center gap-2 p-2 px-4 hover:bg-hover-silver-bgcl cursor-pointer"
+                                       onClick={() => handleOnClickSearchResult("project", id)}
                                     >
                                        {background ? (
                                           <img

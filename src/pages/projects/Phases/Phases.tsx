@@ -1,4 +1,4 @@
-import { KeyboardEvent, LegacyRef, useEffect, useState } from "react"
+import { KeyboardEvent, LegacyRef, useEffect, useRef, useState } from "react"
 import {
    DndContext,
    closestCenter,
@@ -26,6 +26,8 @@ import { Phase } from "./Phase"
 import { checkUserPermission } from "../../../configs/user-permissions"
 import { ProjectRoleGuard } from "../../../components/ResourceGuard"
 import { phaseService } from "../../../services/phase-service"
+import { useLocation, useSearchParams } from "react-router-dom"
+import { ENavigateStates, EQueryStringKeys } from "../../../utils/enums"
 
 type TAddNewPhaseProps = {
    currentFinalPos: number | null
@@ -153,9 +155,14 @@ const DragOverlayItem = ({ phaseData }: TDragOverlayItemProps) => {
 type TPhasesCanDragAndDropProps = {
    phases: TPhaseData[]
    userInProject: TProjectMemberData
+   viewportRef: React.MutableRefObject<HTMLDivElement | null>
 }
 
-const PhasesCanDragAndDrop = ({ phases, userInProject }: TPhasesCanDragAndDropProps) => {
+const PhasesCanDragAndDrop = ({
+   phases,
+   userInProject,
+   viewportRef,
+}: TPhasesCanDragAndDropProps) => {
    const sensors = useSensors(
       useSensor(MouseSensor, {
          activationConstraint: {
@@ -202,7 +209,10 @@ const PhasesCanDragAndDrop = ({ phases, userInProject }: TPhasesCanDragAndDropPr
    return (
       <div className="grow relative">
          <div
-            ref={refToScroll}
+            ref={(node) => {
+               refToScroll(node)
+               viewportRef.current = node
+            }}
             className="flex css-phases-styled-hr-scrollbar p-3 pb-0 gap-x-3 overflow-x-auto overflow-y-hidden absolute bottom-2 top-0 left-0 right-0"
          >
             <DndContext
@@ -248,15 +258,19 @@ const PhasesCanDragAndDrop = ({ phases, userInProject }: TPhasesCanDragAndDropPr
 
 type TFixedPhasesProps = {
    phases: TPhaseData[]
+   viewportRef: React.MutableRefObject<HTMLDivElement | null>
 }
 
-const FixedPhases = ({ phases }: TFixedPhasesProps) => {
+const FixedPhases = ({ phases, viewportRef }: TFixedPhasesProps) => {
    const [refToScroll, refToDrag] = useDragScroll()
 
    return (
       <div className="grow relative">
          <div
-            ref={refToScroll}
+            ref={(node) => {
+               refToScroll(node)
+               viewportRef.current = node
+            }}
             className="flex css-phases-styled-hr-scrollbar p-3 pb-0 gap-x-3 overflow-x-auto overflow-y-hidden absolute bottom-2 top-0 left-0 right-0"
          >
             <div className="flex gap-x-3 relative box-border h-full pb-2">
@@ -273,13 +287,17 @@ const FixedPhases = ({ phases }: TFixedPhasesProps) => {
    )
 }
 
-type TCanDragAndDropProps = {
+type TPhasesProps = {
    userInProject: TProjectMemberData
 }
 
-export const Phases = ({ userInProject }: TCanDragAndDropProps) => {
+export const Phases = ({ userInProject }: TPhasesProps) => {
    const { phases, filterResult } = useAppSelector(({ project }) => project)
    const dispatch = useAppDispatch()
+   const phasesViewportRef = useRef<HTMLDivElement | null>(null)
+   const [searchParams] = useSearchParams()
+   const locationState = useLocation().state
+   const firstJumpRef = useRef<boolean>(true)
 
    const getPhases = () => {
       phaseService
@@ -292,6 +310,37 @@ export const Phases = ({ userInProject }: TCanDragAndDropProps) => {
          })
    }
 
+   const jumpToPhase = () => {
+      const phaseId = searchParams.get(EQueryStringKeys.PHASE_ID)
+      if (phaseId) {
+         const phase = phasesViewportRef.current?.querySelector(`.Top-Phase-Container-${phaseId}`)
+         if (phase) {
+            phase.scrollIntoView({ behavior: "instant", block: "center", inline: "center" })
+            phase.classList.remove("css-highlight-phase")
+            requestAnimationFrame(() => {
+               requestAnimationFrame(() => {
+                  phase.classList.add("css-highlight-phase")
+               })
+            })
+         }
+      }
+   }
+
+   useEffect(() => {
+      if (locationState && locationState[ENavigateStates.GENERAL_SEARCH_NAVIGATE]) {
+         jumpToPhase()
+      }
+   }, [locationState])
+
+   useEffect(() => {
+      if (phases && phases.length > 0) {
+         if (firstJumpRef.current) {
+            firstJumpRef.current = false
+            jumpToPhase()
+         }
+      }
+   }, [phases])
+
    useEffect(() => {
       if (!phases) {
          getPhases()
@@ -301,9 +350,13 @@ export const Phases = ({ userInProject }: TCanDragAndDropProps) => {
    const finalPhases = filterResult || phases || []
 
    return checkUserPermission(userInProject.projectRole, "arrange-phase-task") ? (
-      <PhasesCanDragAndDrop userInProject={userInProject} phases={finalPhases} />
+      <PhasesCanDragAndDrop
+         userInProject={userInProject}
+         phases={finalPhases}
+         viewportRef={phasesViewportRef}
+      />
    ) : (
-      <FixedPhases phases={finalPhases} />
+      <FixedPhases phases={finalPhases} viewportRef={phasesViewportRef} />
    )
 }
 

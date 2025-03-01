@@ -9,6 +9,12 @@ import DeleteIcon from "@mui/icons-material/Delete"
 import { useUserInProject } from "../../../hooks/user"
 import { checkUserPermission } from "../../../configs/user-permissions"
 import type { TPhaseData } from "../../../services/types"
+import { taskService } from "../../../services/task-service"
+import axiosErrorHandler from "../../../utils/axios-error-handler"
+import { LogoLoading } from "../../../components/Loadings"
+import CheckCircleIcon from "@mui/icons-material/CheckCircle"
+
+type TLoadings = "delete-task" | "mark-as-complete"
 
 type TTaskActionsProps = {
    phaseData: TPhaseData
@@ -20,6 +26,7 @@ export const TaskActions = ({ phaseData, taskId }: TTaskActionsProps) => {
    const [anchorEle, setAnchorEle] = useState<HTMLButtonElement | null>(null)
    const dispatch = useAppDispatch()
    const userInProject = useUserInProject()!
+   const [loading, setLoading] = useState<TLoadings>()
 
    const handleOpenDeleteTaskBoard = (e?: React.MouseEvent<HTMLButtonElement>) => {
       if (e) {
@@ -34,8 +41,35 @@ export const TaskActions = ({ phaseData, taskId }: TTaskActionsProps) => {
    }
 
    const deleteTaskHandler = () => {
-      dispatch(deleteTask({ phaseId, taskId }))
-      eventEmitter.emit(EInternalEvents.OPEN_TASK_DETAILS_MODAL, false, taskId)
+      setLoading("delete-task")
+      taskService
+         .deleteTask(taskId)
+         .then(() => {
+            toast.success("Deleted task successfully!")
+            dispatch(deleteTask({ phaseId, taskId }))
+            eventEmitter.emit(EInternalEvents.OPEN_TASK_DETAILS_MODAL, false, taskId)
+         })
+         .catch((error) => {
+            toast.error(axiosErrorHandler.handleHttpError(error).message)
+         })
+         .finally(() => {
+            setLoading(undefined)
+         })
+   }
+
+   const markTaskAsComplete = () => {
+      setLoading("mark-as-complete")
+      taskService
+         .markAsCompleteTask(taskId, "complete")
+         .then(() => {
+            toast.success("Task is marked as complete")
+         })
+         .catch((error) => {
+            toast.error(axiosErrorHandler.handleHttpError(error).message)
+         })
+         .finally(() => {
+            setLoading(undefined)
+         })
    }
 
    return (
@@ -45,10 +79,35 @@ export const TaskActions = ({ phaseData, taskId }: TTaskActionsProps) => {
             <Tooltip title="Delete this task" arrow placement="left">
                <button
                   onClick={handleOpenDeleteTaskBoard}
-                  className="flex items-center gap-x-2 py-[6px] px-3 bg-delete-btn-bgcl rounded hover:bg-delete-btn-hover-bgcl"
+                  className="flex items-center gap-x-2 text-black py-[6px] px-3 bg-delete-btn-bgcl rounded hover:bg-delete-btn-hover-bgcl"
                >
-                  <DeleteIcon fontSize="small" className="text-black" />
-                  <span className="font-bold text-sm text-black">Delete</span>
+                  {loading === "delete-task" ? (
+                     <div className="flex h-5 w-full">
+                        <LogoLoading className="m-auto" color="black" size="small" />
+                     </div>
+                  ) : (
+                     <>
+                        <DeleteIcon fontSize="small" color="inherit" />
+                        <span className="font-bold text-sm">Delete</span>
+                     </>
+                  )}
+               </button>
+            </Tooltip>
+            <Tooltip title="Mark task as complete" arrow placement="left">
+               <button
+                  onClick={markTaskAsComplete}
+                  className="flex items-center gap-x-2 py-[6px] px-3 text-black bg-success-text-cl rounded"
+               >
+                  {loading === "mark-as-complete" ? (
+                     <div className="flex h-5 w-full">
+                        <LogoLoading className="m-auto" color="black" size="small" />
+                     </div>
+                  ) : (
+                     <>
+                        <CheckCircleIcon fontSize="small" color="inherit" />
+                        <span className="font-bold text-sm">Mark as complete</span>
+                     </>
+                  )}
                </button>
             </Tooltip>
          </div>

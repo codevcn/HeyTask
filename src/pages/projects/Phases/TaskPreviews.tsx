@@ -32,10 +32,10 @@ import {
 import { EInternalEvents, eventEmitter } from "../../../utils/events"
 import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUnchecked"
 import CheckCircleIcon from "@mui/icons-material/CheckCircle"
-import { projectService } from "../../../services/project-service"
 import { toast } from "react-toastify"
 import axiosErrorHandler from "../../../utils/axios-error-handler"
 import type { TTaskStatus } from "../../../utils/types"
+import { taskService } from "../../../services/task-service"
 
 type TTaskPreviewProps = {
    taskPreviewData: TTaskPreviewData
@@ -57,7 +57,7 @@ const Task = ({ taskPreviewData, className, phaseData }: TTaskPreviewProps) => {
    const handleMarkAsComplete = (e: React.MouseEvent<HTMLButtonElement>) => {
       e.stopPropagation()
       const newStatus: TTaskStatus = status === "complete" ? "uncomplete" : "complete"
-      projectService
+      taskService
          .markAsCompleteTask(id, newStatus)
          .catch((error) => {
             toast.error(axiosErrorHandler.handleHttpError(error).message)

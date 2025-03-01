@@ -13,7 +13,7 @@ import {
 import { useEffect, useRef, useState } from "react"
 import CloseIcon from "@mui/icons-material/Close"
 import { useAppDispatch, useAppSelector } from "../hooks/redux"
-import { TNotificationData } from "../services/types"
+import type { TNotificationData } from "../services/types"
 import { LogoLoading } from "../components/Loadings"
 import { notificationService } from "../services/notification-service"
 import { toast } from "react-toastify"

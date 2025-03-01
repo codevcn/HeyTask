@@ -11,7 +11,7 @@ import {
    type TAllPermissions,
 } from "../configs/user-permissions"
 import { useAuth } from "../hooks/auth"
-import { generateURLWithParams } from "../utils/helpers"
+import { generateRouteWithParams } from "../utils/helpers"
 
 type TGuardProps = {
    children: JSX.Element
@@ -31,7 +31,7 @@ const AuthGuard = ({ children, fallback, pathname }: TGuardProps) => {
       } else if (authStatus === EAuthStatus.UNAUTHENTICATED) {
          setIsValid(false)
          toast.error("Phiên đăng nhập hết hạn hoặc người dùng không có quyền truy cập tài nguyên.")
-         navigate(generateURLWithParams("/login", { redirect: pathname }))
+         navigate(generateRouteWithParams("/login", { redirect: pathname }))
       }
    }, [authStatus, user])
 

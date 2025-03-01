@@ -1,5 +1,5 @@
 import { Fade, Dialog, styled, TextField, DialogContent } from "@mui/material"
-import { FocusEvent, KeyboardEvent, useEffect, useState } from "react"
+import { FocusEvent, KeyboardEvent, useEffect, useRef, useState } from "react"
 import { EInternalEvents, eventEmitter } from "../../../utils/events"
 import SubtitlesIcon from "@mui/icons-material/Subtitles"
 import CloseIcon from "@mui/icons-material/Close"
@@ -21,6 +21,9 @@ import type { TPhaseData } from "../../../services/types"
 import { MoveTask } from "./MoveTask"
 import { TaskActions } from "./TaskActions"
 import { taskService } from "../../../services/task-service"
+import validator from "validator"
+import { ENavigateStates, EQueryStringKeys } from "../../../utils/enums"
+import { useLocation, useSearchParams } from "react-router-dom"
 
 type TTitleProps = {
    taskTitle: string
@@ -118,6 +121,9 @@ export const TaskDetails = () => {
    const dispatch = useAppDispatch()
    const [open, setOpen] = useState<boolean>(false)
    const [phaseData, setPhaseData] = useState<TPhaseData>()
+   const [searchParams] = useSearchParams()
+   const locationState = useLocation().state
+   const firstJumpRef = useRef<boolean>(true)
 
    const getTaskDetailsHandler = (taskId: number, phaseId: number) => {
       taskService
@@ -159,9 +165,28 @@ export const TaskDetails = () => {
       }
    }
 
+   const jumpToTask = () => {
+      const taskId = searchParams.get(EQueryStringKeys.TASK_ID)
+      if (taskId && validator.isInt(taskId)) {
+         eventEmitter.emit(EInternalEvents.OPEN_TASK_DETAILS_MODAL, true, parseInt(taskId))
+      }
+   }
+
+   useEffect(() => {
+      if (locationState && locationState[ENavigateStates.GENERAL_SEARCH_NAVIGATE]) {
+         jumpToTask()
+      }
+   }, [locationState])
+
    useEffect(() => {
       listenOpenTaskDetails()
       initPhaseData()
+      if (phases && phases.length > 0) {
+         if (firstJumpRef.current) {
+            firstJumpRef.current = false
+            jumpToTask()
+         }
+      }
       return () => {
          eventEmitter.off(EInternalEvents.OPEN_TASK_DETAILS_MODAL)
       }
