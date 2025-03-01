@@ -10,7 +10,7 @@ import {
 } from "@mui/material"
 import { useAppDispatch, useAppSelector } from "../../../hooks/redux"
 import { updateTaskData } from "../../../redux/project/project-slice"
-import { useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import CloseIcon from "@mui/icons-material/Close"
 import { DateCalendar } from "@mui/x-date-pickers/DateCalendar"
 import dayjs, { Dayjs } from "dayjs"
@@ -23,6 +23,7 @@ import { toast } from "react-toastify"
 import type { TTaskDatesBoardData } from "../../../utils/types"
 import { EInternalEvents, eventEmitter } from "../../../utils/events"
 import { checkUserPermission } from "../../../configs/user-permissions"
+import { useDebounce } from "../../../hooks/debounce"
 
 enum EDuteDateReminder {
    MINUTES_BEFORE_0 = "0m",
@@ -38,12 +39,16 @@ const DatesBoard = () => {
    const reminderRef = useRef<HTMLInputElement>()
    const userInProject = useUserInProject()!
    const dispatch = useAppDispatch()
+   const debounce = useDebounce()
 
    const anchorEle = boardData?.anchorEle || null
 
-   const handleTypeDate = (date: Dayjs | null) => {
-      setNewDueDate(date)
-   }
+   const handleTypeDate = useCallback(
+      debounce((date: Dayjs | null) => {
+         setNewDueDate(date)
+      }, 300),
+      [],
+   )
 
    const saveDates = () => {
       if (newDueDate) {

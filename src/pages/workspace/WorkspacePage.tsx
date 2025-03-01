@@ -38,7 +38,7 @@ const UserSection = () => {
 
 const SideNav = () => {
    return (
-      <section className="text-regular-text-cl w-[200px]">
+      <section className="text-regular-text-cl w-[180px]">
          <NavLink
             to="/"
             className="flex items-center gap-2 w-full rounded px-2 py-1 mb-2 hover:bg-hover-silver-bgcl"

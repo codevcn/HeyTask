@@ -1,6 +1,6 @@
 import SpaceDashboardIcon from "@mui/icons-material/SpaceDashboard"
 import StarIcon from "@mui/icons-material/Star"
-import { useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import { useAppDispatch } from "../../hooks/redux"
 import StarOutlineIcon from "@mui/icons-material/StarOutline"
 import { TProjectPreviewData } from "../../services/types"
@@ -18,6 +18,13 @@ import { projectService } from "../../services/project-service"
 import axiosErrorHandler from "../../utils/axios-error-handler"
 import { toast } from "react-toastify"
 import { EInternalEvents, eventEmitter } from "../../utils/events"
+import { ExtraFilter } from "./ExtraFilter"
+import type {
+   TFilterProjectsData,
+   TFilterProjectsWorkerMsg,
+   TFilterProjectsWorkerRes,
+} from "../../utils/types"
+import { createWebWorker } from "../../utils/helpers"
 
 type TAddNewProjectFormData = {
    projectTitle?: string
@@ -182,42 +189,85 @@ export const ProjectPreview = ({ projectPreviewData }: TProjectPreviewProps) => 
    )
 }
 
-const Filter = () => {
-   return (
-      <div className="">
-         <div></div>
-      </div>
-   )
-}
+type TFilterDataExists<T> = Exclude<T, undefined>
 
 type TAllProjectsProps = {
-   allProjects: TProjectPreviewData[] | null
+   filteredProjects: TProjectPreviewData[] | null
+   originalProjects: TProjectPreviewData[] | null
 }
 
-export const AllProjects = ({ allProjects }: TAllProjectsProps) => {
+export const AllProjects = ({ filteredProjects, originalProjects }: TAllProjectsProps) => {
    const dispatch = useAppDispatch()
    const debounce = useDebounce()
+   const filterDataRef = useRef<TFilterProjectsData>({})
+   const filterProjectsWorker = useRef<Worker>()
+
+   const checkFilterDataExists = (
+      filterData: TFilterProjectsData,
+   ): filterData is TFilterDataExists<typeof filterData> => {
+      if (Object.keys(filterData).length === 0) return false
+      let count: number = 0
+      for (const key in filterData) {
+         if (filterData[key as keyof TFilterProjectsData]) {
+            count++
+         }
+      }
+      return count > 0
+   }
+
+   const filterProjects = (partialData: TFilterProjectsData): void => {
+      const filterData = { ...filterDataRef.current, ...partialData }
+      filterDataRef.current = filterData
+      if (originalProjects && originalProjects.length > 0) {
+         if (checkFilterDataExists(filterData)) {
+            const message: TFilterProjectsWorkerMsg = {
+               projects: originalProjects,
+               filterData,
+            }
+            filterProjectsWorker.current?.postMessage(message)
+         } else {
+            dispatch(setFilterResult(null))
+         }
+      }
+   }
 
    const cancelSearch = () => {
       dispatch(setFilterResult(null))
    }
 
-   const searchProject = debounce((e: React.ChangeEvent<HTMLInputElement>) => {
-      const keyword = e.target.value
-      if (keyword && keyword.length > 0) {
-         setTimeout(() => {
-            const result =
-               allProjects?.filter(({ title }) =>
-                  title.toLowerCase().includes(keyword.toLowerCase()),
-               ) || []
-            dispatch(setFilterResult(result))
-         }, 0)
-      } else {
-         cancelSearch()
-      }
-   }, 500)
+   const searchProject = useCallback(
+      debounce((e: React.ChangeEvent<HTMLInputElement>) => {
+         const keyword = e.target.value
+         if (keyword && keyword.length > 0) {
+            filterProjects({ title: keyword })
+         } else {
+            cancelSearch()
+         }
+      }, 500),
+      [originalProjects],
+   )
 
-   const handleOpenFilter = () => {}
+   const handleOpenFilter = () => {
+      eventEmitter.emit(EInternalEvents.OPEN_PROJECTS_FILTER)
+   }
+
+   const doFilterWithResult = (projectIds: TFilterProjectsWorkerRes) => {
+      dispatch((dispatch, getState) => {
+         const filteredProjects = getState().workspace.projects
+         if (!filteredProjects || filteredProjects.length === 0) return
+         dispatch(setFilterResult(filteredProjects.filter(({ id }) => projectIds.includes(id))))
+      })
+   }
+
+   useEffect(() => {
+      filterProjectsWorker.current = createWebWorker("/src/workers/filter-projects-worker.ts")
+      filterProjectsWorker.current.onmessage = (e: MessageEvent<TFilterProjectsWorkerRes>) => {
+         doFilterWithResult(e.data)
+      }
+      return () => {
+         filterProjectsWorker.current?.terminate()
+      }
+   }, [])
 
    return (
       <section className="w-full">
@@ -236,7 +286,7 @@ export const AllProjects = ({ allProjects }: TAllProjectsProps) => {
                   />
                   <SearchIcon className="mr-2" color="inherit" fontSize="small" />
                </div>
-               <Tooltip title="Filter projects" arrow>
+               <Tooltip title="Extra filter" arrow>
                   <button
                      onClick={handleOpenFilter}
                      className="p-1 rounded hover:bg-hover-silver-bgcl"
@@ -246,11 +296,11 @@ export const AllProjects = ({ allProjects }: TAllProjectsProps) => {
                </Tooltip>
             </div>
          </div>
-         <Filter />
-         {allProjects ? (
+         {originalProjects && <ExtraFilter projects={originalProjects} onFilter={filterProjects} />}
+         {filteredProjects ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-               {allProjects.length > 0 &&
-                  allProjects.map((project) => (
+               {filteredProjects.length > 0 &&
+                  filteredProjects.map((project) => (
                      <ProjectPreview key={project.id} projectPreviewData={project} />
                   ))}
                <AddNewProject />

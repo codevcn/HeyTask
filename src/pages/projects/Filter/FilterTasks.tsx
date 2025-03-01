@@ -1,13 +1,16 @@
 import FilterListIcon from "@mui/icons-material/FilterList"
 import { Popover, Fade, styled, RadioGroup, FormControlLabel, Radio } from "@mui/material"
-import { useEffect, useMemo, useRef, useState } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import CloseIcon from "@mui/icons-material/Close"
 import { useDebounce } from "../../../hooks/debounce"
 import { createWebWorker } from "../../../utils/helpers"
-import type { TFilterTasksData } from "./sharing"
 import { FilterByMembers } from "./FilterByMembers"
 import { FilterByDueDate } from "./FilterByDates"
-import type { TFilterTasksWorkerMsg, TFilterTasksWorkerRes } from "../../../utils/types"
+import type {
+   TFilterTasksData,
+   TFilterTasksWorkerMsg,
+   TFilterTasksWorkerRes,
+} from "../../../utils/types"
 import { setFilterResult } from "../../../redux/project/project-slice"
 import { useAppDispatch, useAppSelector } from "../../../hooks/redux"
 import { TPhaseData } from "../../../services/types"
@@ -141,7 +144,7 @@ type TFilterTasksProps = {
 
 const Filter = ({ phases }: TFilterTasksProps) => {
    const [anchorEle, setAnchorEle] = useState<HTMLElement | null>(null)
-   const filterTasksWorkerRef = useRef<Worker>()
+   const filterTasksWorker = useRef<Worker>()
    const debounce = useDebounce()
    const filterDataRef = useRef<TFilterTasksData>({})
    const dispatch = useAppDispatch()
@@ -160,6 +163,7 @@ const Filter = ({ phases }: TFilterTasksProps) => {
 
    const filterTasks = (partialData: TFilterTasksData): void => {
       const filterData = { ...filterDataRef.current, ...partialData }
+      filterDataRef.current = filterData
       if (checkFilterDataIsEmpty(filterData)) {
          dispatch(setFilterResult(null))
       } else {
@@ -167,9 +171,8 @@ const Filter = ({ phases }: TFilterTasksProps) => {
             phases,
             filterData,
          }
-         filterTasksWorkerRef.current?.postMessage(message)
+         filterTasksWorker.current?.postMessage(message)
       }
-      filterDataRef.current = filterData
    }
 
    const handleOpenFilterBoard = (e?: React.MouseEvent<HTMLButtonElement>) => {
@@ -180,38 +183,45 @@ const Filter = ({ phases }: TFilterTasksProps) => {
       }
    }
 
-   const doFilterWithResult = (taskIds: TFilterTasksWorkerRes) => {
-      const updatedPhases = phases.map((phase) => {
-         const { taskPreviews } = phase
-         if (taskPreviews && taskPreviews.length > 0) {
-            const updatedTaskPreviews = taskPreviews.filter(({ id }) => taskIds.includes(id))
-            return {
-               ...phase,
-               taskPreviews: updatedTaskPreviews.length > 0 ? updatedTaskPreviews : null,
-            }
-         }
-         return phase
-      })
-      dispatch(setFilterResult(updatedPhases))
-   }
+   const searchByTaskTitle = useCallback(debounce(filterTasks, 400), [phases])
 
-   useEffect(() => {
-      filterTasksWorkerRef.current = createWebWorker("/src/workers/filter-tasks-worker.ts")
-      filterTasksWorkerRef.current?.addEventListener(
-         "message",
-         (e: MessageEvent<TFilterTasksWorkerRes>) => {
-            doFilterWithResult(e.data)
-         },
-      )
-      return () => {
-         filterTasksWorkerRef.current?.terminate()
-      }
-   }, [])
+   const doFilterWithResult = (taskIds: TFilterTasksWorkerRes) => {
+      dispatch((dispatch, getState) => {
+         const phases = getState().project.phases
+         if (!phases || phases.length === 0) return
+         const updatedPhases = phases.map((phase) => {
+            const { taskPreviews } = phase
+            if (taskPreviews && taskPreviews.length > 0) {
+               const updatedTaskPreviews = taskPreviews.filter(({ id }) => taskIds.includes(id))
+               return {
+                  ...phase,
+                  taskPreviews: updatedTaskPreviews.length > 0 ? updatedTaskPreviews : null,
+               }
+            }
+            return phase
+         })
+         dispatch(setFilterResult(updatedPhases))
+      })
+   }
 
    const clearAllFilter = () => {
       filterDataRef.current = {}
       setClearAllFlag((pre) => !pre)
    }
+
+   useEffect(() => {
+      filterTasksWorker.current = createWebWorker("/src/workers/filter-tasks-worker.ts")
+      filterTasksWorker.current.onmessage = (e: MessageEvent<TFilterTasksWorkerRes>) => {
+         doFilterWithResult(e.data)
+      }
+      return () => {
+         filterTasksWorker.current?.terminate()
+      }
+   }, [])
+
+   useEffect(() => {
+      filterTasks({})
+   }, [phases])
 
    return (
       <>
@@ -248,7 +258,7 @@ const Filter = ({ phases }: TFilterTasksProps) => {
                   key={clearAllFlag ? 1 : 0}
                   className="css-styled-vt-scrollbar overflow-y-auto grow px-4 pb-3"
                >
-                  <FilterByTaskTitle onFilter={debounce(filterTasks, 400)} />
+                  <FilterByTaskTitle onFilter={searchByTaskTitle} />
                   <FilterByMembers onFilter={filterTasks} />
                   <FilterByStatus onFilter={filterTasks} />
                   <FilterByDueDate onFilter={filterTasks} />

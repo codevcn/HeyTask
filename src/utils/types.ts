@@ -1,14 +1,15 @@
 import type { HttpStatusCode } from "axios"
 import type {
    TPhaseData,
+   TProjectMemberData,
+   TProjectPreviewData,
    TTaskData,
    TTaskMemberData,
    TTaskPreviewData,
    TUserData,
 } from "../services/types"
 import type { PopoverOrigin } from "@mui/material"
-import type { TFilterTasksData } from "../pages/projects/Filter/sharing"
-import type { EAppMessageTypes } from "./enums"
+import type { EAppMessageTypes, EPickDateValues } from "./enums"
 
 export type TSuccess = {
    success: boolean
@@ -93,6 +94,13 @@ export type TMoveTaskState = {
 
 export type TTaskStatus = "complete" | "uncomplete"
 
+export type TFilterTasksData = Partial<{
+   memberIds: TProjectMemberData["id"][]
+   taskStatus: TTaskStatus
+   dueDate: EPickDateValues
+   taskTitle: string
+}>
+
 export type TFilterTasksWorkerMsg = {
    phases: TPhaseData[]
    filterData: TFilterTasksData
@@ -116,3 +124,16 @@ export type TUpdateFetchedListAction = {
    fetchedItems: TProjectFetchedItem[]
    type: "fetched" | "unfetched"
 }
+
+export type TFilterProjectsData = Partial<{
+   fromDate: string
+   toDate: string
+   title: string
+}>
+
+export type TFilterProjectsWorkerMsg = {
+   projects: TProjectPreviewData[]
+   filterData: TFilterProjectsData
+}
+
+export type TFilterProjectsWorkerRes = TProjectPreviewData["id"][]

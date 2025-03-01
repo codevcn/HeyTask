@@ -46,3 +46,11 @@ export enum EQueryStringKeys {
 export enum ENavigateStates {
    GENERAL_SEARCH_NAVIGATE = "GENERAL_SEARCH_NAVIGATE",
 }
+
+export enum EPickDateValues {
+   NO_DUE_DATES = "NO_DUE_DATES",
+   OVERDUE = "OVERDUE",
+   DUE_IN_NEXT_DAY = "DUE_IN_NEXT_DAY",
+   DUE_IN_NEXT_WEEK = "DUE_IN_NEXT_WEEK",
+   DUE_IN_NEXT_MONTH = "DUE_IN_NEXT_MONTH",
+}

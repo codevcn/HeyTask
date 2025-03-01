@@ -1,5 +1,5 @@
-import { EPickDateValues } from "../pages/projects/Filter/sharing"
 import type { TTaskData } from "../services/types"
+import { EPickDateValues } from "../utils/enums"
 import type { TFilterTasksWorkerMsg, TTaskStatus } from "../utils/types"
 import dayjs from "dayjs"
 import isoWeek from "dayjs/plugin/isoWeek"

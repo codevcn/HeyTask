@@ -14,7 +14,7 @@ import { useUserInProject } from "../../../hooks/user"
 import type { TProjectMemberData } from "../../../services/types"
 import { useAppSelector } from "../../../hooks/redux"
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown"
-import type { TFilterTasksData } from "./sharing"
+import type { TFilterTasksData } from "../../../utils/types"
 import { useForceUpdate } from "../../../hooks/rendering"
 
 type TMemberItemProps = {

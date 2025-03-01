@@ -10,13 +10,13 @@ import { AllProjects, ProjectPreview } from "./AllProjects"
 import { EInternalEvents, eventEmitter } from "../../utils/events"
 
 type TStarredProjectsProps = {
-   allProjects: TProjectPreviewData[]
+   projects: TProjectPreviewData[]
 }
 
-const StarredProjects = ({ allProjects }: TStarredProjectsProps) => {
+const StarredProjects = ({ projects }: TStarredProjectsProps) => {
    const starredProjects = useMemo<TProjectPreviewData[]>(() => {
-      return allProjects?.filter(({ starred }) => starred) || []
-   }, [allProjects])
+      return projects?.filter(({ starred }) => starred) || []
+   }, [projects])
 
    return (
       starredProjects.length > 0 && (
@@ -63,11 +63,11 @@ export const Projects = () => {
    }, [])
 
    const finalProjects = filterResult || projects
-
+   console.log(">>> final pro:", finalProjects)
    return (
       <section className="w-full">
-         <StarredProjects allProjects={projects || []} />
-         <AllProjects allProjects={finalProjects} />
+         <StarredProjects projects={projects || []} />
+         <AllProjects filteredProjects={finalProjects} originalProjects={projects} />
       </section>
    )
 }

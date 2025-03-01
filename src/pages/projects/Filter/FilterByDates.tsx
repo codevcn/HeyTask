@@ -1,9 +1,9 @@
 import { styled, RadioGroup, FormControlLabel, Radio } from "@mui/material"
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday"
 import AccessTimeIcon from "@mui/icons-material/AccessTime"
-import type { TFilterTasksData } from "./sharing"
-import { EPickDateValues } from "./sharing"
 import { useState } from "react"
+import type { TFilterTasksData } from "../../../utils/types"
+import { EPickDateValues } from "../../../utils/enums"
 
 type TFilterByDueDateProps = {
    onFilter: (filterData: TFilterTasksData) => void

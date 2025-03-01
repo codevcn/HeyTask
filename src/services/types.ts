@@ -110,6 +110,7 @@ export type TProjectPreviewData = {
    title: string
    background: string | null
    starred: boolean
+   createdAt: string
 }
 
 export type TSearchUserData = {
