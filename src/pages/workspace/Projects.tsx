@@ -10,64 +10,64 @@ import { AllProjects, ProjectPreview } from "./AllProjects"
 import { EInternalEvents, eventEmitter } from "../../utils/events"
 
 type TStarredProjectsProps = {
-   projects: TProjectPreviewData[]
+  projects: TProjectPreviewData[]
 }
 
 const StarredProjects = ({ projects }: TStarredProjectsProps) => {
-   const starredProjects = useMemo<TProjectPreviewData[]>(() => {
-      return projects?.filter(({ starred }) => starred) || []
-   }, [projects])
+  const starredProjects = useMemo<TProjectPreviewData[]>(() => {
+    return projects?.filter(({ starred }) => starred) || []
+  }, [projects])
 
-   return (
-      starredProjects.length > 0 && (
-         <section className="w-full">
-            <a
-               id="starred-projects-list"
-               href="#starred-projects-list"
-               className="flex items-center gap-2 mb-3"
-            >
-               <StarIcon fontSize="small" />
-               <h2 className="text-lg font-semibold">Starred Boards</h2>
-            </a>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-               {starredProjects.map((project) => (
-                  <ProjectPreview key={project.id} projectPreviewData={project} />
-               ))}
-            </div>
-            <hr className="my-6" />
-         </section>
-      )
-   )
+  return (
+    starredProjects.length > 0 && (
+      <section className="w-full">
+        <a
+          id="starred-projects-list"
+          href="#starred-projects-list"
+          className="flex items-center gap-2 mb-3"
+        >
+          <StarIcon fontSize="small" />
+          <h2 className="text-lg font-semibold">Starred Boards</h2>
+        </a>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {starredProjects.map((project) => (
+            <ProjectPreview key={project.id} projectPreviewData={project} />
+          ))}
+        </div>
+        <hr className="my-6" />
+      </section>
+    )
+  )
 }
 
 export const Projects = () => {
-   const { projects, filterResult } = useAppSelector(({ workspace }) => workspace)
-   const dispatch = useAppDispatch()
+  const { projects, filterResult } = useAppSelector(({ workspace }) => workspace)
+  const dispatch = useAppDispatch()
 
-   const fetchProjects = () => {
-      workspaceService
-         .getProjects()
-         .then((res) => {
-            dispatch(setProjects(res))
-         })
-         .catch((error) => {
-            toast.error(axiosErrorHandler.handleHttpError(error).message)
-         })
-   }
-
-   useEffect(() => {
-      fetchProjects()
-      eventEmitter.on(EInternalEvents.REFRESH_PROJECTS, () => {
-         fetchProjects()
+  const fetchProjects = () => {
+    workspaceService
+      .getProjects()
+      .then((res) => {
+        dispatch(setProjects(res))
       })
-   }, [])
+      .catch((error) => {
+        toast.error(axiosErrorHandler.handleHttpError(error).message)
+      })
+  }
 
-   const finalProjects = filterResult || projects
-   console.log(">>> final pro:", finalProjects)
-   return (
-      <section className="w-full">
-         <StarredProjects projects={projects || []} />
-         <AllProjects filteredProjects={finalProjects} originalProjects={projects} />
-      </section>
-   )
+  useEffect(() => {
+    fetchProjects()
+    eventEmitter.on(EInternalEvents.REFRESH_PROJECTS, () => {
+      fetchProjects()
+    })
+  }, [])
+
+  const finalProjects = filterResult || projects
+
+  return (
+    <section className="w-full">
+      <StarredProjects projects={projects || []} />
+      <AllProjects filteredProjects={finalProjects} originalProjects={projects} />
+    </section>
+  )
 }

@@ -1,109 +1,49 @@
-import { useState, useRef, useEffect, MouseEvent } from "react"
+import { useState } from "react"
 
-const items: string[] = [
-   "https://storage.googleapis.com/a1aa/image/FcNVUSSjEutyWOY3r4_AyYmtTgV3KLniM17sftR1t7c.jpg",
-   "https://storage.googleapis.com/a1aa/image/C5ZK8iYrM8CcfRpYIE3H2Ba9FL3oLvjCVw4qBGCHipc.jpg",
-   "https://storage.googleapis.com/a1aa/image/DefV6-crshU8zj5k0ux88uAqc2uqcOTkKhiLgJIbKvc.jpg",
+const quotes: TQuote[] = [
+  { id: 1, quote: "The only limit to our realization of tomorrow is our doubts of today." },
+  { id: 2, quote: "Do what you can, with what you have, where you are." },
+  { id: 3, quote: "Success is not the key to happiness. Happiness is the key to success." },
 ]
 
-type TSliderProps = {
-   slides: JSX.Element[]
+type TQuote = { id: number; quote: string }
+
+export default function QuoteSearch() {
+  const [searchTerm, setSearchTerm] = useState("")
+
+  const highlightText = (text: string, keyword: string) => {
+    if (!keyword) return text
+    return text.split(new RegExp(`(${keyword})`, "gi")).map((part, index) =>
+      part.toLowerCase() === keyword.toLowerCase() ? (
+        <span key={index} className="bg-blue-300">
+          {part}
+        </span>
+      ) : (
+        part
+      ),
+    )
+  }
+
+  const filteredQuotes = quotes.filter((q) =>
+    q.quote.toLowerCase().includes(searchTerm.toLowerCase()),
+  )
+
+  return (
+    <div className="p-4 max-w-lg mx-auto">
+      <input
+        type="text"
+        placeholder="Tìm kiếm quote..."
+        className="w-full p-2 border rounded mb-4"
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+      />
+      <ul>
+        {filteredQuotes.map((q) => (
+          <li key={q.id} className="mb-2">
+            {highlightText(q.quote, searchTerm)}
+          </li>
+        ))}
+      </ul>
+    </div>
+  )
 }
-
-const Slider = ({ slides }: TSliderProps) => {
-   const [currentIndex, setCurrentIndex] = useState(0)
-   const sliderRef = useRef<HTMLDivElement>(null)
-   const isDragging = useRef(false)
-   const startPosition = useRef<number | null>(null)
-   const currentTranslate = useRef<number>(0)
-   const prevTranslate = useRef<number>(0)
-
-   const handleMouseDown = (e: React.MouseEvent) => {
-      isDragging.current = true
-      startPosition.current = e.clientX
-      if (sliderRef.current) {
-         sliderRef.current.style.transition = "none"
-      }
-   }
-
-   const handleMouseMove = (e: MouseEvent<HTMLElement>) => {
-      if (!isDragging.current || !startPosition.current) return
-
-      const currentPosition = e.clientX
-      currentTranslate.current = currentPosition - startPosition.current
-
-      if (sliderRef.current) {
-         sliderRef.current.style.transform = `translateX(calc(${prevTranslate.current}% + ${currentTranslate.current}px))`
-      }
-   }
-
-   const handleMouseUp = () => {
-      isDragging.current = false
-
-      const moveBy = currentTranslate.current
-      if (Math.abs(moveBy) > 100) {
-         if (moveBy > 0) {
-            setCurrentIndex((prev) => Math.max(prev - 1, 0))
-         } else {
-            setCurrentIndex((prev) => Math.min(prev + 1, items.length - 1))
-         }
-      }
-
-      prevTranslate.current = currentIndex * -100
-      if (sliderRef.current) {
-         sliderRef.current.style.transition = "transform 0.3s ease"
-         sliderRef.current.style.transform = `translateX(${prevTranslate.current}%)`
-      }
-   }
-
-   const handleMouseLeave = () => {
-      if (isDragging.current) {
-         handleMouseUp()
-      }
-   }
-
-   useEffect(() => {
-      prevTranslate.current = currentIndex * -100
-      if (sliderRef.current) {
-         sliderRef.current.style.transition = "transform 0.3s ease"
-         sliderRef.current.style.transform = `translateX(${prevTranslate.current}%)`
-      }
-   }, [currentIndex])
-
-   return (
-      <div
-         className="relative w-full overflow-hidden cursor-grab"
-         onMouseDown={handleMouseDown}
-         onMouseMove={handleMouseMove}
-         onMouseUp={handleMouseUp}
-         onMouseLeave={handleMouseLeave}
-      >
-         <div
-            ref={sliderRef}
-            className="flex transition-transform duration-300 ease-in-out"
-            onDragStart={(e) => e.preventDefault()}
-         >
-            {slides}
-         </div>
-      </div>
-   )
-}
-
-const App = () => {
-   return (
-      <div className="flex justify-center items-center h-screen bg-gray-100">
-         <Slider
-            slides={items.map((image, index) => (
-               <img
-                  key={index}
-                  src={image}
-                  alt={`Slide ${index}`}
-                  className="w-full h-auto flex-shrink-0"
-               />
-            ))}
-         />
-      </div>
-   )
-}
-
-export default App
