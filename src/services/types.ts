@@ -12,7 +12,7 @@ export type TUserProfileData = {
   bio: string | null
   birthday: string | null
   gender: EGenders
-  socialLink: string | null
+  socialLinks: string | null
   avatar: string | null
 }
 
@@ -20,7 +20,7 @@ export type TUserData = TUserProfileData & {
   id: number
   email: string
   role: EUserRoles
-  // emailVerified: boolean
+  emailVerified: boolean
 }
 
 export type TLoginPayload = {
@@ -29,7 +29,7 @@ export type TLoginPayload = {
 }
 
 export type TRegisterPayload = {
-  fullName: string
+  fullname: string
   email: string
   password: string
   reTypePassword: string
@@ -94,7 +94,6 @@ export type TTaskFileData = {
   fileName: string
   fileSize: string
   uploadedAt: string
-  downloadUrl: string
 }
 
 export type TUploadedFileData = {

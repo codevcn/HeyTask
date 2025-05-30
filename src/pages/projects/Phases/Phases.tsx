@@ -36,18 +36,22 @@ type TAddNewPhaseProps = {
 const AddNewPhase = ({ currentFinalPos }: TAddNewPhaseProps) => {
   const [isAdding, setIsAdding] = useState<boolean>(false)
   const dispatch = useAppDispatch()
+  const project = useAppSelector(({ project }) => project.project!)
 
   const handleAddNewPhase = (title: string) => {
     if (title && title.length > 0) {
-      dispatch(
-        addNewPhase({
-          id: randomInteger(1, 1000),
-          title,
-          taskPreviews: null,
-          position: currentFinalPos ? currentFinalPos + 1 : 1,
-          description: null,
-        }),
-      )
+      phaseService
+        .createPhase(project.id, {
+          phaseName: title,
+          description: "",
+          orderIndex: currentFinalPos ? currentFinalPos + 1 : 1,
+          status: "NOT_STARTED",
+          startDate: new Date().toISOString(),
+          project: { id: project.id },
+        })
+        .then((res) => {
+          dispatch(addNewPhase(res))
+        })
     }
     setIsAdding(false)
   }
@@ -176,6 +180,7 @@ const PhasesCanDragAndDrop = ({
   const [draggingId, setDraggingId] = useState<number | null>(null)
   const dispatch = useAppDispatch()
   const dndItems: TPhaseData["id"][] = phases.map((phase) => phase.id)
+  const project = useAppSelector(({ project }) => project.project!)
 
   const handleDragging = (e?: DragStartEvent) => {
     if (e) {
@@ -234,6 +239,7 @@ const PhasesCanDragAndDrop = ({
                   <Phase
                     key={phase.id}
                     phaseData={phase}
+                    projectId={project.id}
                     className={phase.id === draggingId ? "opacity-0" : "opacity-100"}
                   />
                 ))}
@@ -258,6 +264,7 @@ type TFixedPhasesProps = {
 
 const FixedPhases = ({ phases, viewportRef }: TFixedPhasesProps) => {
   const [refToScroll, refToDrag] = useDragScroll()
+  const project = useAppSelector(({ project }) => project.project!)
 
   return (
     <div className="grow relative">
@@ -275,7 +282,9 @@ const FixedPhases = ({ phases, viewportRef }: TFixedPhasesProps) => {
           />
           {phases &&
             phases.length > 0 &&
-            phases.map((phase) => <Phase key={phase.id} phaseData={phase} />)}
+            phases.map((phase) => (
+              <Phase key={phase.id} phaseData={phase} projectId={project.id} />
+            ))}
         </div>
       </div>
     </div>
@@ -287,16 +296,16 @@ type TPhasesProps = {
 }
 
 export const Phases = ({ userInProject }: TPhasesProps) => {
-  const { phases, filterResult } = useAppSelector(({ project }) => project)
+  const { phases, filterResult, project } = useAppSelector(({ project }) => project)
   const dispatch = useAppDispatch()
   const phasesViewportRef = useRef<HTMLDivElement | null>(null)
   const [searchParams] = useSearchParams()
   const locationState = useLocation().state
   const firstJumpRef = useRef<boolean>(true)
 
-  const getPhases = () => {
+  const getPhases = (projectId: number) => {
     phaseService
-      .getPhases()
+      .getPhases(projectId)
       .then((res) => {
         dispatch(setPhases(res))
       })
@@ -335,8 +344,8 @@ export const Phases = ({ userInProject }: TPhasesProps) => {
   }, [phases])
 
   useEffect(() => {
-    if (!phases) {
-      getPhases()
+    if (!phases && project?.id) {
+      getPhases(project.id)
     }
   }, [])
 

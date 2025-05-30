@@ -1,0 +1,144 @@
+import type { EGenders, EProjectRoles } from "../../../utils/enums"
+import type { EProjectMemberRoles } from "./output-enums"
+import type { TApiTaskStatus } from "./sharings"
+
+// Common types
+export type TApiResponse<T = any> = {
+  status: "success" | "error"
+  data: T
+  error: string | null
+}
+
+export type TLibResponse<T = any> = {
+  data: T
+}
+
+// User types
+export type TUser = {
+  id: number
+  username: string
+  email: string
+  fullname: string
+  avatar?: string
+  birthday?: string
+  gender?: EGenders
+  socialLinks?: string
+  bio?: string
+  emailVerified?: boolean
+}
+
+export type TProjectMember = {
+  id: number
+  projectId: number
+  role: EProjectMemberRoles
+  userId: number
+}
+
+// Project types
+export type TProject = {
+  id: number
+  projectName: string
+  description: string
+  status: "ACTIVE" | "COMPLETED" | "ARCHIVED"
+  startDate: string // ISO date string
+  endDate?: string // ISO date string
+  ownerId: number
+  createdAt: string // ISO date string
+  updatedAt: string // ISO date string
+}
+
+// Phase types
+export type TPhase = {
+  id: number
+  phaseName: string
+  description: string
+  status: "NOT_STARTED" | "IN_PROGRESS" | "COMPLETED"
+  startDate: string // ISO date string
+  endDate?: string // ISO date string
+  orderIndex: number
+  projectId: number
+  createdAt: string // ISO date string
+  updatedAt: string // ISO date string
+}
+
+// Task types
+export type TTask = {
+  id: number
+  taskName: string
+  description: string
+  status: TApiTaskStatus
+  priority: "LOW" | "MEDIUM" | "HIGH" | "URGENT"
+  dueDate?: string // ISO date string
+  allowSelfAssign: boolean
+  orderIndex: number
+  phaseId: number
+  assignedToId?: number
+  createdAt: string // ISO date string
+  updatedAt: string // ISO date string
+}
+
+// Comment types
+export type TComment = {
+  id: number
+  content: string
+  createdAt: string // ISO date string
+  userId: number
+  userRole: EProjectRoles
+  taskId: number
+}
+
+// File types
+export type TFile = {
+  id: number
+  fileName: string
+  fileType: string
+  fileSize: number
+  filePath: string
+  createdAt: string // ISO date string
+  updatedAt: string // ISO date string
+  userId: number
+  taskId: number
+}
+
+// Notification types
+export type TNotification = {
+  id: number
+  message: string
+  read: boolean
+  createdAt: string // ISO date string
+  userId: number
+}
+
+// Auth response types
+export type TJwtResponse = {
+  token: string
+  user: TUser
+}
+
+export type TGeneralSearch = {
+  projects: TProject[]
+  phases: TPhase[]
+  tasks: TTask[]
+}
+
+// API Response types
+export type TGeneralSearchResponse = TApiResponse<TLibResponse<TGeneralSearch>>
+export type TAuthResponse = TApiResponse<TLibResponse<TJwtResponse>>
+export type TUserResponse = TApiResponse<TLibResponse<TUser>>
+export type TUsersResponse = TApiResponse<TLibResponse<TUser[]>>
+export type TProjectResponse = TApiResponse<TLibResponse<TProject>>
+export type TProjectsResponse = TApiResponse<TLibResponse<TProject[]>>
+export type TPhaseResponse = TApiResponse<TLibResponse<TPhase>>
+export type TPhasesResponse = TApiResponse<TLibResponse<TPhase[]>>
+export type TTaskResponse = TApiResponse<TLibResponse<TTask>>
+export type TTasksResponse = TApiResponse<TLibResponse<TTask[]>>
+export type TCommentResponse = TApiResponse<TLibResponse<TComment>>
+export type TCommentsResponse = TApiResponse<TLibResponse<TComment[]>>
+export type TFileResponse = TApiResponse<TLibResponse<TFile>>
+export type TFilesResponse = TApiResponse<TLibResponse<TFile[]>>
+export type TNotificationResponse = TApiResponse<TLibResponse<TNotification>>
+export type TNotificationsResponse = TApiResponse<TLibResponse<TNotification[]>>
+export type TMessageResponse = TApiResponse<TLibResponse<string>>
+export type TProjectMemberResponse = TApiResponse<TLibResponse<TProjectMember>>
+export type TProjectMembersResponse = TApiResponse<TLibResponse<TProjectMember[]>>
+export type TMsgApiResponse = TApiResponse<TLibResponse<TMessageResponse>>

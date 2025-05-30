@@ -1,76 +1,63 @@
-import { perfomDelay } from "../utils/helpers"
-import { TSuccess } from "../utils/types"
-import type {
-   TCountUnreadNotificationsData,
-   TFetchNotificationsData,
-   TNotificationData,
-} from "./types"
+// đã sửa xong file này
 
-const notifications: TNotificationData[] = [
-   {
-      id: 1,
-      description: "Hoa Ho wants to join the Workspace Personal CodeVCN.",
-      timestamp: "2025-02-06T17:41:00Z",
-      seen: false,
-   },
-   {
-      id: 2,
-      description: "Reminder: Was due Feb 5, 2025, 3:16 PM",
-      timestamp: "2025-02-04T15:16:00Z",
-      seen: false,
-   },
-   {
-      id: 3,
-      description: "A new system update is available. Please restart your app.",
-      timestamp: "2025-02-07T08:30:00Z",
-      seen: true,
-   },
-   {
-      id: 4,
-      description: "Don't forget to submit your project report before the deadline.",
-      timestamp: "2025-02-06T12:00:00Z",
-      seen: false,
-   },
-]
+import { TSuccess } from "../utils/types"
+import { apiGetNotifications, apiMarkNotificationAsRead } from "./apis/notification-apis"
+import type { TFetchNotificationsData, TNotificationData } from "./types"
+
+type TUpdateNotificationPayload = { id: TNotificationData["id"] } & Partial<
+  Omit<TNotificationData, "id">
+>
 
 class NotificationService {
-   async fetchNotifications(): Promise<TFetchNotificationsData> {
-      await perfomDelay(1000)
-      return {
-         notifications: notifications,
-      }
-   }
+  async fetchNotifications(): Promise<TFetchNotificationsData> {
+    const { data } = await apiGetNotifications()
+    if (!data) throw new Error("No notifications found")
+    return {
+      notifications: data.data?.map((notification) => ({
+        id: notification.id,
+        description: notification.message,
+        timestamp: notification.createdAt,
+        seen: notification.read,
+      })),
+    }
+  }
 
-   async updateNotification(updatesPayload: Partial<TNotificationData>): Promise<TSuccess> {
-      await perfomDelay(1000)
-      return { success: true }
-   }
+  async updateNotification(updatesPayload: TUpdateNotificationPayload): Promise<TSuccess> {
+    const { id, seen } = updatesPayload
+    if (seen) {
+      await apiMarkNotificationAsRead({ notificationId: id })
+    }
+    return { success: true }
+  }
 
-   async markAllAsRead(): Promise<TSuccess> {
-      await perfomDelay(1000)
-      return { success: true }
-   }
+  // đã bỏ
+  // async markAllAsRead(): Promise<TSuccess> {
+  //   await perfomDelay(1000)
+  //   return { success: true }
+  // }
 
-   async loadMoreNotifications(lastId: number): Promise<TFetchNotificationsData> {
-      await perfomDelay(1000)
-      return {
-         notifications: notifications.map((obj) => ({
-            ...obj,
-            id:
-               Math.random() +
-               Math.random() +
-               Math.random() +
-               Math.random() +
-               Math.random() +
-               Math.random(),
-         })),
-      }
-   }
+  // đã bỏ
+  // async loadMoreNotifications(lastId: number): Promise<TFetchNotificationsData> {
+  //   await perfomDelay(1000)
+  //   return {
+  //     notifications: notifications.map((obj) => ({
+  //       ...obj,
+  //       id:
+  //         Math.random() +
+  //         Math.random() +
+  //         Math.random() +
+  //         Math.random() +
+  //         Math.random() +
+  //         Math.random(),
+  //     })),
+  //   }
+  // }
 
-   async countUnreadNotifcations(): Promise<TCountUnreadNotificationsData> {
-      await perfomDelay(1000)
-      return { total: 11 }
-   }
+  // đã bỏ
+  // async countUnreadNotifcations(): Promise<TCountUnreadNotificationsData> {
+  //   await perfomDelay(1000)
+  //   return { total: 11 }
+  // }
 }
 
 export const notificationService = new NotificationService()

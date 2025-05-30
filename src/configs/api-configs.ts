@@ -1,5 +1,13 @@
 import axios from "axios"
 
-export const clientAxios = axios.create({
-  baseURL: "http://localhost:8080/api", // Endpoint mặc định
+const BASE_URL = "http://localhost:8080/api"
+
+const clientAxios = axios.create({
+  baseURL: BASE_URL,
+  headers: {
+    "Content-Type": "application/json",
+  },
+  withCredentials: true,
 })
+
+export { clientAxios }
