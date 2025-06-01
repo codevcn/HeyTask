@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useDebounce } from "../hooks/debounce"
 import { searchService } from "../services/search-service"
 import type { TGeneralSearchData } from "../services/types"
@@ -173,28 +173,25 @@ export const GeneralSearch = () => {
     setStartSearch(false)
   }
 
-  const handleSearch = useCallback(
-    debounce((e: React.ChangeEvent<HTMLInputElement>) => {
-      const keyword = e.target.value
-      if (keyword && keyword.length > 0) {
-        setLoading(true)
-        searchService
-          .generalSearch(keyword)
-          .then((res) => {
-            setSearchResult(res)
-          })
-          .catch((error) => {
-            toast.error(axiosErrorHandler.handleHttpError(error).message)
-          })
-          .finally(() => {
-            setLoading(false)
-          })
-      } else {
-        setSearchResult(undefined)
-      }
-    }, 400),
-    [],
-  )
+  const handleSearch = debounce((e: React.ChangeEvent<HTMLInputElement>) => {
+    const keyword = e.target.value
+    if (keyword && keyword.length > 0) {
+      setLoading(true)
+      searchService
+        .generalSearch(keyword)
+        .then((res) => {
+          setSearchResult(res)
+        })
+        .catch((error) => {
+          toast.error(axiosErrorHandler.handleHttpError(error).message)
+        })
+        .finally(() => {
+          setLoading(false)
+        })
+    } else {
+      setSearchResult(undefined)
+    }
+  }, 400)
 
   const handleMouseClickOnPage = (e: MouseEvent) => {
     const inputEle = searchcContainerRef.current
@@ -241,7 +238,7 @@ export const GeneralSearch = () => {
               </div>
             ) : tasks && phases && projects ? (
               tasks.length === 0 && phases.length === 0 && projects.length === 0 ? (
-                <div className="flex flex-col justify-center items-center gap-1 px-10 py-20 w-full text-regular-text-cl">
+                <div className="flex flex-col justify-center items-center gap-1 px-10 h-[250px] w-full text-regular-text-cl">
                   <SearchOffIcon sx={{ height: 50, width: 50 }} color="inherit" />
                   <p className="text-base font-bold text-center">
                     We couldn't find anything matching your search.

@@ -2,8 +2,15 @@ import {
   convertToApiTaskStatus,
   convertToTaskStatus,
   convertUndefinedFieldsToNull,
-} from "../utils/helpers"
-import type { TTaskFileData, TTaskData, TUploadedFileData, TTaskPreviewData } from "./types"
+  convertProjectRoles,
+} from "../utils/api-converters/api-converters"
+import type {
+  TTaskFileData,
+  TTaskData,
+  TUploadedFileData,
+  TTaskPreviewData,
+  TCommentData,
+} from "./types"
 import type { TSuccess, TTaskStatus } from "../utils/types"
 import {
   apiCreateTask,
@@ -13,11 +20,13 @@ import {
   apiUpdateTask,
 } from "./apis/task-apis"
 import { apiGetCommentsByTask } from "./apis/comment-apis"
-import { convertUserApiData } from "./helpers/convert-api-data"
 import { apiGetUser } from "./apis/user-apis"
-import { apiUploadTaskFile, apiGetFileDetails } from "./apis/file-apis"
+import { apiUploadTaskFile, apiGetFileDetails, apiDownloadTaskFile } from "./apis/file-apis"
 import type { TTaskInput } from "./apis/types/input-types"
 import { apiAddMemberToATask, apiRemoveMemberFromATask } from "./apis/member-apis"
+import { convertUserApiData } from "../utils/api-converters/api-converters"
+import { TDownloadFileResponse } from "./apis/types/output-types"
+import { createImageUrlEndpoint } from "../utils/helpers"
 
 class TaskService {
   async getTaskDetails(taskId: number): Promise<TTaskData> {
@@ -33,7 +42,7 @@ class TaskService {
     } = commentsResponse
     if (!taskData) throw new Error("Task not found")
     const comments = await Promise.all(
-      commentsData?.map(async (comment) => {
+      commentsData?.map(async (comment): Promise<TCommentData> => {
         const {
           data: { data: userData },
         } = await apiGetUser(comment.userId)
@@ -42,7 +51,10 @@ class TaskService {
           id: comment.id,
           content: comment.content,
           createdAt: comment.createdAt,
-          user: { ...convertUserApiData(userData), projectRole: comment.userRole },
+          user: {
+            ...convertUserApiData(userData),
+            projectRole: convertProjectRoles(comment.userRole),
+          },
           isTaskResult: false,
         }
       }) || [],
@@ -65,8 +77,13 @@ class TaskService {
     const fileData = data.data
     return {
       id: fileData.id,
-      url: fileData.filePath,
+      url: createImageUrlEndpoint(fileData.filePath),
     }
+  }
+
+  async downloadTaskFile(fileId: string): Promise<TDownloadFileResponse> {
+    const res = await apiDownloadTaskFile(fileId)
+    return res // res.data is a Blob
   }
 
   async getTaskFileDetails(fileId: TTaskFileData["id"]): Promise<TTaskFileData> {
@@ -86,8 +103,8 @@ class TaskService {
     await apiUpdateTask({ id: taskId }, { status: convertToApiTaskStatus(newStatus) })
   }
 
-  async deleteTask(taskId: number): Promise<TSuccess> {
-    await apiDeleteTask({ id: taskId })
+  async deleteTask(taskId: number, projectId: number): Promise<TSuccess> {
+    await apiDeleteTask({ id: taskId }, projectId)
     return { success: true }
   }
 
@@ -102,10 +119,11 @@ class TaskService {
     phaseId: number,
     taskName: string,
     orderIndex: number,
+    projectId: number,
   ): Promise<TTaskPreviewData> {
     const {
       data: { data: task },
-    } = await apiCreateTask(phaseId, taskName, orderIndex)
+    } = await apiCreateTask(phaseId, taskName, orderIndex, projectId)
     if (!task) throw new Error("Task not created")
     return {
       id: task.id,
@@ -147,13 +165,18 @@ class TaskService {
     return { success: true }
   }
 
-  async removeMemberFromATask(taskId: number): Promise<TSuccess> {
-    await apiRemoveMemberFromATask(taskId)
+  async removeMemberFromATask(taskId: number, userId: number): Promise<TSuccess> {
+    await apiRemoveMemberFromATask(taskId, userId)
     return { success: true }
   }
 
-  async moveTask(taskId: number, phaseId: number, position: number): Promise<TSuccess> {
-    await apiMoveTask(taskId, phaseId, position)
+  async moveTask(
+    taskId: number,
+    phaseId: number,
+    position: number,
+    projectId: number,
+  ): Promise<TSuccess> {
+    await apiMoveTask(taskId, phaseId, position, projectId)
     return { success: true }
   }
 }

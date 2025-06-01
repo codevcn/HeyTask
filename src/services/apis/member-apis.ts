@@ -28,5 +28,8 @@ export const apiAddMemberToATask = async ({
 }: TAddMemberToATaskParams): Promise<TMsgApiResponse> =>
   clientAxios.post(`/members/add-member`, {}, { params: { taskId, userId, projectId } })
 
-export const apiRemoveMemberFromATask = async (taskId: number): Promise<TMsgApiResponse> =>
-  clientAxios.delete(`/members/remove-member`, { params: { taskId } })
+export const apiRemoveMemberFromATask = async (
+  taskId: number,
+  userId: number,
+): Promise<TMsgApiResponse> =>
+  clientAxios.delete(`/members/remove-member`, { params: { taskId, userId } })

@@ -5,7 +5,6 @@ import type { TTaskFileData } from "../../../services/types"
 import { LogoLoading } from "../../../components/Loadings"
 import CloseIcon from "@mui/icons-material/Close"
 import dayjs from "dayjs"
-import OpenInNewIcon from "@mui/icons-material/OpenInNew"
 import FileDownloadIcon from "@mui/icons-material/FileDownload"
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever"
 import { toast } from "react-toastify"
@@ -42,24 +41,39 @@ export const TaskFileDetails = () => {
     setOpen(false)
   }
 
-  const getFileDownloadUrl = (fileData: TTaskFileData) => `/api/files/download/${fileData.id}`
-
-  const viewFileInNewTab = () => {
-    if (!fileData) return
-    window.open(getFileDownloadUrl(fileData), "_blank", "noopener,noreferrer")
-  }
-
   const downloadFile = () => {
     if (!fileData) return
-    const download = document.createElement("a")
-    download.href = getFileDownloadUrl(fileData)
-    download.download = fileData.fileName || "downloaded-file"
-    document.body.appendChild(download)
-    download.click()
-    document.body.removeChild(download)
+    taskService
+      .downloadTaskFile(fileData.id)
+      .then((res) => {
+        if (res.status !== 200) throw new Error("Download failed")
+        // Lấy tên file từ header
+        const contentDisposition = res.headers["content-disposition"]
+        if (!contentDisposition) throw new Error("File not found")
+        const fileName = contentDisposition.split('filename="')[1].split('"')[0]
+        // Tạo blob từ response
+        const blob = new Blob([res.data])
+        // Tạo URL và tải xuống
+        const url = window.URL.createObjectURL(blob)
+        const link = document.createElement("a")
+        link.href = url
+        link.download = fileName
+        document.body.appendChild(link)
+        link.click()
+        // Dọn dẹp
+        document.body.removeChild(link)
+        window.URL.revokeObjectURL(url)
+      })
+      .catch((error) => {
+        toast.error(axiosErrorHandler.handleHttpError(error).message)
+      })
   }
 
   const deleteFile = (fileId: string) => {}
+
+  const convertBytesToKB = (bytes: number) => {
+    return (bytes / 1024).toFixed(2)
+  }
 
   return (
     <StyledModal
@@ -81,16 +95,9 @@ export const TaskFileDetails = () => {
             <div className="flex gap-x-2 items-center mt-3">
               <span>{`Added ${dayjs(fileData.uploadedAt).format("MMM D, YYYY, h:mm A")}`}</span>
               <span>•</span>
-              <span>{fileData.fileSize}</span>
+              <span>{convertBytesToKB(parseInt(fileData.fileSize)) + "KB"}</span>
             </div>
             <div className="flex items-center gap-x-4">
-              <button
-                onClick={viewFileInNewTab}
-                className="flex items-center gap-x-2 rounded-md p-2 hover:bg-modal-btn-hover-bgcl"
-              >
-                <OpenInNewIcon fontSize="small" />
-                <span className="text-sm">Open in new tab</span>
-              </button>
               <button
                 onClick={downloadFile}
                 className="flex items-center gap-x-2 rounded-md p-2 hover:bg-modal-btn-hover-bgcl"
@@ -98,13 +105,13 @@ export const TaskFileDetails = () => {
                 <FileDownloadIcon />
                 <span className="text-sm">Download</span>
               </button>
-              <button
+              {/* <button
                 onClick={() => deleteFile(fileData.id)}
                 className="flex items-center gap-x-2 rounded-md p-2 hover:bg-modal-btn-hover-bgcl"
               >
                 <DeleteForeverIcon />
                 <span className="text-sm">Delete</span>
-              </button>
+              </button> */}
             </div>
           </div>
         ) : (

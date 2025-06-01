@@ -18,37 +18,31 @@ class SearchService {
       projects: searchData.projects.map((project) => {
         return {
           id: project.id,
-          title: project.projectName,
+          title: project.title,
           background: projectBackgrounds[0],
         }
       }),
       phases: searchData.phases.map((phase) => {
-        const project = searchData.projects.find((project) => project.id === phase.projectId)
-        if (!project) throw new Error("Project not found")
         return {
           id: phase.id,
-          title: phase.phaseName,
+          title: phase.title,
           project: {
-            id: project.id,
-            title: project.projectName,
+            id: phase.project.id,
+            title: phase.project.title,
           },
         }
       }),
       tasks: searchData.tasks.map((task) => {
-        const phase = searchData.phases.find((phase) => phase.id === task.phaseId)
-        if (!phase) throw new Error("Phase not found")
-        const project = searchData.projects.find((project) => project.id === phase.projectId)
-        if (!project) throw new Error("Project not found")
         return {
           id: task.id,
-          title: task.taskName,
+          title: task.title,
           project: {
-            id: project.id,
-            title: project.projectName,
+            id: task.project.id,
+            title: task.project.title,
           },
           phase: {
-            id: task.phaseId,
-            title: phase.phaseName,
+            id: task.phase.id,
+            title: task.phase.title,
           },
         }
       }),

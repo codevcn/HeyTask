@@ -76,36 +76,40 @@ export const CustomRichTextEditor = ({
     input.click()
   }
 
+  const uploadFileHandler = (editor: TinyMCEEditor) => {
+    const input = document.createElement("input")
+    input.setAttribute("type", "file")
+    input.setAttribute("accept", ".doc,.docx,.xls,.xlsx,.pdf")
+    input.onchange = (e) => {
+      const file = (e.target as HTMLInputElement | undefined)?.files?.[0]
+      if (file && file instanceof File) {
+        openFixedLoadingHandler(true)
+        taskService
+          .uploadTaskFile(file, taskId, userId)
+          .then((res) => {
+            editor.insertContent(
+              renderToStaticMarkup(
+                <RichFileTitleTemplate textContent={file.name} fileId={res.id} />,
+              ),
+            )
+          })
+          .catch((error) => {
+            toast.error(axiosErrorHandler.handleHttpError(error).message)
+          })
+          .finally(() => {
+            openFixedLoadingHandler(false)
+          })
+      }
+    }
+    input.click()
+  }
+
   const onInitRichTextEditor = (editor: TinyMCEEditor) => {
     editor.ui.registry.addButton("customUploadFileButton", {
       icon: "new-document",
       tooltip: "Upload a file",
       onAction: (_) => {
-        const input = document.createElement("input")
-        input.setAttribute("type", "file")
-        input.setAttribute("accept", ".doc,.docx,.xls,.xlsx,.pdf")
-        input.onchange = (e) => {
-          const file = (e.target as HTMLInputElement | undefined)?.files?.[0]
-          if (file && file instanceof File) {
-            openFixedLoadingHandler(true)
-            taskService
-              .uploadTaskFile(file, taskId, userId)
-              .then((res) => {
-                editor.insertContent(
-                  renderToStaticMarkup(
-                    <RichFileTitleTemplate textContent={file.name} fileId={res.id} />,
-                  ),
-                )
-              })
-              .catch((error) => {
-                toast.error(axiosErrorHandler.handleHttpError(error).message)
-              })
-              .finally(() => {
-                openFixedLoadingHandler(false)
-              })
-          }
-        }
-        input.click()
+        uploadFileHandler(editor)
       },
     })
     setTimeout(() => {

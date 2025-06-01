@@ -1,6 +1,6 @@
 // đã sửa xong file này
 
-import { convertProjectRoles } from "../utils/helpers"
+import { convertProjectRoles } from "../utils/api-converters/api-converters"
 import type {
   TProjectData,
   TProjectMemberData,
@@ -19,10 +19,11 @@ import {
   apiSendProjectInvitations,
   apiUpdateProject,
   apiGetJoinedProjects,
+  apiDeleteProject,
 } from "./apis/project-apis"
 import { projectBackgrounds, staticStarredValue } from "../lib/project-static-data"
-import { convertUserApiData } from "./helpers/convert-api-data"
 import { apiGetUser } from "./apis/user-apis"
+import { convertUserApiData } from "../utils/api-converters/api-converters"
 
 class ProjectService {
   async getUserInfoInProject(userId: number, projectId: number): Promise<TUserInProjectData> {
@@ -65,6 +66,7 @@ class ProjectService {
       description: projectData.description,
       background: projectBackgrounds[0],
       starred: staticStarredValue,
+      ownerId: projectData.ownerId,
     }
   }
 
@@ -189,6 +191,10 @@ class ProjectService {
       starred: staticStarredValue,
       createdAt: project.createdAt,
     }))
+  }
+
+  async deleteProject(projectId: number): Promise<void> {
+    await apiDeleteProject({ projectId })
   }
 }
 

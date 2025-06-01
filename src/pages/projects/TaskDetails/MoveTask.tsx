@@ -44,6 +44,7 @@ export const MoveTask = ({ taskData, phaseId }: TMoveTaskProps) => {
   const dispatch = useAppDispatch()
   const [isMoving, setIsMoving] = useState<boolean>(false)
   const [taskPositionInPhase, setTaskPositionInPhase] = useState<number>()
+  const project = useAppSelector((state) => state.project.project!)
 
   const { toPhase, toPosition } = moveTo
 
@@ -66,7 +67,7 @@ export const MoveTask = ({ taskData, phaseId }: TMoveTaskProps) => {
     if (toPhase && (toPosition || toPosition === 0)) {
       setIsMoving(true)
       taskService
-        .moveTask(taskId, toPhase.id, toPosition)
+        .moveTask(taskId, toPhase.id, toPosition, project.id)
         .then(() => {
           setAnchorEle(null)
           dispatch(moveTask({ fromPhaseId: phaseId, taskId, toPhaseId: toPhase.id, toPosition }))

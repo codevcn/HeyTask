@@ -17,3 +17,9 @@ export enum EApiNotificationAction {
   REJECT = "REJECT",
   PENDING = "PENDING",
 }
+
+export enum EApiGender {
+  Male = "Male",
+  Female = "Female",
+  Other = "Other",
+}

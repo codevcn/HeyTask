@@ -3,7 +3,7 @@ import { useState } from "react"
 import { EInternalEvents, eventEmitter } from "../../../utils/events"
 import CloseIcon from "@mui/icons-material/Close"
 import { toast } from "react-toastify"
-import { useAppDispatch } from "../../../hooks/redux"
+import { useAppDispatch, useAppSelector } from "../../../hooks/redux"
 import { deleteTask, updateTaskPreview, updateTaskData } from "../../../redux/project/project-slice"
 import DeleteIcon from "@mui/icons-material/Delete"
 import { useUserInProject } from "../../../hooks/user"
@@ -31,6 +31,7 @@ export const TaskActions = ({ phaseData, taskData }: TTaskActionsProps) => {
   const dispatch = useAppDispatch()
   const userInProject = useUserInProject()!
   const [loading, setLoading] = useState<TLoadings>()
+  const project = useAppSelector((state) => state.project.project!)
 
   const handleOpenDeleteTaskBoard = (e?: React.MouseEvent<HTMLButtonElement>) => {
     if (e) {
@@ -43,7 +44,7 @@ export const TaskActions = ({ phaseData, taskData }: TTaskActionsProps) => {
   const deleteTaskHandler = () => {
     setLoading("delete-task")
     taskService
-      .deleteTask(taskId)
+      .deleteTask(taskId, project.id)
       .then(() => {
         toast.success("Deleted task successfully!")
         dispatch(deleteTask({ phaseId, taskId }))

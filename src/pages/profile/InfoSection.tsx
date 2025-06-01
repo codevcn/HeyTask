@@ -1,4 +1,4 @@
-import { MenuItem, Select, styled, TextField } from "@mui/material"
+import { MenuItem, Select, SelectChangeEvent, styled, TextField } from "@mui/material"
 import type { TUserData, TUserProfileData } from "../../services/types"
 import { DateField } from "@mui/x-date-pickers/DateField"
 import CheckIcon from "@mui/icons-material/Check"
@@ -13,6 +13,7 @@ import WarningIcon from "@mui/icons-material/Warning"
 import { useAppDispatch } from "../../hooks/redux"
 import { updateUserData } from "../../redux/user/user-slice"
 import { LogoLoading } from "../../components/Loadings"
+import validator from "validator"
 
 type TInputTypes = keyof TUserProfileData
 
@@ -88,12 +89,17 @@ type TInfoSectionProps = {
   userData: TUserData
 }
 
+const checkValidLink = (link: string) => {
+  return validator.isURL(link)
+}
+
 export const InfoSection = ({ userData }: TInfoSectionProps) => {
   const [loading, setLoading] = useState<TInputTypes>()
   const [error, setError] = useState<TProfileDataError>({})
   const [focused, setFocused] = useState<TFocused>({})
   const formRef = useRef<HTMLFormElement>(null)
   const dispatch = useAppDispatch()
+  const genderRef = useRef<HTMLInputElement>(null)
 
   const onFocusInput = (e: React.MouseEvent<HTMLElement>, inputType: TInputTypes) => {
     setFocused({ element: e.currentTarget as HTMLElement, inputType })
@@ -105,6 +111,8 @@ export const InfoSection = ({ userData }: TInfoSectionProps) => {
         setError({ [inputType]: "Full name must not be empty!" })
       } else if (inputType === "birthday") {
         setError({ [inputType]: "Birthday must not be empty!" })
+      } else if (inputType === "gender") {
+        setError({ [inputType]: "Gender must not be empty!" })
       } else if (inputType === "bio") {
         setError({ [inputType]: "Bio must not be empty!" })
       } else if (inputType === "socialLinks") {
@@ -112,13 +120,24 @@ export const InfoSection = ({ userData }: TInfoSectionProps) => {
       }
       return null
     }
+    if (inputType === "socialLinks") {
+      if (!checkValidLink(profileData)) {
+        setError({ [inputType]: "Social link must be a valid URL!" })
+        return null
+      }
+    }
     return profileData
+  }
+
+  const resetError = (inputType: TInputTypes) => {
+    setError((prev) => ({ ...prev, [inputType]: undefined }))
   }
 
   const updateProfileHandler = (inputType: TInputTypes) => {
     const formData = new FormData(formRef.current!)
     const data = validate(formData.get(inputType) as string, inputType)
     if (data) {
+      resetError(inputType)
       setLoading(inputType)
       userService
         .updateProfile({ [inputType]: data })
@@ -146,6 +165,14 @@ export const InfoSection = ({ userData }: TInfoSectionProps) => {
     if (focusedContainerEle && !focusedContainerEle.contains(e.target as Node)) {
       setFocused({})
     }
+  }
+
+  const changeGender = (e: SelectChangeEvent<unknown>) => {
+    const genderInput = genderRef.current
+    if (genderInput) {
+      genderInput.value = e.target.value as EGenders
+    }
+    updateProfileHandler("gender")
   }
 
   useEffect(() => {
@@ -222,17 +249,17 @@ export const InfoSection = ({ userData }: TInfoSectionProps) => {
           <div className="w-full">
             <label className="block text-sm">Gender</label>
             <div className="relative w-full">
+              <input type="hidden" name="gender" defaultValue={userData.gender} ref={genderRef} />
               <UserGenderInput
-                defaultValue={userData.gender}
+                value={userData.gender}
                 size="small"
-                name="gender"
                 customProp={{ isUpdating: loading === "gender" }}
                 MenuProps={{
                   MenuListProps: {
                     className: "bg-modal-popover-bgcl bor border border-regular-border-cl",
                   },
                 }}
-                onChange={() => updateProfileHandler("gender")}
+                onChange={changeGender}
               >
                 <StyledMenuItem value={EGenders.FEMALE}>Female</StyledMenuItem>
                 <StyledMenuItem value={EGenders.MALE}>Male</StyledMenuItem>

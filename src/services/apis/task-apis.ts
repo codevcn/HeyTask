@@ -17,20 +17,31 @@ export const apiCreateTask = async (
   phaseId: number,
   taskName: TTaskInput["taskName"],
   orderIndex: number,
+  projectId: number,
 ): Promise<TTaskResponse> =>
-  clientAxios.post("/tasks", { phase: { id: phaseId }, taskName, orderIndex })
+  clientAxios.post("/tasks", {
+    task: {
+      phase: { id: phaseId },
+      taskName,
+      orderIndex,
+    },
+    projectId,
+  })
 
 export const apiUpdateTask = async (
   { id }: TTaskIdParam,
   payload: Partial<TTaskInput>,
-): Promise<TMsgApiResponse> => clientAxios.put(`/tasks/${id}`, payload)
+): Promise<TMsgApiResponse> => clientAxios.put(`/tasks/${id}`, { task: payload })
 
-export const apiDeleteTask = async ({ id }: TTaskIdParam): Promise<TMessageResponse> =>
-  clientAxios.delete(`/tasks/${id}`)
+export const apiDeleteTask = async (
+  { id }: TTaskIdParam,
+  projectId: number,
+): Promise<TMessageResponse> => clientAxios.delete(`/tasks/${id}`, { params: { projectId } })
 
 export const apiMoveTask = async (
   taskId: number,
   phaseId: number,
   position: number,
+  projectId: number,
 ): Promise<TMsgApiResponse> =>
-  clientAxios.put(`/tasks/${taskId}/move`, {}, { params: { phaseId, position } })
+  clientAxios.put(`/tasks/${taskId}/move`, {}, { params: { phaseId, position, projectId } })

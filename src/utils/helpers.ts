@@ -4,9 +4,6 @@ import type { SnackbarOrigin } from "@mui/material"
 import { EProjectRoles } from "./enums"
 import type { Area } from "react-easy-crop"
 import DOMPurify from "dompurify"
-import { EApiProjectMemberRoles } from "../services/apis/types/output-enums"
-import type { TTaskStatus } from "./types"
-import type { TApiTaskStatus } from "../services/apis/types/sharings"
 
 export const pureNavigator = (href: string, isReloadPage?: boolean): void => {
   if (isReloadPage) {
@@ -162,45 +159,13 @@ export const generateRouteWithParams = <T extends TStringKeyObject>(
 
 export const sanitizeHTMLString = (htmlString: string) => DOMPurify.sanitize(htmlString)
 
-export const convertUndefinedFieldsToNull = <T extends Record<string | number, any>>(
-  object: T,
-): any => {
-  const result: any = {}
-  for (const key in object) {
-    if (!object[key]) {
-      result[key] = null
-    } else {
-      result[key] = object[key]
-    }
-  }
-  return result
+export const createImageUrlEndpoint = (filename: string): string => {
+  /**
+   * URL hình ảnh sẽ có dạng: http://localhost:8080/api/files/images/{tên_file}
+   */
+  return `${import.meta.env.VITE_API_ENDPOINT_PREFIX}/files/images/${filename}`
 }
 
-export const convertProjectRoles = (projectRole: EApiProjectMemberRoles): EProjectRoles => {
-  switch (projectRole) {
-    case EApiProjectMemberRoles.Admin:
-      return EProjectRoles.ADMIN
-    case EApiProjectMemberRoles.Leader:
-      return EProjectRoles.LEADER
-    default:
-      return EProjectRoles.MEMBER
-  }
-}
-
-export const convertToTaskStatus = (taskStatus: TApiTaskStatus): TTaskStatus => {
-  switch (taskStatus) {
-    case "IN_PROGRESS":
-      return "uncomplete"
-    case "DONE":
-      return "complete"
-  }
-}
-
-export const convertToApiTaskStatus = (taskStatus: TTaskStatus): TApiTaskStatus => {
-  switch (taskStatus) {
-    case "uncomplete":
-      return "IN_PROGRESS"
-    case "complete":
-      return "DONE"
-  }
+export const getCssVar = (varName: string) => {
+  return getComputedStyle(document.documentElement).getPropertyValue(varName).trim()
 }

@@ -69,9 +69,7 @@ const LogoutSection = ({ userData }: TLogoutSectionProps) => {
             <Avatar sx={{ height: 72, width: 72 }}>{fullName[0]}</Avatar>
           )}
           <div className="text-base w-[calc(100%-72px-12px)]">
-            <p className="font-bold truncate w-full">
-              {"wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww"}
-            </p>
+            <p className="font-bold truncate w-full">{fullName}</p>
             <p>{email}</p>
           </div>
         </div>

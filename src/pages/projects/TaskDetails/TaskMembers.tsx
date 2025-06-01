@@ -53,7 +53,7 @@ const AddMemberBoard = () => {
         dispatch(addNewTaskMemberAction(member, phaseId, taskId, projectId))
       } else {
         taskService
-          .removeMemberFromATask(taskId)
+          .removeMemberFromATask(taskId, member.id)
           .then(() => {
             dispatch(removeTaskMember({ memberId: member.id, phaseId, taskId }))
           })

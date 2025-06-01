@@ -12,7 +12,7 @@ class AxiosErrorHandler {
     let message: string = "Unknown Error!"
     let isCanceled: boolean = false
 
-    console.log(">>> axios error", originalError)
+    console.error(">>> axios error", originalError)
 
     if (this.isAxiosError(originalError)) {
       const errorResponse = originalError.response

@@ -11,7 +11,7 @@ import {
 import { apiGetTasksByPhase } from "./apis/task-apis"
 import type { TPhaseData, TTaskPreviewData } from "./types"
 import type { TPhaseInput } from "./apis/types/input-types"
-import { convertToTaskStatus } from "../utils/helpers"
+import { convertToTaskStatus } from "../utils/api-converters/api-converters"
 
 class PhaseService {
   async getPhases(projectId: number): Promise<TPhaseData[]> {

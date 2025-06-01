@@ -1,3 +1,4 @@
+import type { EApiGender } from "./output-enums"
 import type { TApiTaskStatus } from "./sharings"
 
 // Auth types
@@ -100,8 +101,12 @@ export type TGetProjectMemberParams = {
 }
 
 export type TUpdateUserProfileInput = {
-  fullName: string
+  fullname: string
   avatar: string
+  birthday: string
+  gender: EApiGender
+  bio: string
+  socialLinks: string
 }
 
 export type TMarkAsTaskResultInput = {

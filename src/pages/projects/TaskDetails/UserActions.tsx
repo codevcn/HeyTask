@@ -33,7 +33,7 @@ export const UserActions = ({ phaseId, taskData, projectId }: TUserActionsProps)
 
   const leaveTask = () => {
     taskService
-      .removeMemberFromATask(id)
+      .removeMemberFromATask(id, userInProject.id)
       .then(() => {
         dispatch(removeTaskMember({ memberId: userInProject.id, phaseId, taskId: id }))
       })
@@ -93,7 +93,7 @@ export const UserActions = ({ phaseId, taskData, projectId }: TUserActionsProps)
             <span>Members</span>
           </button>
         </Tooltip>
-        {checkUserPermission(userInProject.projectRole, "assign-due-date") && (
+        {/* {checkUserPermission(userInProject.projectRole, "assign-due-date") && (
           <Tooltip title="Set deadline for this task" arrow placement="left">
             <button
               onClick={openDueDatesBoard}
@@ -103,7 +103,7 @@ export const UserActions = ({ phaseId, taskData, projectId }: TUserActionsProps)
               <span>Dates</span>
             </button>
           </Tooltip>
-        )}
+        )} */}
       </div>
     </>
   )

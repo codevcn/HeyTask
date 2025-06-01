@@ -238,7 +238,7 @@ export const TaskDetails = () => {
                     taskId={taskData.id}
                     projectId={project.id}
                   />
-                  <TaskDueDate dueDate={taskData.dueDate} />
+                  {/* <TaskDueDate dueDate={taskData.dueDate} /> */}
                 </div>
                 <Description
                   description={taskData.description}

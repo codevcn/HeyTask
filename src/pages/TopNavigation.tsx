@@ -44,7 +44,9 @@ const ProfileMenu = () => {
     <>
       <StyledIconButton onClick={handleOpenAddMemberBoard}>
         {user.avatar ? (
-          <Avatar src={user.avatar} alt="User Avatar" sx={{ height: 24, width: 24 }} />
+          <Avatar src={user.avatar} alt="User Avatar" sx={{ height: 24, width: 24 }}>
+            {user.fullName[0]}
+          </Avatar>
         ) : (
           <Avatar alt="User Avatar" sx={{ height: 24, width: 24 }}>
             {user.fullName[0]}

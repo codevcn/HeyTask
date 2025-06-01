@@ -50,6 +50,7 @@ export type TProjectData = {
   description: string | null
   background: string | null
   starred: boolean
+  ownerId: number
 }
 
 export type TTaskMemberData = TUserData & TUserInProjectData
@@ -207,5 +208,23 @@ export type TGeneralSearchData = {
       id: number
       title: string
     }
+  }[]
+}
+
+export type TStatisticsData = {
+  ownedProjectsCount: number
+  joinedProjectsCount: number
+  totalProjectsCount: number
+  totalTasksCount: number
+  completedTasksCount: number
+  pendingTasksCount: number
+  projectMemberStats: {
+    projectName: string
+    memberCount: number
+  }[]
+  phaseStats: {
+    projectId: number
+    projectName: string
+    phaseCount: number
   }[]
 }

@@ -4,7 +4,7 @@ import type { TLoginPayload, TRegisterPayload, TUserData } from "./types"
 import type { TSuccess } from "../utils/types"
 import { apiLogin, apiLogout, apiSignup } from "./apis/auth-apis"
 import { apiGetCurrentUser } from "./apis/user-apis"
-import { convertUserApiData } from "./helpers/convert-api-data"
+import { convertUserApiData } from "../utils/api-converters/api-converters"
 
 class AuthService {
   async login(payload: TLoginPayload): Promise<TSuccess> {

@@ -14,7 +14,7 @@ import {
   updateTaskData,
   updateTaskPreview,
 } from "../../../redux/project/project-slice"
-import { useAppDispatch } from "../../../hooks/redux"
+import { useAppDispatch, useAppSelector } from "../../../hooks/redux"
 import {
   arrayMove,
   SortableContext,
@@ -153,11 +153,12 @@ const AddNewTask = ({ phaseData, finalTaskPosition }: TAddNewTaskProps) => {
   const phaseId = phaseData.id
   const [isAdding, setIsAdding] = useState<boolean>(false)
   const dispatch = useAppDispatch()
+  const project = useAppSelector(({ project }) => project.project!)
 
   const handleAddNewTask = (title?: string) => {
     if (title && title.length > 0) {
       taskService
-        .createNewTask(phaseId, title, finalTaskPosition ? finalTaskPosition + 1 : 0)
+        .createNewTask(phaseId, title, finalTaskPosition ? finalTaskPosition + 1 : 0, project.id)
         .then((res) => {
           dispatch(
             addNewTaskPreview({
@@ -287,6 +288,7 @@ export const TaskPreviews = ({ taskPreviews, phaseData }: TTaskPreviewsProps) =>
   )
   const dispatch = useAppDispatch()
   const dndItems: TTaskPreviewData["id"][] = taskPreviews.map((task) => task.id)
+  const project = useAppSelector((state) => state.project.project!)
 
   const handleDragStart = (e: DragStartEvent) => {
     setDraggingId(e.active.id as number)
@@ -307,15 +309,17 @@ export const TaskPreviews = ({ taskPreviews, phaseData }: TTaskPreviewsProps) =>
             taskPreviews: arrayMove(preTaskPreviews, fromIndex, toIndex),
           }),
         )
-        taskService.moveTask(parseInt(active.id.toString()), phaseId, toIndex).catch((error) => {
-          toast.error(axiosErrorHandler.handleHttpError(error).message)
-          dispatch(
-            updateSinglePhase({
-              id: phaseId,
-              taskPreviews: preTaskPreviews,
-            }),
-          )
-        })
+        taskService
+          .moveTask(parseInt(active.id.toString()), phaseId, toIndex, project.id)
+          .catch((error) => {
+            toast.error(axiosErrorHandler.handleHttpError(error).message)
+            dispatch(
+              updateSinglePhase({
+                id: phaseId,
+                taskPreviews: preTaskPreviews,
+              }),
+            )
+          })
       }
     })
   }

@@ -37,7 +37,6 @@ const ProjectPage = () => {
     projectService
       .getUserInfoInProject(userId, projectId)
       .then((res) => {
-        console.log(">>> role of user in project:", res)
         dispatch(setUserInProject(res))
       })
       .catch((error) => {

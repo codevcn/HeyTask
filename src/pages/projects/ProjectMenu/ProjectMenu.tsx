@@ -1,4 +1,4 @@
-import { Drawer, styled } from "@mui/material"
+import { Drawer, Popover, styled } from "@mui/material"
 import { useEffect, useState } from "react"
 import { EInternalEvents, eventEmitter } from "../../../utils/events"
 import { useAppSelector } from "../../../hooks/redux"
@@ -13,6 +13,8 @@ import { ProjectMenuContext, useProjectMenuContext } from "./sharing"
 import type { TProjectMenuActive } from "./sharing"
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew"
 import { ProjectBackground } from "./ProjectBackground"
+import { useUserInProject } from "../../../hooks/user"
+import DeleteIcon from "@mui/icons-material/Delete"
 
 type TTitleSectionProps = {
   onCloseMenu: () => void
@@ -66,9 +68,100 @@ const ContextProvider = ({ children }: TContextProviderProps) => {
   )
 }
 
+const LeaveDeleteProject = () => {
+  const [anchorEle, setAnchorEle] = useState<HTMLButtonElement | null>(null)
+  const projectData = useAppSelector(({ project }) => project.project!)
+  const userInProject = useUserInProject()!
+  const isProjectOwner = projectData.ownerId === userInProject.id
+
+  const handleOpenLeaveDeleteProject = (e?: React.MouseEvent<HTMLButtonElement>) => {
+    if (e) {
+      setAnchorEle(e.currentTarget)
+    } else {
+      setAnchorEle(null)
+    }
+  }
+
+  const handleLeaveDeleteProject = () => {
+    openFixedLoadingHandler(true)
+    if (isProjectOwner) {
+      projectService
+        .deleteProject(projectData.id)
+        .then(() => {
+          pureNavigator("/workspace", true)
+        })
+        .catch((error) => {
+          toast.error(axiosErrorHandler.handleHttpError(error).message)
+        })
+    } else {
+      projectService
+        .leaveProject(projectData.id)
+        .then(() => {
+          pureNavigator("/workspace", true)
+        })
+        .catch((error) => {
+          toast.error(axiosErrorHandler.handleHttpError(error).message)
+        })
+    }
+  }
+
+  return (
+    <div className="relative z-10">
+      <button
+        onClick={handleOpenLeaveDeleteProject}
+        className="flex items-center gap-x-3 p-2 hover:bg-modal-btn-hover-bgcl rounded w-full mt-1"
+      >
+        {isProjectOwner ? (
+          <>
+            <DeleteIcon fontSize="small" />
+            <p className="w-fit">Delete this project</p>
+          </>
+        ) : (
+          <>
+            <LogoutIcon fontSize="small" />
+            <p className="w-fit">Leave this project</p>
+          </>
+        )}
+      </button>
+
+      <StyledPopover
+        open={!!anchorEle}
+        anchorEl={anchorEle}
+        onClose={() => handleOpenLeaveDeleteProject()}
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "right",
+        }}
+        transformOrigin={{
+          vertical: "top",
+          horizontal: "right",
+        }}
+      >
+        <div className="bg-modal-popover-bgcl rounded-md p-3 text-regular-text-cl w-[300px]">
+          <div className="relative w-full py-1">
+            <h3 className="w-full text-center text-sm font-bold">Delete this project</h3>
+            <button
+              onClick={() => handleOpenLeaveDeleteProject()}
+              className="flex absolute right-0 top-0 p-1 rounded-md hover:bg-modal-btn-hover-bgcl"
+            >
+              <CloseIcon className="text-regular-text-cl" fontSize="small" />
+            </button>
+          </div>
+          <p className="text-sm mt-2">Deleting a project is forever. There is no undo.</p>
+          <button
+            onClick={handleLeaveDeleteProject}
+            className="text-sm mt-2 bg-delete-btn-bgcl rounded-md p-1 w-full text-black font-bold hover:bg-delete-btn-hover-bgcl"
+          >
+            Delete project
+          </button>
+        </div>
+      </StyledPopover>
+    </div>
+  )
+}
+
 export const ProjectMenu = () => {
   const [open, setOpen] = useState<boolean>(false)
-  const projectData = useAppSelector(({ project }) => project.project!)
 
   useEffect(() => {
     eventEmitter.on(EInternalEvents.OPEN_PROJECT_MENU, (isOpen) => {
@@ -79,18 +172,6 @@ export const ProjectMenu = () => {
     }
   }, [])
 
-  const leaveProject = () => {
-    openFixedLoadingHandler(true)
-    projectService
-      .leaveProject()
-      .then(() => {
-        pureNavigator("", true)
-      })
-      .catch((error) => {
-        toast.error(axiosErrorHandler.handleHttpError(error).message)
-      })
-  }
-
   return (
     <StyledDrawer anchor="right" open={open} onClose={() => setOpen(false)} keepMounted>
       <ContextProvider>
@@ -98,23 +179,13 @@ export const ProjectMenu = () => {
           <TitleSection onCloseMenu={() => setOpen(false)} />
           <hr className="my-2" />
           <div className="css-styled-vt-scrollbar overflow-y-auto overflow-x-hidden text-modal-text-cl text-sm px-3 grow relative">
-            <AboutProject projectData={projectData} />
+            {/* <AboutProject projectData={projectData} />
             <ProjectBackground
               projectBackground={projectData.background}
               projectId={projectData.id}
             />
-            <hr className="my-2" />
-            <div className="relative z-10">
-              <button
-                onClick={leaveProject}
-                className="flex items-center gap-x-3 p-2 hover:bg-modal-btn-hover-bgcl rounded w-full mt-1"
-              >
-                <LogoutIcon fontSize="small" />
-                <div>
-                  <p className="w-fit">Leave this project</p>
-                </div>
-              </button>
-            </div>
+            <hr className="my-2" /> */}
+            <LeaveDeleteProject />
           </div>
         </section>
       </ContextProvider>
@@ -128,5 +199,13 @@ const StyledDrawer = styled(Drawer)({
       width: 350,
       backgroundColor: "var(--ht-modal-board-bgcl)",
     },
+  },
+})
+
+const StyledPopover = styled(Popover)({
+  "& .MuiPaper-root": {
+    borderRadius: 6,
+    backgroundColor: "var(--ht-modal-popover-bgcl)",
+    border: "1px var(--ht-regular-border-cl) solid",
   },
 })

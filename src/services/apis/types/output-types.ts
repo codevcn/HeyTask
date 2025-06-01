@@ -1,9 +1,10 @@
-import type { EGenders } from "../../../utils/enums"
+import { AxiosResponse } from "axios"
 import type {
   EApiNotificationAction,
   EApiNotificationTypes,
   EApiProjectMemberRoles,
   EApiUserRoles,
+  EApiGender,
 } from "./output-enums"
 import type { TApiTaskStatus } from "./sharings"
 
@@ -26,7 +27,7 @@ export type TUser = {
   fullname: string
   avatar?: string
   birthday?: string
-  gender?: EGenders
+  gender?: EApiGender
   socialLinks?: string
   bio?: string
   emailVerified?: boolean
@@ -94,7 +95,7 @@ export type TComment = {
 }
 
 // File types
-export type TFile = {
+export type TTaskFile = {
   id: number
   fileName: string
   fileType: string
@@ -126,13 +127,61 @@ export type TJwtResponse = {
 }
 
 export type TGeneralSearch = {
-  projects: TProject[]
-  phases: TPhase[]
-  tasks: TTask[]
+  projects: {
+    id: number
+    title: string
+  }[]
+  phases: {
+    id: number
+    title: string
+    project: {
+      id: number
+      title: string
+    }
+  }[]
+  tasks: {
+    id: number
+    title: string
+    project: {
+      id: number
+      title: string
+    }
+    phase: {
+      id: number
+      title: string
+    }
+  }[]
 }
 
 export type TTaskMember = TUser & {
   projectRole: EApiProjectMemberRoles
+}
+
+export type TUserAvatarFile = {
+  filename: string
+  filePath: string
+  fileType: string
+  fileSize: number
+}
+
+export type TDownloadFileResponse = AxiosResponse<Blob>
+
+export type TStatistics = {
+  ownedProjectsCount: number
+  joinedProjectsCount: number
+  totalProjectsCount: number
+  totalTasksCount: number
+  completedTasksCount: number
+  pendingTasksCount: number
+  projectMemberStats: {
+    projectName: string
+    memberCount: number
+  }[]
+  phaseStats: {
+    projectId: number
+    projectName: string
+    phaseCount: number
+  }[]
 }
 
 // API Response types
@@ -148,8 +197,10 @@ export type TTaskResponse = TApiResponse<TLibResponse<TTask>>
 export type TTasksResponse = TApiResponse<TLibResponse<TTask[]>>
 export type TCommentResponse = TApiResponse<TLibResponse<TComment>>
 export type TCommentsResponse = TApiResponse<TLibResponse<TComment[]>>
-export type TFileResponse = TApiResponse<TLibResponse<TFile>>
-export type TFilesResponse = TApiResponse<TLibResponse<TFile[]>>
+export type TFileResponse = TApiResponse<TLibResponse<TTaskFile>>
+export type TFilesResponse = TApiResponse<TLibResponse<TTaskFile[]>>
+export type TUserAvatarFileResponse = TApiResponse<TLibResponse<TUserAvatarFile>>
+export type TUserAvatarFilesResponse = TApiResponse<TLibResponse<TUserAvatarFile[]>>
 export type TNotificationResponse = TApiResponse<TLibResponse<TNotification>>
 export type TNotificationsResponse = TApiResponse<TLibResponse<TNotification[]>>
 export type TMessageResponse = TApiResponse<TLibResponse<string>>
@@ -157,3 +208,4 @@ export type TProjectMemberResponse = TApiResponse<TLibResponse<TProjectMember>>
 export type TProjectMembersResponse = TApiResponse<TLibResponse<TProjectMember[]>>
 export type TMsgApiResponse = TApiResponse<TLibResponse<TMessageResponse>>
 export type TTaskMemberResponse = TApiResponse<TLibResponse<TTaskMember[]>>
+export type TStatisticsResponse = TApiResponse<TLibResponse<TStatistics>>
