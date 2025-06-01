@@ -6,16 +6,22 @@ export const apiGetPhasesByProject = async ({
   projectId,
 }: TProjectIdParam): Promise<TPhasesResponse> => clientAxios.get(`/phases/project/${projectId}`)
 
-export const apiGetPhase = async ({ id }: TPhaseIdParam): Promise<TPhaseResponse> =>
-  clientAxios.get(`/phases/${id}`)
+export const apiGetPhase = async (phaseId: TPhaseIdParam): Promise<TPhaseResponse> =>
+  clientAxios.get(`/phases/${phaseId}`)
 
 export const apiCreatePhase = async (payload: TPhaseInput): Promise<TPhaseResponse> =>
   clientAxios.post("/phases", payload)
 
 export const apiUpdatePhase = async (
-  { id }: TPhaseIdParam,
-  payload: TPhaseInput,
-): Promise<TPhaseResponse> => clientAxios.put(`/phases/${id}`, payload)
+  phaseId: TPhaseIdParam,
+  payload: Partial<TPhaseInput>,
+): Promise<TPhaseResponse> => clientAxios.put(`/phases/${phaseId}`, payload)
 
-export const apiDeletePhase = async ({ id }: TPhaseIdParam): Promise<TMessageResponse> =>
-  clientAxios.delete(`/phases/${id}`)
+export const apiDeletePhase = async (phaseId: TPhaseIdParam): Promise<TMessageResponse> =>
+  clientAxios.delete(`/phases/${phaseId}`)
+
+export const apiMovePhase = async (
+  phaseId: TPhaseIdParam,
+  payload: { newPosition: number },
+): Promise<TMessageResponse> =>
+  clientAxios.put(`/phases/${phaseId}/move`, {}, { params: { position: payload.newPosition } })

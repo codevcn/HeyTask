@@ -4,7 +4,7 @@ import type { SnackbarOrigin } from "@mui/material"
 import { EProjectRoles } from "./enums"
 import type { Area } from "react-easy-crop"
 import DOMPurify from "dompurify"
-import { EProjectMemberRoles } from "../services/apis/types/output-enums"
+import { EApiProjectMemberRoles } from "../services/apis/types/output-enums"
 import type { TTaskStatus } from "./types"
 import type { TApiTaskStatus } from "../services/apis/types/sharings"
 
@@ -176,11 +176,11 @@ export const convertUndefinedFieldsToNull = <T extends Record<string | number, a
   return result
 }
 
-export const convertProjectRoles = (projectRole: EProjectMemberRoles): EProjectRoles => {
+export const convertProjectRoles = (projectRole: EApiProjectMemberRoles): EProjectRoles => {
   switch (projectRole) {
-    case EProjectMemberRoles.Admin:
+    case EApiProjectMemberRoles.Admin:
       return EProjectRoles.ADMIN
-    case EProjectMemberRoles.Leader:
+    case EApiProjectMemberRoles.Leader:
       return EProjectRoles.LEADER
     default:
       return EProjectRoles.MEMBER

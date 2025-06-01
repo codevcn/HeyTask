@@ -10,6 +10,7 @@ import type {
 } from "../services/types"
 import type { PopoverOrigin } from "@mui/material"
 import type { EAppMessageTypes, EPickDateValues } from "./enums"
+import type { TNotification } from "../services/apis/types/output-types"
 
 export type TSuccess = {
   success: boolean
@@ -139,3 +140,5 @@ export type TFilterProjectsWorkerMsg = {
 }
 
 export type TFilterProjectsWorkerRes = TProjectPreviewData["id"][]
+
+export type TNotificationEventData = TNotification

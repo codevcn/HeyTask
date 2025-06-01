@@ -274,6 +274,12 @@ export const projectSlice = createSlice({
         }
       }
     },
+    setProjectMembers: (state, action: PayloadAction<TProjectMemberData[]>) => {
+      const project = state.project
+      if (project) {
+        project.members = action.payload
+      }
+    },
     resetState: () => initialState,
   },
 })
@@ -304,5 +310,6 @@ export const {
   movePhase,
   setRequests,
   updateRequests,
+  setProjectMembers,
   resetState,
 } = projectSlice.actions

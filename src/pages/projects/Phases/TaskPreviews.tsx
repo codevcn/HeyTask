@@ -301,19 +301,21 @@ export const TaskPreviews = ({ taskPreviews, phaseData }: TTaskPreviewsProps) =>
       if (preTaskPreviews && preTaskPreviews.length > 0) {
         const fromIndex = preTaskPreviews.findIndex((task) => task.id === active.id)
         const toIndex = preTaskPreviews.findIndex((task) => task.id === over.id)
-        taskService
-          .moveTask(parseInt(active.id.toString()), phaseId, toIndex)
-          .then(() => {
-            dispatch(
-              updateSinglePhase({
-                id: phaseId,
-                taskPreviews: arrayMove(preTaskPreviews, fromIndex, toIndex),
-              }),
-            )
-          })
-          .catch((error) => {
-            toast.error(axiosErrorHandler.handleHttpError(error).message)
-          })
+        dispatch(
+          updateSinglePhase({
+            id: phaseId,
+            taskPreviews: arrayMove(preTaskPreviews, fromIndex, toIndex),
+          }),
+        )
+        taskService.moveTask(parseInt(active.id.toString()), phaseId, toIndex).catch((error) => {
+          toast.error(axiosErrorHandler.handleHttpError(error).message)
+          dispatch(
+            updateSinglePhase({
+              id: phaseId,
+              taskPreviews: preTaskPreviews,
+            }),
+          )
+        })
       }
     })
   }

@@ -8,6 +8,7 @@ import { toast } from "react-toastify"
 import axiosErrorHandler from "../../utils/axios-error-handler"
 import { AllProjects, ProjectPreview } from "./AllProjects"
 import { EInternalEvents, eventEmitter } from "../../utils/events"
+import { JoinedProjects } from "./JoinedProjects"
 
 type TStarredProjectsProps = {
   projects: TProjectPreviewData[]
@@ -60,14 +61,18 @@ export const Projects = () => {
     eventEmitter.on(EInternalEvents.REFRESH_PROJECTS, () => {
       fetchProjects()
     })
+    return () => {
+      eventEmitter.off(EInternalEvents.REFRESH_PROJECTS)
+    }
   }, [])
 
   const finalProjects = filterResult || projects
 
   return (
     <section className="w-full">
-      <StarredProjects projects={projects || []} />
+      {/* <StarredProjects projects={projects || []} /> */}
       <AllProjects filteredProjects={finalProjects} originalProjects={projects} />
+      <JoinedProjects />
     </section>
   )
 }

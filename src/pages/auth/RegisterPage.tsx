@@ -16,7 +16,7 @@ import { passwordRegex } from "../../utils/regex"
 import { OAuth } from "./OAuth"
 import { AppLogo } from "../../components/AppLogo"
 
-type IFormData = {
+type TRegisterFormData = {
   fullname: string
   email: string
   password: string
@@ -31,9 +31,9 @@ const RegisterPage = () => {
     handleSubmit,
     setError,
     formState: { errors },
-  } = useForm<IFormData>()
+  } = useForm<TRegisterFormData>()
 
-  const validateForm = (data: IFormData): boolean => {
+  const validateForm = (data: TRegisterFormData): boolean => {
     let isValid: boolean = true
     if (!data.fullname) {
       setError("fullname", { message: "Trường tên đầy đủ không được để trống." })
@@ -63,13 +63,13 @@ const RegisterPage = () => {
     return isValid
   }
 
-  const loginHandler = (data: IFormData) => {
+  const registerHandler = (data: TRegisterFormData) => {
     if (validateForm(data)) {
       setLoading(true)
       authService
         .register(data)
         .then(() => {
-          pureNavigator("/dashboard")
+          pureNavigator("/workspace")
         })
         .catch((error) => {
           toast.error(axiosErrorHandler.handleHttpError(error).message)
@@ -111,7 +111,7 @@ const RegisterPage = () => {
             Trước hết hãy đăng ký một tài khoản trên HeyTask để sử dụng dịch vụ của chúng tôi.
           </span>
         </span>
-        <form action="#" onSubmit={handleSubmit(loginHandler)} className="w-full">
+        <form onSubmit={handleSubmit(registerHandler)} className="w-full">
           <div className="w-full mt-6">
             <TextField
               variant="outlined"

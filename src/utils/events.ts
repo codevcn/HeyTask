@@ -17,6 +17,7 @@ export enum EInternalEvents {
   OPEN_USER_PREVIEW = "OPEN_USER_PREVIEW",
   REFRESH_PROJECTS = "REFRESH_PROJECTS",
   OPEN_PROJECTS_FILTER = "OPEN_PROJECTS_FILTER",
+  REFRESH_JOINED_PROJECTS = "REFRESH_JOINED_PROJECTS",
 }
 
 interface IEventEmitter {
@@ -39,6 +40,7 @@ interface IEventEmitter {
   [EInternalEvents.OPEN_USER_PREVIEW]: (boardData: TUserPreviewBoardData) => void
   [EInternalEvents.REFRESH_PROJECTS]: () => void
   [EInternalEvents.OPEN_PROJECTS_FILTER]: () => void
+  [EInternalEvents.REFRESH_JOINED_PROJECTS]: () => void
 }
 
 export const eventEmitter = new EventEmitter<IEventEmitter>()

@@ -229,7 +229,7 @@ export const TaskDetails = () => {
               taskData={taskData}
               taskIsComplete={taskData.status === "complete"}
             />
-            <MoveTask taskId={taskData.id} phaseId={phaseData.id} />
+            <MoveTask taskData={taskData} phaseId={phaseData.id} />
             <div className="flex justify-between gap-x-3 mt-6">
               <section className="w-full">
                 <div className="flex gap-5">

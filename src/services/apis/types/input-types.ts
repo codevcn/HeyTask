@@ -67,9 +67,7 @@ export type TProjectIdParam = {
   projectId: number
 }
 
-export type TPhaseIdParam = {
-  id: number
-}
+export type TPhaseIdParam = number
 
 export type TTaskIdParam = {
   id: number
@@ -114,4 +112,9 @@ export type TAddMemberToATaskParams = {
   taskId: number
   userId: number
   projectId: number
+}
+
+export type TSendProjectInvitationsInput = {
+  projectId: number
+  userIds: number[]
 }

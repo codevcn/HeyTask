@@ -28,7 +28,7 @@ const DeleteComment = ({ commentId, createdAt }: TDeleteCommentProps) => {
   const [anchorEle, setAnchorEle] = useState<HTMLButtonElement | null>(null)
   const dispatch = useAppDispatch()
 
-  const handleOpenDeleteComment = (e?: React.MouseEvent<HTMLButtonElement>) => {
+  const handleOpenConfirmDeleteComment = (e?: React.MouseEvent<HTMLButtonElement>) => {
     if (e) {
       const deleteExpires = dayjs().isAfter(dayjs(createdAt).add(TIME_TO_DELETE_COMMENT, "hour"))
       if (deleteExpires) {
@@ -55,13 +55,13 @@ const DeleteComment = ({ commentId, createdAt }: TDeleteCommentProps) => {
 
   return (
     <>
-      <button onClick={handleOpenDeleteComment} className="hover:underline text-xs">
+      <button onClick={handleOpenConfirmDeleteComment} className="hover:underline text-xs">
         Delete
       </button>
       <StyledPopover
         open={!!anchorEle}
         anchorEl={anchorEle}
-        onClose={() => handleOpenDeleteComment()}
+        onClose={() => handleOpenConfirmDeleteComment()}
         anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
         transformOrigin={{ horizontal: "right", vertical: "top" }}
       >
@@ -69,7 +69,7 @@ const DeleteComment = ({ commentId, createdAt }: TDeleteCommentProps) => {
           <div className="relative w-full py-1">
             <h3 className="w-full text-center text-sm font-bold">Delete comment</h3>
             <button
-              onClick={() => handleOpenDeleteComment()}
+              onClick={() => handleOpenConfirmDeleteComment()}
               className="flex absolute right-0 top-0 p-1 rounded-md hover:bg-modal-btn-hover-bgcl"
             >
               <CloseIcon className="text-regular-text-cl" fontSize="small" />
@@ -128,7 +128,7 @@ const UserComment = ({
     }
   }
 
-  const editing = () => {
+  const handleOpenEditEditor = () => {
     const editExpires = dayjs().isAfter(dayjs(createdAt).add(TIME_TO_EDIT_COMMENT, "minute"))
     if (editExpires) {
       toast.warn("User just can edit user's comment within 15 minutes")
@@ -211,7 +211,7 @@ const UserComment = ({
           {user.id === loginedUser.id && (
             <div className="flex justify-between gap-2 text-regular-text-cl mt-1 leading-none px-2">
               <div className="flex items-center gap-x-1">
-                <button onClick={editing} className="hover:underline text-xs">
+                <button onClick={handleOpenEditEditor} className="hover:underline text-xs">
                   Edit
                 </button>
                 <span>•</span>

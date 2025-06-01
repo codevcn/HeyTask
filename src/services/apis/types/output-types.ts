@@ -1,5 +1,10 @@
-import type { EGenders, EProjectRoles } from "../../../utils/enums"
-import type { EProjectMemberRoles } from "./output-enums"
+import type { EGenders } from "../../../utils/enums"
+import type {
+  EApiNotificationAction,
+  EApiNotificationTypes,
+  EApiProjectMemberRoles,
+  EApiUserRoles,
+} from "./output-enums"
 import type { TApiTaskStatus } from "./sharings"
 
 // Common types
@@ -25,12 +30,13 @@ export type TUser = {
   socialLinks?: string
   bio?: string
   emailVerified?: boolean
+  role: EApiUserRoles
 }
 
 export type TProjectMember = {
   id: number
   projectId: number
-  role: EProjectMemberRoles
+  role: EApiProjectMemberRoles
   userId: number
 }
 
@@ -83,7 +89,7 @@ export type TComment = {
   content: string
   createdAt: string // ISO date string
   userId: number
-  userRole: EProjectRoles
+  userRole: EApiProjectMemberRoles
   taskId: number
 }
 
@@ -102,11 +108,15 @@ export type TFile = {
 
 // Notification types
 export type TNotification = {
-  id: number
+  notificationId: number
+  userId: number
   message: string
   read: boolean
-  createdAt: string // ISO date string
-  userId: number
+  createdAt: string
+  type: EApiNotificationTypes
+  action: EApiNotificationAction
+  projectId: number | null
+  senderId: number | null
 }
 
 // Auth response types
@@ -119,6 +129,10 @@ export type TGeneralSearch = {
   projects: TProject[]
   phases: TPhase[]
   tasks: TTask[]
+}
+
+export type TTaskMember = TUser & {
+  projectRole: EApiProjectMemberRoles
 }
 
 // API Response types
@@ -142,3 +156,4 @@ export type TMessageResponse = TApiResponse<TLibResponse<string>>
 export type TProjectMemberResponse = TApiResponse<TLibResponse<TProjectMember>>
 export type TProjectMembersResponse = TApiResponse<TLibResponse<TProjectMember[]>>
 export type TMsgApiResponse = TApiResponse<TLibResponse<TMessageResponse>>
+export type TTaskMemberResponse = TApiResponse<TLibResponse<TTaskMember[]>>

@@ -8,7 +8,7 @@ import {
   useSensors,
   DragOverlay,
 } from "@dnd-kit/core"
-import type { DragEndEvent, DragStartEvent } from "@dnd-kit/core"
+import type { Active, DragEndEvent, DragStartEvent, Over } from "@dnd-kit/core"
 import { arrayMove, SortableContext, horizontalListSortingStrategy } from "@dnd-kit/sortable"
 import { useAppDispatch, useAppSelector } from "../../../hooks/redux"
 import { addNewPhase, setPhases } from "../../../redux/project/project-slice"
@@ -21,7 +21,6 @@ import { useDragScroll } from "../../../hooks/drag-scroll"
 import { TaskPreviews } from "./TaskPreviews"
 import AddIcon from "@mui/icons-material/Add"
 import CloseIcon from "@mui/icons-material/Close"
-import { randomInteger } from "../../../utils/helpers"
 import { Phase } from "./Phase"
 import { checkUserPermission } from "../../../configs/user-permissions"
 import { ProjectRoleGuard } from "../../../components/ResourceGuard"
@@ -190,18 +189,26 @@ const PhasesCanDragAndDrop = ({
     }
   }
 
+  const movePhaseHandler = (active: Active, over: Over) => {
+    dispatch((dispatch, getState) => {
+      const prePhases = getState().project.phases
+      if (prePhases && prePhases.length > 0) {
+        const fromIndex = prePhases.findIndex((phase) => phase.id === active.id)
+        const toIndex = prePhases.findIndex((phase) => phase.id === over.id)
+        dispatch(setPhases(arrayMove(prePhases, fromIndex, toIndex)))
+        phaseService.movePhase(prePhases[fromIndex].id, toIndex).catch((error) => {
+          toast.error(axiosErrorHandler.handleHttpError(error).message)
+          dispatch(setPhases(prePhases))
+        })
+      }
+    })
+  }
+
   const handleDragEnd = (e: DragEndEvent) => {
     const { over, active } = e
     if (over) {
       if (active.id !== over.id) {
-        dispatch((dispatch, getState) => {
-          const prePhases = getState().project.phases
-          if (prePhases && prePhases.length > 0) {
-            const fromIndex = prePhases.findIndex((phase) => phase.id === active.id)
-            const toIndex = prePhases.findIndex((phase) => phase.id === over.id)
-            dispatch(setPhases(arrayMove(prePhases, fromIndex, toIndex)))
-          }
-        })
+        movePhaseHandler(active, over)
       }
     }
     setDraggingId(null)

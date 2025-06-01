@@ -10,10 +10,11 @@ import { taskService } from "../../../services/task-service"
 import { toast } from "react-toastify"
 import axiosErrorHandler from "../../../utils/axios-error-handler"
 import { LogoLoading } from "../../../components/Loadings"
+import { TTaskDataState } from "../../../utils/types"
 
 type TPositionsToMove = {
   taskPreviews: TTaskPreviewData[]
-  phasePosition: number
+  toPhaseId: number
 }
 
 type TPhasesToMoveProps = {
@@ -27,11 +28,12 @@ type TMoveTaskFormData = {
 }
 
 type TMoveTaskProps = {
-  taskId: number
+  taskData: TTaskDataState
   phaseId: number
 }
 
-export const MoveTask = ({ taskId, phaseId }: TMoveTaskProps) => {
+export const MoveTask = ({ taskData, phaseId }: TMoveTaskProps) => {
+  const { id: taskId } = taskData
   const phases = useAppSelector(({ project }) => project.phases)
   const [anchorEle, setAnchorEle] = useState<HTMLElement | null>(null)
   const [moveTo, setMoveTo] = useState<TMoveTaskFormData>({
@@ -41,6 +43,7 @@ export const MoveTask = ({ taskId, phaseId }: TMoveTaskProps) => {
   const [phaseData, setPhaseData] = useState<TPhaseData>()
   const dispatch = useAppDispatch()
   const [isMoving, setIsMoving] = useState<boolean>(false)
+  const [taskPositionInPhase, setTaskPositionInPhase] = useState<number>()
 
   const { toPhase, toPosition } = moveTo
 
@@ -50,6 +53,7 @@ export const MoveTask = ({ taskId, phaseId }: TMoveTaskProps) => {
       setPhaseData(phase)
       const toPosition = phase.taskPreviews?.find(({ id }) => id === taskId)?.position
       setMoveTo({ toPosition, toPhase: phase })
+      setTaskPositionInPhase(toPosition)
     }
   }
 
@@ -87,7 +91,9 @@ export const MoveTask = ({ taskId, phaseId }: TMoveTaskProps) => {
   const onChangePhaseToMove = (e: SelectChangeEvent<unknown>, phases: TPhaseData[]) => {
     const phaseId = parseInt(e.target.value as string)
     const toPhase = phases.find(({ id }) => id === phaseId)!
-    setMoveTo({ toPosition: toPhase.taskPreviews?.[0]?.position || 0, toPhase })
+    const toPosition = (toPhase.taskPreviews?.[0]?.position || 1) - 1
+    setMoveTo({ toPosition, toPhase })
+    setTaskPositionInPhase(toPosition)
   }
 
   const onChangePositionToMove = (e: SelectChangeEvent<unknown>) => {
@@ -120,21 +126,7 @@ export const MoveTask = ({ taskId, phaseId }: TMoveTaskProps) => {
     )
   }
 
-  const isFinalPosition = (taskId: number, taskPreviews: TTaskPreviewData[]): boolean => {
-    if (!taskPreviews || taskPreviews.length === 0) return false
-    let maxPosition: number = -1
-    let taskSelected: TTaskPreviewData | undefined = undefined
-    for (const task of taskPreviews) {
-      const pos = task.position
-      if (pos > maxPosition) {
-        maxPosition = pos
-        taskSelected = task
-      }
-    }
-    return taskSelected?.id === taskId
-  }
-
-  const PositionsToMove = ({ taskPreviews, phasePosition }: TPositionsToMove) => {
+  const PositionsToMove = ({ taskPreviews, toPhaseId }: TPositionsToMove) => {
     const taskPreviewsCount = taskPreviews.length
     return (
       <div className="w-[78px]">
@@ -153,12 +145,17 @@ export const MoveTask = ({ taskId, phaseId }: TMoveTaskProps) => {
             {taskPreviewsCount > 0 &&
               taskPreviews.map(({ id, position }) => (
                 <StyledMenuItem key={id} value={position}>
-                  <span>{`${position + 1}${phasePosition === position ? " (current)" : ""}`}</span>
+                  <span>{`${position + 1}${taskPositionInPhase === position ? " (current)" : ""}`}</span>
                 </StyledMenuItem>
               ))}
-            {!isFinalPosition(taskId, taskPreviews) && (
-              <StyledMenuItem value={taskPreviewsCount || 0}>
-                <span>{(taskPreviewsCount || 0) + 1}</span>
+            {taskPreviewsCount > 0 && phaseId !== toPhaseId && (
+              <StyledMenuItem value={taskPreviewsCount}>
+                <span>{taskPreviewsCount + 1}</span>
+              </StyledMenuItem>
+            )}
+            {taskPreviewsCount === 0 && (
+              <StyledMenuItem value={0}>
+                <span>1</span>
               </StyledMenuItem>
             )}
           </StyledSelect>
@@ -207,10 +204,7 @@ export const MoveTask = ({ taskId, phaseId }: TMoveTaskProps) => {
           <div className="w-full mt-2">
             <div className="flex items-center gap-3">
               <PhasesToMove phases={phases} toPhase={toPhase} />
-              <PositionsToMove
-                taskPreviews={toPhase.taskPreviews || []}
-                phasePosition={phaseData.position}
-              />
+              <PositionsToMove taskPreviews={toPhase.taskPreviews || []} toPhaseId={toPhase.id} />
             </div>
             <button
               disabled={isMoving}

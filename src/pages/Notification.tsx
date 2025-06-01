@@ -10,7 +10,7 @@ import {
   Badge,
   BadgeProps,
 } from "@mui/material"
-import { useEffect, useRef, useState } from "react"
+import { useContext, useEffect, useRef, useState } from "react"
 import CloseIcon from "@mui/icons-material/Close"
 import { useAppDispatch, useAppSelector } from "../hooks/redux"
 import type { TNotificationData } from "../services/types"
@@ -26,10 +26,15 @@ import {
   updateSingleNotification,
 } from "../redux/notification/notification-slice"
 import dayjs from "dayjs"
-import { sanitizeHTMLString } from "../utils/helpers"
+import { openFixedLoadingHandler, sanitizeHTMLString } from "../utils/helpers"
 import DoneAllIcon from "@mui/icons-material/DoneAll"
 import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank"
-
+import { ESSEEvents } from "../utils/enums"
+import type { TNotificationEventData } from "../utils/types"
+import { EApiNotificationAction, EApiNotificationTypes } from "../services/apis/types/output-enums"
+import { projectService } from "../services/project-service"
+import { EventSourceContext } from "../lib/event-source-context"
+import { EInternalEvents, eventEmitter } from "../utils/events"
 type TNotificationItemProps = {
   notificationData: TNotificationData
   onMarkAsRead: (notificationId: number, seen: boolean) => void
@@ -41,12 +46,46 @@ const NotificationItem = ({
   onMarkAsRead,
   loadingId,
 }: TNotificationItemProps) => {
-  const { timestamp, description, seen, id } = notificationData
+  const { timestamp, description, seen, id, type, action } = notificationData
+  const dispatch = useAppDispatch()
+
+  const handleAcceptInvitation = () => {
+    openFixedLoadingHandler(true)
+    projectService
+      .acceptProjectInvitation(id)
+      .then(() => {
+        toast.success("Invitation accepted")
+        dispatch(updateSingleNotification({ id, action: EApiNotificationAction.ACCEPT }))
+        eventEmitter.emit(EInternalEvents.REFRESH_JOINED_PROJECTS)
+      })
+      .catch((error) => {
+        toast.error(axiosErrorHandler.handleHttpError(error).message)
+      })
+      .finally(() => {
+        openFixedLoadingHandler(false)
+      })
+  }
+
+  const handleRejectInvitation = () => {
+    openFixedLoadingHandler(true)
+    projectService
+      .rejectProjectInvitation(id)
+      .then(() => {
+        toast.success("Invitation rejected")
+        dispatch(updateSingleNotification({ id, action: EApiNotificationAction.REJECT }))
+      })
+      .catch((error) => {
+        toast.error(axiosErrorHandler.handleHttpError(error).message)
+      })
+      .finally(() => {
+        openFixedLoadingHandler(false)
+      })
+  }
 
   return (
     <div className="bg-modal-btn-bgcl rounded-lg relative text-sm">
-      <div className="flex items-center space-x-2 py-1 px-2 h-6 bg-black rounded-tr-md rounded-tl-md relative">
-        <div className="flex absolute top-1/2 right-2 -translate-y-1/2 z-20">
+      <div className="py-1 px-2 h-6 bg-black rounded-tr-md rounded-tl-md relative">
+        {/* <div className="flex absolute top-1/2 right-2 -translate-y-1/2 z-20">
           {loadingId?.includes(id) ? (
             <LogoLoading size="small" />
           ) : seen ? (
@@ -64,12 +103,41 @@ const NotificationItem = ({
               ></button>
             </Tooltip>
           )}
-        </div>
+        </div> */}
+        {action === EApiNotificationAction.ACCEPT && (
+          <div className="flex absolute top-1/2 right-2 -translate-y-1/2 z-20 items-center gap-1 text-success-text-cl">
+            <DoneAllIcon sx={{ height: 16, width: 16 }} color="inherit" />
+            <span className="text-xs">Invitation accepted</span>
+          </div>
+        )}
+        {action === EApiNotificationAction.REJECT && (
+          <div className="flex absolute top-1/2 right-2 -translate-y-1/2 z-20 items-center gap-1 text-delete-btn-bgcl">
+            <CloseIcon sx={{ height: 16, width: 16 }} color="inherit" />
+            <span className="text-xs">Invitation rejected</span>
+          </div>
+        )}
       </div>
       <div className="flex space-x-3 p-2 rounded-br-md rounded-bl-md">
-        <div className="text-sm leading-snug space-y-1">
+        <div className="text-sm leading-snug space-y-1 whitespace-pre-wrap">
           <div className="text-sm">{sanitizeHTMLString(description)}</div>
-          <div className="text-regular-text-cl text-xs">
+          {type === EApiNotificationTypes.PROJECT_INVITATION &&
+            action === EApiNotificationAction.PENDING && (
+              <div className="flex items-center gap-2 py-1">
+                <button
+                  onClick={handleAcceptInvitation}
+                  className="flex-1 text-xs py-1 px-2 rounded bg-success-text-cl text-black"
+                >
+                  Accept
+                </button>
+                <button
+                  onClick={handleRejectInvitation}
+                  className="flex-1 text-xs py-1 px-2 rounded bg-delete-btn-bgcl text-black"
+                >
+                  Reject
+                </button>
+              </div>
+            )}
+          <div className="text-regular-text-cl text-xs text-right">
             {dayjs(timestamp).format("MMM D, YYYY, h:mm A")}
           </div>
         </div>
@@ -229,18 +297,18 @@ const NotificationsList = () => {
     <>
       <div className="text-sm py-2 px-3 w-full">
         <div className="flex items-center gap-3 justify-between">
-          <OnlyShowUnreadBtn
+          {/* <OnlyShowUnreadBtn
             control={<Android12Switch defaultChecked onChange={onlyShowUnreadNotifications} />}
             label="Only show unread"
-          />
-          {checkAtLeastOneUnread(finalNotifications) && (
+          /> */}
+          {/* {checkAtLeastOneUnread(finalNotifications) && (
             <button
               onClick={handleMarkAllAsRead}
               className="text-xs py-1 px-2 rounded bg-modal-btn-bgcl hover:bg-modal-btn-hover-bgcl"
             >
               Mark all as read
             </button>
-          )}
+          )} */}
         </div>
       </div>
       {finalNotifications.length > 0 ? (
@@ -308,6 +376,8 @@ const NotificationButton = ({ onOpenNotificationsList }: TNotificationButtonProp
 
 export const Notification = () => {
   const [anchorEle, setAnchorEle] = useState<HTMLElement | null>(null)
+  const dispatch = useAppDispatch()
+  const eventSource = useContext(EventSourceContext)
 
   const handleOpenNotification = (e?: React.MouseEvent<HTMLButtonElement>) => {
     if (e) {
@@ -316,6 +386,30 @@ export const Notification = () => {
       setAnchorEle(null)
     }
   }
+
+  useEffect(() => {
+    const generalListener = (e: MessageEvent) => {
+      const data = JSON.parse(e.data) as TNotificationEventData
+      dispatch(
+        addNotifications([
+          {
+            id: data.notificationId,
+            description: data.message,
+            timestamp: data.createdAt,
+            seen: data.read,
+            type: data.type,
+            action: data.action,
+            projectId: data.projectId,
+            senderId: data.senderId,
+          },
+        ]),
+      )
+    }
+    eventSource.current?.addEventListener(ESSEEvents.GENERAL, generalListener)
+    return () => {
+      eventSource.current?.removeEventListener(ESSEEvents.GENERAL, generalListener)
+    }
+  }, [])
 
   return (
     <>

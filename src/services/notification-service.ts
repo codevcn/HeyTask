@@ -14,10 +14,14 @@ class NotificationService {
     if (!data) throw new Error("No notifications found")
     return {
       notifications: data.data?.map((notification) => ({
-        id: notification.id,
+        id: notification.notificationId,
         description: notification.message,
         timestamp: notification.createdAt,
         seen: notification.read,
+        type: notification.type,
+        action: notification.action,
+        projectId: notification.projectId,
+        senderId: notification.senderId,
       })),
     }
   }

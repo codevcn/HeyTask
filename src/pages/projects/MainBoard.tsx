@@ -155,10 +155,8 @@ const StrangerViewport = ({ userInProject }: TStrangerViewportProps) => {
   return (
     <div className="flex items-center justify-center grow bg-regular-bgcl">
       <div className="bg-regular-bgcl text-regular-text-cl p-6 rounded-lg shadow-lg w-96">
-        <h2 className="text-xl font-semibold">This project is private.</h2>
-        <p className="mt-2 text-modal-text-cl">
-          Send a request to the project administrator to gain access.
-        </p>
+        <h2 className="text-xl font-semibold">You are not a member of this project.</h2>
+        <p className="mt-2 text-modal-text-cl">Please wait for the project owner to invite you.</p>
 
         <p className="mt-4">You are logged in as</p>
         <div className="mt-1 flex items-center space-x-3 border border-gray-600 p-3 rounded-lg">
@@ -173,12 +171,12 @@ const StrangerViewport = ({ userInProject }: TStrangerViewportProps) => {
           </div>
         </div>
 
-        <p className="mt-4 text-modal-text-cl text-sm">
+        {/* <p className="mt-4 text-modal-text-cl text-sm">
           By requesting access, you agree to share your account information, including your email
           address, with the project administrators.
-        </p>
+        </p> */}
 
-        <button
+        {/* <button
           onClick={joinProject}
           className="flex justify-center mt-4 w-full h-9 bg-confirm-btn-bgcl hover:bg-confirm-btn-hover-bgcl text-black py-2 rounded-lg transition"
         >
@@ -189,7 +187,7 @@ const StrangerViewport = ({ userInProject }: TStrangerViewportProps) => {
           ) : (
             <b>Request to join this project</b>
           )}
-        </button>
+        </button> */}
       </div>
     </div>
   )

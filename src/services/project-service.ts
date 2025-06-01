@@ -11,10 +11,14 @@ import type { TSuccess } from "../utils/types"
 import { apiGetProjectMember, apiGetProjectMembers } from "./apis/member-apis"
 import {
   apiCreateProject,
+  apiAcceptProjectInvitation,
   apiGetProject,
   apiGetProjects,
   apiLeaveProject,
+  apiRejectProjectInvitation,
+  apiSendProjectInvitations,
   apiUpdateProject,
+  apiGetJoinedProjects,
 } from "./apis/project-apis"
 import { projectBackgrounds, staticStarredValue } from "../lib/project-static-data"
 import { convertUserApiData } from "./helpers/convert-api-data"
@@ -90,10 +94,9 @@ class ProjectService {
     )
   }
 
-  // đã bỏ
-  // async sendProjectInvitations(...userIds: TUserData["id"][]): Promise<void> {
-  //   await perfomDelay(1000)
-  // }
+  async sendProjectInvitations(projectId: number, ...userIds: number[]): Promise<void> {
+    await apiSendProjectInvitations({ projectId, userIds })
+  }
 
   // đã bỏ
   // async joinProject(projectId: number): Promise<void> {
@@ -165,6 +168,28 @@ class ProjectService {
   //       "https://trello-backgrounds.s3.amazonaws.com/SharedBackground/2560x1703/6f971f0ef48c1a5f2cde86f2d3a9ab56/photo-1736297150541-89378f055b96.webp",
   //   }
   // }
+
+  async acceptProjectInvitation(notificationId: number): Promise<void> {
+    await apiAcceptProjectInvitation({ notificationId })
+  }
+
+  async rejectProjectInvitation(notificationId: number): Promise<void> {
+    await apiRejectProjectInvitation({ notificationId })
+  }
+
+  async getJoinedProjects(): Promise<TProjectPreviewData[]> {
+    const { data } = await apiGetJoinedProjects()
+    if (!data) {
+      throw new Error("Projects not found")
+    }
+    return data.data.map((project) => ({
+      title: project.projectName,
+      id: project.id,
+      background: projectBackgrounds[0],
+      starred: staticStarredValue,
+      createdAt: project.createdAt,
+    }))
+  }
 }
 
 export const projectService = new ProjectService()

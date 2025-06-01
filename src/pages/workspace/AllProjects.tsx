@@ -270,7 +270,7 @@ export const AllProjects = ({ filteredProjects, originalProjects }: TAllProjects
       <div className="flex items-center justify-between gap-5 mb-3">
         <a id="all-projects-list" className="flex items-center gap-2" href="#all-projects-list">
           <SpaceDashboardIcon fontSize="small" />
-          <h2 className="text-lg font-semibold">Your Boards</h2>
+          <h2 className="text-lg font-semibold">Your Projects</h2>
         </a>
         <div className="flex items-center gap-2">
           <div className="border border-[#8C9BAB] border-solid rounded hover:bg-hover-silver-bgcl">

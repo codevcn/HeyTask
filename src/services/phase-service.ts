@@ -1,17 +1,17 @@
 // đã sửa xong file này
 
-import { convertToTaskStatus, convertUndefinedFieldsToNull } from "../utils/helpers"
 import type { TSuccess } from "../utils/types"
 import {
   apiCreatePhase,
   apiDeletePhase,
   apiGetPhasesByProject,
+  apiMovePhase,
   apiUpdatePhase,
 } from "./apis/phase-apis"
 import { apiGetTasksByPhase } from "./apis/task-apis"
-import type { TPhaseData } from "./types"
-import { apiGetUser } from "./apis/user-apis"
+import type { TPhaseData, TTaskPreviewData } from "./types"
 import type { TPhaseInput } from "./apis/types/input-types"
+import { convertToTaskStatus } from "../utils/helpers"
 
 class PhaseService {
   async getPhases(projectId: number): Promise<TPhaseData[]> {
@@ -30,16 +30,15 @@ class PhaseService {
         position: phase.orderIndex,
         description: phase.description,
         taskPreviews: await Promise.all(
-          tasks.map(async (task) => {
-            const userApiRes = task.assignedToId ? await apiGetUser(task.assignedToId) : null
+          tasks.map(async (task): Promise<TTaskPreviewData> => {
             return {
-              id: task.id,
-              title: task.taskName,
+              dueDate: task.dueDate || null,
               hasDescription: !!task.description,
+              id: task.id,
               position: task.orderIndex,
-              taskMembers: userApiRes ? [convertUndefinedFieldsToNull(userApiRes.data.data)] : [],
               status: convertToTaskStatus(task.status),
-              dueDate: task.dueDate ?? null,
+              taskMembers: [],
+              title: task.taskName,
             }
           }),
         ),
@@ -69,18 +68,12 @@ class PhaseService {
     }
   }
 
-  async updatePhase(projectId: number, phase: TPhaseData): Promise<TPhaseData> {
-    const { data } = await apiUpdatePhase(
-      { id: phase.id },
-      {
-        phaseName: phase.title,
-        description: phase.description || "",
-        orderIndex: phase.position,
-        status: "NOT_STARTED",
-        startDate: new Date().toISOString(),
-        project: { id: projectId },
-      },
-    )
+  async updatePhase(phaseId: number, updateData: Partial<TPhaseData>): Promise<TPhaseData> {
+    const { data } = await apiUpdatePhase(phaseId, {
+      phaseName: updateData.title,
+      description: updateData.description || "",
+      orderIndex: updateData.position,
+    })
     if (!data) throw new Error("No phase updated")
     const phaseData = data.data
     return {
@@ -97,12 +90,12 @@ class PhaseService {
   }
 
   async deletePhase(phaseId: number): Promise<TSuccess> {
-    await apiDeletePhase({ id: phaseId })
+    await apiDeletePhase(phaseId)
     return { success: true }
   }
 
-  async movePhase(projectId: number, phase: TPhaseData): Promise<TSuccess> {
-    await this.updatePhase(projectId, phase)
+  async movePhase(phaseId: number, newPosition: number): Promise<TSuccess> {
+    await apiMovePhase(phaseId, { newPosition })
     return { success: true }
   }
 }

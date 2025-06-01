@@ -6,6 +6,7 @@ import type {
   EUserRoles,
 } from "../utils/enums"
 import type { TTaskStatus } from "../utils/types"
+import type { EApiNotificationAction, EApiNotificationTypes } from "./apis/types/output-enums"
 
 export type TUserProfileData = {
   fullName: string
@@ -136,6 +137,10 @@ export type TGeneralNotificationData = {
   description: string
   timestamp: string
   seen: boolean
+  type: EApiNotificationTypes
+  action: EApiNotificationAction
+  projectId: number | null
+  senderId: number | null
 }
 
 export type TNotificationData = TGeneralNotificationData

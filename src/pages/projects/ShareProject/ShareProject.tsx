@@ -22,59 +22,58 @@ import { userService } from "../../../services/user-service"
 import { useDebounce } from "../../../hooks/debounce"
 import { LogoLoading } from "../../../components/Loadings"
 import { EInternalEvents, eventEmitter } from "../../../utils/events"
-import { useAppDispatch } from "../../../hooks/redux"
+import { useAppDispatch, useAppSelector } from "../../../hooks/redux"
 import { updateProject } from "../../../redux/project/project-slice"
 import { MemberAndRequests } from "./MemberAndRequests"
+import { checkUserPermission } from "../../../configs/user-permissions"
+import { useUserInProject } from "../../../hooks/user"
 
 type TSearchStatus = "searching" | "search-done"
 
 const SearchSection = () => {
+  const project = useAppSelector((state) => state.project.project!)
   const inputRef = useRef<HTMLInputElement>(null)
   const [searchResult, setResult] = useState<TSearchUserData[]>()
   const [searchStatus, setSearchStatus] = useState<TSearchStatus>()
   const [pickedUsers, setPickedUsers] = useState<TSearchUserData[]>()
   const debounce = useDebounce()
 
-  const searchUser = useCallback(
-    debounce(() => {
-      const inputValue = inputRef.current?.value
-      if (inputValue) {
-        setSearchStatus("searching")
-        userService
-          .searchUsers(inputValue)
-          .then((res) => {
-            setResult(res)
-          })
-          .catch((error) => {
-            toast.error(axiosErrorHandler.handleHttpError(error).message)
-          })
-          .finally(() => {
-            setSearchStatus("search-done")
-          })
-      } else {
-        setResult(undefined)
-        setSearchStatus(undefined)
-      }
-    }, 300),
-    [],
-  )
+  const searchUser = debounce(() => {
+    const inputValue = inputRef.current?.value
+    if (inputValue) {
+      setSearchStatus("searching")
+      userService
+        .searchUsers(inputValue)
+        .then((res) => {
+          setResult(res)
+        })
+        .catch((error) => {
+          toast.error(axiosErrorHandler.handleHttpError(error).message)
+        })
+        .finally(() => {
+          setSearchStatus("search-done")
+        })
+    } else {
+      setResult(undefined)
+      setSearchStatus(undefined)
+    }
+  }, 300)
 
-  const sendInvitationViaLink = () => {
-    // đã bỏ
-    // if (pickedUsers && pickedUsers.length > 0) {
-    //    openFixedLoadingHandler(true)
-    //    projectService
-    //       .sendProjectInvitations(...pickedUsers.map((user) => user.id))
-    //       .then(() => {
-    //          toast.success("Sent invitation successfully!")
-    //       })
-    //       .catch((error) => {
-    //          toast.error(axiosErrorHandler.handleHttpError(error).message)
-    //       })
-    //       .finally(() => {
-    //          openFixedLoadingHandler(false)
-    //       })
-    // }
+  const sendInvitationHandler = () => {
+    if (pickedUsers && pickedUsers.length > 0) {
+      openFixedLoadingHandler(true)
+      projectService
+        .sendProjectInvitations(project.id, ...pickedUsers.map((user) => user.id))
+        .then(() => {
+          toast.success("Sent invitation successfully!")
+        })
+        .catch((error) => {
+          toast.error(axiosErrorHandler.handleHttpError(error).message)
+        })
+        .finally(() => {
+          openFixedLoadingHandler(false)
+        })
+    }
   }
 
   const pickUsers = (user: TSearchUserData) => {
@@ -155,7 +154,7 @@ const SearchSection = () => {
         )}
       </div>
       <button
-        onClick={sendInvitationViaLink}
+        onClick={sendInvitationHandler}
         className="bg-confirm-btn-bgcl h-fit hover:bg-confirm-btn-hover-bgcl w-fit py-2 px-3 text-black text-sm rounded"
       >
         Share
@@ -218,9 +217,9 @@ const SharingSection = ({ shareLink, projectId }: TSharingSectionProps) => {
   }, [shareLink])
 
   return (
-    <div className="text-modal-text-cl w-full">
+    <div className="text-modal-text-cl w-full mt-5">
       <SearchSection />
-      <div className="mt-4 p-2 bg-modal-btn-bgcl rounded flex items-center justify-between">
+      {/* <div className="mt-4 p-2 bg-modal-btn-bgcl rounded flex items-center justify-between">
         <div className="flex gap-x-2">
           <LinkIcon className="text-inherit" />
           <Tooltip title="Anyone with the link can join as a member" arrow>
@@ -253,7 +252,7 @@ const SharingSection = ({ shareLink, projectId }: TSharingSectionProps) => {
             </button>
           </div>
         )}
-      </div>
+      </div> */}
     </div>
   )
 }
@@ -265,6 +264,7 @@ type TShareProjectProps = {
 export const ShareProject = ({ projectData }: TShareProjectProps) => {
   const { members, shareLink, id } = projectData
   const [openDialog, setOpenDialog] = useState<boolean>(false)
+  const userInProject = useUserInProject()!
 
   const openUserPreview = (e: React.MouseEvent<HTMLElement>, userData: TUserData) => {
     eventEmitter.emit(EInternalEvents.OPEN_USER_PREVIEW, { anchorEle: e.currentTarget, userData })
@@ -316,10 +316,10 @@ export const ShareProject = ({ projectData }: TShareProjectProps) => {
                 <CloseIcon className="text-regular-text-cl" />
               </button>
             </header>
-            <div className="w-full mt-5">
+            {checkUserPermission(userInProject.projectRole, "add-remove-project-member") && (
               <SharingSection shareLink={shareLink} projectId={id} />
-              <MemberAndRequests projectMembers={members} projectId={id} />
-            </div>
+            )}
+            <MemberAndRequests projectMembers={members} projectId={id} />
           </div>
         </DialogContent>
       </StyledDialog>

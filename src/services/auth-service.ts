@@ -14,7 +14,7 @@ class AuthService {
   }
 
   async register(payload: TRegisterPayload): Promise<TSuccess> {
-    await apiSignup({ username: "", ...payload })
+    await apiSignup({ username: payload.email, ...payload })
     return { success: true }
   }
 
