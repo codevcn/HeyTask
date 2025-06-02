@@ -60,13 +60,16 @@ class TaskService {
       }) || [],
     )
     const fetchedTaskMember = taskData.assignedToId ? await apiGetUser(taskData.assignedToId) : null
+    const userAsMember = fetchedTaskMember
+      ? convertUndefinedFieldsToNull(fetchedTaskMember.data.data)
+      : null
     return {
       comments,
       status: convertToTaskStatus(taskData.status),
       description: taskData.description,
       dueDate: taskData.dueDate || null,
       id: taskData.id,
-      members: fetchedTaskMember ? [convertUndefinedFieldsToNull(fetchedTaskMember.data.data)] : [],
+      members: userAsMember ? [{ ...userAsMember, fullName: userAsMember.fullname }] : [],
       title: taskData.taskName,
     }
   }

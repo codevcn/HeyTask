@@ -119,7 +119,7 @@ const AddMemberBoard = () => {
           </div>
           {!searchResult && (
             <div className="mt-3 w-full">
-              <h3 className="text-sm font-bold">Card members</h3>
+              <h3 className="text-sm font-bold">Task members</h3>
               <div className="mt-2">
                 {(taskMembers || []).map((member) => (
                   <div
