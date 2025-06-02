@@ -68,12 +68,20 @@ class PhaseService {
     }
   }
 
-  async updatePhase(phaseId: number, updateData: Partial<TPhaseData>): Promise<TPhaseData> {
-    const { data } = await apiUpdatePhase(phaseId, {
-      phaseName: updateData.title,
-      description: updateData.description || "",
-      orderIndex: updateData.position,
-    })
+  async updatePhase(
+    phaseId: number,
+    updateData: Partial<TPhaseData>,
+    projectId: number,
+  ): Promise<TPhaseData> {
+    const { data } = await apiUpdatePhase(
+      phaseId,
+      {
+        phaseName: updateData.title,
+        description: updateData.description || "",
+        orderIndex: updateData.position,
+      },
+      projectId,
+    )
     if (!data) throw new Error("No phase updated")
     const phaseData = data.data
     return {

@@ -30,13 +30,17 @@ export const Phase = ({ phaseData, className, projectId }: TPhaseProps) => {
   const quitEditing = (newTitle: string) => {
     if (newTitle && newTitle.length > 0) {
       phaseService
-        .updatePhase(projectId, {
-          id: phaseData.id,
-          title: newTitle,
-          description: phaseData.description || "",
-          position: phaseData.position,
-          taskPreviews,
-        })
+        .updatePhase(
+          projectId,
+          {
+            id: phaseData.id,
+            title: newTitle,
+            description: phaseData.description || "",
+            position: phaseData.position,
+            taskPreviews,
+          },
+          projectId,
+        )
         .then((res) => {
           dispatch(updateSinglePhase({ ...phaseData, ...res }))
         })

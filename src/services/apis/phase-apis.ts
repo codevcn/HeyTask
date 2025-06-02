@@ -15,7 +15,9 @@ export const apiCreatePhase = async (payload: TPhaseInput): Promise<TPhaseRespon
 export const apiUpdatePhase = async (
   phaseId: TPhaseIdParam,
   payload: Partial<TPhaseInput>,
-): Promise<TPhaseResponse> => clientAxios.put(`/phases/${phaseId}`, payload)
+  projectId: number,
+): Promise<TPhaseResponse> =>
+  clientAxios.put(`/phases/${phaseId}`, payload, { params: { projectId } })
 
 export const apiDeletePhase = async (phaseId: TPhaseIdParam): Promise<TMessageResponse> =>
   clientAxios.delete(`/phases/${phaseId}`)
