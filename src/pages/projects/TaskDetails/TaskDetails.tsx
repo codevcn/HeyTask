@@ -40,11 +40,12 @@ const Title = ({ onClose, taskIsComplete, taskData }: TTitleProps) => {
   const dispatch = useAppDispatch()
   const userInProject = useUserInProject()!
   const [editedTitle, setEditedTitle] = useState<string | null>(title)
+  const project = useAppSelector((state) => state.project.project!)
 
   const quitEditing = (newTitle: string) => {
     if (newTitle && newTitle.length > 0) {
       taskService
-        .updateTaskForPreview(taskData.id, { taskName: newTitle })
+        .updateTaskForPreview(taskData.id, { taskName: newTitle }, project.id)
         .then(() => {
           dispatch(updateTaskData({ ...taskData, title: newTitle }))
           dispatch(updateTaskPreview({ phaseId, id, title: newTitle }))

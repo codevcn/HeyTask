@@ -43,6 +43,7 @@ const DatesBoard = () => {
   const dispatch = useAppDispatch()
   const debounce = useDebounce()
   const [isSaving, setIsSaving] = useState<boolean>(false)
+  const project = useAppSelector((state) => state.project.project!)
 
   const anchorEle = boardData?.anchorEle || null
 
@@ -58,9 +59,14 @@ const DatesBoard = () => {
       const isoString = newDueDate.toISOString()
       setIsSaving(true)
       taskService
-        .updateTask(taskData.phaseId, taskData.id, {
-          dueDate: isoString,
-        })
+        .updateTask(
+          taskData.phaseId,
+          taskData.id,
+          {
+            dueDate: isoString,
+          },
+          project.id,
+        )
         .then(() => {
           dispatch(updateTaskData({ dueDate: isoString }))
         })

@@ -31,7 +31,8 @@ export const apiCreateTask = async (
 export const apiUpdateTask = async (
   { id }: TTaskIdParam,
   payload: Partial<TTaskInput>,
-): Promise<TMsgApiResponse> => clientAxios.put(`/tasks/${id}`, { task: payload })
+  projectId: number,
+): Promise<TMsgApiResponse> => clientAxios.put(`/tasks/${id}`, { task: payload, projectId })
 
 export const apiDeleteTask = async (
   { id }: TTaskIdParam,

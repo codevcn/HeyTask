@@ -1,6 +1,6 @@
 import { Editor as TinyMCEEditor } from "tinymce"
 import { useRef, useState } from "react"
-import { useAppDispatch } from "../../../hooks/redux"
+import { useAppDispatch, useAppSelector } from "../../../hooks/redux"
 import ReorderIcon from "@mui/icons-material/Reorder"
 import { updateTaskData, updateTaskPreview } from "../../../redux/project/project-slice"
 import { CustomRichTextContent } from "../../../components/RichTextContent"
@@ -22,6 +22,7 @@ export const Description = ({ description, taskId, phaseId }: TDescriptionProps)
   const editorRef = useRef<TinyMCEEditor | null>(null)
   const dispatch = useAppDispatch()
   const user = useUser()!
+  const project = useAppSelector((state) => state.project.project!)
 
   const focusBlurEditor = (editorWrapperId: string, type: "focus" | "blur") => {
     const editorWrapper = editorsContainerRef.current?.querySelector<HTMLDivElement>(
@@ -38,7 +39,7 @@ export const Description = ({ description, taskId, phaseId }: TDescriptionProps)
       const content = editor.getContent()
       if (typeof content === "string") {
         taskService
-          .updateTask(phaseId, taskId, { description: content })
+          .updateTask(phaseId, taskId, { description: content }, project.id)
           .then(() => {
             dispatch(updateTaskData({ description: content }))
             dispatch(updateTaskPreview({ phaseId, id: taskId, hasDescription: !!content }))

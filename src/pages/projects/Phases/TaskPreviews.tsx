@@ -55,6 +55,7 @@ const Task = ({ taskPreviewData, className, phaseData }: TTaskPreviewProps) => {
   const isComplete = status === "complete"
   const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id })
   const dispatch = useAppDispatch()
+  const project = useAppSelector(({ project }) => project.project!)
 
   const openTaskDetails = () => {
     eventEmitter.emit(EInternalEvents.OPEN_TASK_DETAILS_MODAL, true, id)
@@ -64,7 +65,7 @@ const Task = ({ taskPreviewData, className, phaseData }: TTaskPreviewProps) => {
     e.stopPropagation()
     const newStatus: TTaskStatus = status === "complete" ? "uncomplete" : "complete"
     taskService
-      .handleMarkTaskComplete(id, newStatus)
+      .handleMarkTaskComplete(id, newStatus, project.id)
       .then(() => {
         dispatch(updateTaskPreview({ ...taskPreviewData, phaseId, status: newStatus }))
         dispatch(updateTaskData({ status: newStatus }))

@@ -99,8 +99,12 @@ class TaskService {
     }
   }
 
-  async handleMarkTaskComplete(taskId: number, newStatus: TTaskStatus): Promise<void> {
-    await apiUpdateTask({ id: taskId }, { status: convertToApiTaskStatus(newStatus) })
+  async handleMarkTaskComplete(
+    taskId: number,
+    newStatus: TTaskStatus,
+    projectId: number,
+  ): Promise<void> {
+    await apiUpdateTask({ id: taskId }, { status: convertToApiTaskStatus(newStatus) }, projectId)
   }
 
   async deleteTask(taskId: number, projectId: number): Promise<TSuccess> {
@@ -108,8 +112,12 @@ class TaskService {
     return { success: true }
   }
 
-  async updateTaskForPreview(taskId: number, taskData: Partial<TTaskInput>): Promise<TSuccess> {
-    await apiUpdateTask({ id: taskId }, taskData)
+  async updateTaskForPreview(
+    taskId: number,
+    taskData: Partial<TTaskInput>,
+    projectId: number,
+  ): Promise<TSuccess> {
+    await apiUpdateTask({ id: taskId }, taskData, projectId)
     return {
       success: true,
     }
@@ -142,6 +150,7 @@ class TaskService {
     phaseId: number,
     taskId: number,
     taskData: Partial<TTaskData>,
+    projectId: number,
   ): Promise<TSuccess> {
     await apiUpdateTask(
       { id: taskId },
@@ -154,6 +163,7 @@ class TaskService {
           id: phaseId,
         },
       },
+      projectId,
     )
     return {
       success: true,
