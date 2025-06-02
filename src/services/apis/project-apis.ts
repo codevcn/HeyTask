@@ -49,4 +49,6 @@ export const apiRemoveMemberFromProject = async (
   projectId: number,
   userId: number,
 ): Promise<TMessageResponse> =>
-  clientAxios.delete(`/projects/remove-project-member`, { params: { projectId, userId } })
+  clientAxios.delete(`/projects/remove-project-member`, {
+    params: { projectId: parseInt(projectId + ""), userId: parseInt(userId + "") },
+  })
