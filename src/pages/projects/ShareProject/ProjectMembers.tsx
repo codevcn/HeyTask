@@ -19,6 +19,7 @@ import axiosErrorHandler from "../../../utils/axios-error-handler"
 import { checkUserPermission } from "../../../configs/user-permissions"
 import { EventSourceContext } from "../../../lib/event-source-context"
 import { ESSEEvents } from "../../../utils/enums"
+import { taskService } from "../../../services/task-service"
 
 type TRolesProps = {
   selectedMember: TProjectMemberData
@@ -68,8 +69,19 @@ const EditAuthorization = ({
     }
 
     const removeFromProject = (memberId: number) => {
-      dispatch(removeMemberFromProject(memberId))
-      onClose()
+      openFixedLoadingHandler(true)
+      projectService
+        .removeMemberFromProject(project.id, memberId)
+        .then(() => {
+          dispatch(removeMemberFromProject(memberId))
+          onClose()
+        })
+        .catch((error) => {
+          toast.error(axiosErrorHandler.handleHttpError(error).message)
+        })
+        .finally(() => {
+          openFixedLoadingHandler(false)
+        })
     }
 
     return (

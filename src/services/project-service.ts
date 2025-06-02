@@ -20,6 +20,7 @@ import {
   apiUpdateProject,
   apiGetJoinedProjects,
   apiDeleteProject,
+  apiRemoveMemberFromProject,
 } from "./apis/project-apis"
 import { projectBackgrounds, staticStarredValue } from "../lib/project-static-data"
 import { apiGetUser } from "./apis/user-apis"
@@ -195,6 +196,10 @@ class ProjectService {
 
   async deleteProject(projectId: number): Promise<void> {
     await apiDeleteProject({ projectId })
+  }
+
+  async removeMemberFromProject(projectId: number, userId: number): Promise<void> {
+    await apiRemoveMemberFromProject(projectId, userId)
   }
 }
 
