@@ -181,13 +181,16 @@ const MemberItem = ({ memberData, selected, onOpenAuthorization, isUser }: TMemb
           <p className="text-xs leading-tight">{email}</p>
         </div>
       </div>
-      <button
+      {/* <button
         onClick={(e) => onOpenAuthorization(e, memberData)}
         className="flex items-center gap-x-1 px-3 py-1 rounded bg-modal-btn-bgcl hover:bg-modal-btn-hover-bgcl"
       >
         <span className="text-sm">{displayProjectRole(projectRole)}</span>
         <KeyboardArrowDownIcon fontSize="small" className="text-modal-text-cl" />
-      </button>
+      </button> */}
+      <div className="flex items-center gap-x-1 px-3 py-1 rounded bg-modal-btn-bgcl hover:bg-modal-btn-hover-bgcl">
+        <span className="text-sm">{displayProjectRole(projectRole)}</span>
+      </div>
     </div>
   )
 }
